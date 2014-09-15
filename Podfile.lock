@@ -1,0 +1,13 @@
+PODS:
+  - MBProgressHUD (0.9)
+  - ProgressHUD (1.3)
+
+DEPENDENCIES:
+  - MBProgressHUD (~> 0.9)
+  - ProgressHUD (~> 1.3)
+
+SPEC CHECKSUMS:
+  MBProgressHUD: 2038dbcf3dce73215abed6001657043d53aa79a8
+  ProgressHUD: 56af86269058221d1975dd3e85cf7fbf44dba199
+
+COCOAPODS: 0.33.1
