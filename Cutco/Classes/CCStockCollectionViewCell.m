@@ -17,6 +17,8 @@
 
 @implementation CCStockCollectionViewCell
 
+#pragma mark - Init
+
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
@@ -27,6 +29,8 @@
     return self;
 }
 
+#pragma mark - Accessors
+
 - (UIImageView *)imageView {
     if (!_imageView) {
         CGRect frame = CGRectMake(0.0,
@@ -35,7 +39,6 @@
                                   CGRectGetWidth(self.contentView.frame)/3*2);
         _imageView = [[UIImageView alloc] initWithFrame:frame];
         _imageView.contentMode = UIViewContentModeScaleAspectFit;
-//        _imageView.backgroundColor = [UIColor brownColor];
     }
     return _imageView;
 }
@@ -48,7 +51,6 @@
                                   CGRectGetHeight(self.contentView.frame) / 3 - 8.0);
         _titleLabel = [[UILabel alloc] initWithFrame:frame];
         _titleLabel.numberOfLines = 2;
-//        _titleLabel.backgroundColor = [UIColor greenColor];
         _titleLabel.textAlignment = NSTextAlignmentCenter;
         _titleLabel.font = [UIFont fontWithName:@"Arial" size:12.0f];
     }
