@@ -13,7 +13,7 @@
 #import <Parse/Parse.h>
 #import <MBProgressHUD.h>
 
-@interface CCStockViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
+@interface CCStockViewController () <UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) NSArray *stockItems;
@@ -27,6 +27,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    UIBarButtonItem *showCameraButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
+                                                                                      target:self
+                                                                                      action:@selector(showCamera)];
+    self.navigationItem.rightBarButtonItem = showCameraButton;
+    
     [self.view addSubview:self.collectionView];
     
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.collectionView animated:YES];
@@ -34,6 +39,19 @@
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self loadStockItemsFromParse];
     });
+}
+
+- (void)showCamera {
+    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        NSLog(@"device has no camera");
+    } else {
+        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+        picker.delegate = self;
+        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        picker.allowsEditing = NO;
+        
+        [self presentViewController:picker animated:YES completion:nil];
+    }
 }
 
 - (void)viewWillLayoutSubviews {
@@ -95,12 +113,23 @@
     }
 }
 
+#pragma mark - Image Picker Controller Delegate
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+    NSLog(@"photo taken");
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
 #pragma mark - Parse methods
 
-#define StockItemParseClassName @"Knifes"
+#define PARSE_CLASS_STOCK_ITEM @"Knifes"
 
 - (void)loadStockItemsFromParse {
-    PFQuery *query = [PFQuery queryWithClassName:StockItemParseClassName];
+    PFQuery *query = [PFQuery queryWithClassName:PARSE_CLASS_STOCK_ITEM];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         [MBProgressHUD hideHUDForView:self.collectionView animated:YES];
         if (!error) {
