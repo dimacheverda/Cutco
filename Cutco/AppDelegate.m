@@ -24,8 +24,6 @@
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    CGRect r = [[UIScreen mainScreen] bounds];
-    NSLog(@"%f  %f", r.size.width, r.size.height);
     self.window.backgroundColor = [UIColor whiteColor];
     self.window.rootViewController = [[CCSignInViewController alloc] init];
     [self.window makeKeyAndVisible];

@@ -163,6 +163,11 @@
     tutorialVC.title = @"Tutorial";
     reportVC.title = @"Report";
     
+    stockVC.tabBarItem.image = [UIImage imageNamed:@"cart"];
+    historyVC.tabBarItem.image = [UIImage imageNamed:@"cart"];
+    tutorialVC.tabBarItem.image = [UIImage imageNamed:@"cart"];
+    reportVC.tabBarItem.image = [UIImage imageNamed:@"cart"];
+    
     UITabBarController *tabBarController = [[UITabBarController alloc] init];
     tabBarController.viewControllers = @[navController, historyVC, tutorialVC, reportVC];
     

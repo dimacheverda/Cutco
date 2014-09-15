@@ -17,11 +17,15 @@
         _name = object[@"name"];
         _itemDescription = object[@"description"];
         _salePrice = object[@"sale_price"];
-        _retailsPrice = object[@"retail_price"];
+        _retailPrice = object[@"retail_price"];
         PFFile *imageFile = object[@"image"];
         _image = [UIImage imageWithData:[imageFile getData]];
     }
     return self;
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"UPC : %@,\nname : %@,\ndescription : %@,\nsale_price : %@,\nretail_price : %@\n", _UPC,_name,_itemDescription,_salePrice,_retailPrice];
 }
 
 @end

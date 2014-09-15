@@ -14,7 +14,7 @@
 @property (strong, nonatomic) NSString *name;
 @property (strong, nonatomic) NSString *itemDescription;
 @property (strong, nonatomic) NSNumber *UPC;
-@property (strong, nonatomic) NSNumber *retailsPrice;
+@property (strong, nonatomic) NSNumber *retailPrice;
 @property (strong, nonatomic) NSNumber *salePrice;
 @property (strong, nonatomic) UIImage *image;
 
