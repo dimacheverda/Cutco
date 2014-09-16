@@ -9,6 +9,7 @@
 #import "CCStockItemViewController.h"
 #import <Parse/Parse.h>
 #import "CCSale.h"
+#import <MBProgressHUD.h>
 
 @interface CCStockItemViewController ()
 
@@ -179,6 +180,7 @@
 - (void)saveSaveButtonDidPressed {
     CCSale *sale = [[CCSale alloc] initWithStockItem:self.stockItem];
     PFObject *saleObject = [sale getPFObject];
+    
     [saleObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
             NSLog(@"save successfully");

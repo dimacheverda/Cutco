@@ -16,8 +16,8 @@
         _UPC = object[@"UPC"];
         _name = object[@"name"];
         _itemDescription = object[@"description"];
-        _salePrice = object[@"sale_price"];
-        _retailPrice = object[@"retail_price"];
+        _salePrice = object[@"salePrice"];
+        _retailPrice = object[@"retailPrice"];
         PFFile *imageFile = object[@"image"];
         _image = [UIImage imageWithData:[imageFile getData]];
         _objectId = object.objectId;
@@ -29,8 +29,8 @@
     PFObject *object = [[PFObject alloc] initWithClassName:@"StockItem"];
     object[@"name"] = self.name;
     object[@"description"] = self.itemDescription;
-    object[@"retail_price"] = self.retailPrice;
-    object[@"sale_price"] = self.salePrice;
+    object[@"retailPrice"] = self.retailPrice;
+    object[@"salePrice"] = self.salePrice;
     object[@"UPC"] = self.UPC;
     object[@"image"] = [PFFile fileWithData:UIImagePNGRepresentation(self.image)];
     object.objectId = self.objectId;
