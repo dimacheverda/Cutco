@@ -17,7 +17,9 @@
 @property (strong, nonatomic) NSNumber *retailPrice;
 @property (strong, nonatomic) NSNumber *salePrice;
 @property (strong, nonatomic) UIImage *image;
+@property (strong, nonatomic) NSString *objectId;
 
 - (instancetype)initWithPFObject:(PFObject *)object;
+- (PFObject *)getPFObject;
 
 @end

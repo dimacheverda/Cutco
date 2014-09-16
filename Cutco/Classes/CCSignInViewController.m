@@ -126,7 +126,7 @@
 #pragma mark - Action Handlers
 
 - (void)signInButtonDidPressed {
-    /*
+/*
      //uncomment to add sign in check
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.labelText = @"Loading";
@@ -137,16 +137,14 @@
                 [MBProgressHUD hideHUDForView:self.view animated:YES];
                 [self performTransition];
             });
-            
         } else {
             hud.mode = MBProgressHUDModeText;
             hud.labelText = @"Error";
-            hud.detailsLabelText = [NSString stringWithFormat:@"%@", error.description];
+            hud.detailsLabelText = [NSString stringWithFormat:@"%@", error.localizedDescription];
             [hud hide:YES afterDelay:2.0];
         }
     }];
-     */
-    
+    */
     [self performTransition];
 }
 

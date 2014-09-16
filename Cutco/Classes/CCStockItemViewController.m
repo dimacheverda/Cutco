@@ -8,7 +8,7 @@
 
 #import "CCStockItemViewController.h"
 #import <Parse/Parse.h>
-
+#import "CCSale.h"
 
 @interface CCStockItemViewController ()
 
@@ -177,10 +177,15 @@
 #pragma mark - Action Handlers
 
 - (void)saveSaveButtonDidPressed {
-    
-    
-    NSLog(@"save sale!");
-    
+    CCSale *sale = [[CCSale alloc] initWithStockItem:self.stockItem];
+    PFObject *saleObject = [sale getPFObject];
+    [saleObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            NSLog(@"save successfully");
+        } else {
+            NSLog(@"save error %@", error);
+        }
+    }];
 }
 
 @end

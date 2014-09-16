@@ -126,7 +126,7 @@
 
 #pragma mark - Parse methods
 
-#define PARSE_CLASS_STOCK_ITEM @"Knifes"
+#define PARSE_CLASS_STOCK_ITEM @"StockItem"
 
 - (void)loadStockItemsFromParse {
     PFQuery *query = [PFQuery queryWithClassName:PARSE_CLASS_STOCK_ITEM];
