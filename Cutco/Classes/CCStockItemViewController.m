@@ -10,6 +10,7 @@
 #import <Parse/Parse.h>
 #import "CCSale.h"
 #import <MBProgressHUD.h>
+#import "NSDate+CCDate.h"
 
 @interface CCStockItemViewController ()
 
@@ -20,6 +21,7 @@
 @property (strong, nonatomic) UILabel *retailPriceLabel;
 @property (strong, nonatomic) UILabel *salePriceLabel;
 @property (strong, nonatomic) UILabel *UPCLabel;
+@property (strong, nonatomic) MBProgressHUD *hud;
 
 @end
 
@@ -44,7 +46,7 @@
     UIBarButtonItem *saveSaleButton = [[UIBarButtonItem alloc] initWithTitle:@"Save Sale"
                                                                        style:UIBarButtonItemStyleDone
                                                                       target:self
-                                                                      action:@selector(saveSaveButtonDidPressed)];
+                                                                      action:@selector(saveSaleButtonDidPressed)];
     self.navigationItem.rightBarButtonItem = saveSaleButton;
     
     [self.view addSubview:self.imageView];
@@ -177,15 +179,57 @@
 
 #pragma mark - Action Handlers
 
-- (void)saveSaveButtonDidPressed {
+- (void)saveSaleButtonDidPressed {
+    PFQuery *quary = [PFQuery queryWithClassName:@"Photo"];
+    [quary whereKey:@"user" equalTo:[PFUser currentUser]];
+    
+    self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    self.hud.labelText = @"Loading";
+    self.hud.mode = MBProgressHUDModeIndeterminate;
+    
+    [quary findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (!error) {
+            BOOL isDateFound = NO;
+            for (int i = objects.count-1; i >= 0; i--) {
+                PFObject *object = objects[i];
+                
+                if ([object.createdAt isCurrentDay]) {
+                    i = -1;
+                    isDateFound = YES;
+                    [self saveSaleToParse];
+                }
+            }
+            if (!isDateFound) {
+                // no booth photo for current day found
+                self.hud.mode = MBProgressHUDModeText;
+                self.hud.labelText = @"Wait!";
+                self.hud.detailsLabelText = @"No booth photo found. Take photo first to make sales.";
+                [self.hud hide:YES afterDelay:3.0];
+            }
+        } else {
+            // cant load booth photos data
+            self.hud.mode = MBProgressHUDModeText;
+            self.hud.labelText = @"Error";
+            self.hud.detailsLabelText = error.localizedDescription;
+            [self.hud hide:YES afterDelay:2.0];
+        }
+    }];
+}
+
+- (void)saveSaleToParse {
     CCSale *sale = [[CCSale alloc] initWithStockItem:self.stockItem];
     PFObject *saleObject = [sale getPFObject];
     
     [saleObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
-            NSLog(@"save successfully");
+            self.hud.mode = MBProgressHUDModeText;
+            self.hud.labelText = @"Success";
+            [self.hud hide:YES afterDelay:1.0];
         } else {
-            NSLog(@"save error %@", error);
+            self.hud.mode = MBProgressHUDModeText;
+            self.hud.labelText = @"Error";
+            self.hud.detailsLabelText = error.localizedDescription;
+            [self.hud hide:YES afterDelay:2.0];
         }
     }];
 }
