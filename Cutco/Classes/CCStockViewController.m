@@ -43,6 +43,7 @@
 
 - (void)showCamera {
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        // TODO: add alert view if no camera
         NSLog(@"device has no camera");
     } else {
         UIImagePickerController *picker = [[UIImagePickerController alloc] init];
@@ -118,6 +119,29 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     NSLog(@"photo taken");
     [picker dismissViewControllerAnimated:YES completion:nil];
+    
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"Loading";
+    hud.mode = MBProgressHUDModeIndeterminate;
+    
+    UIImage *image = info[UIImagePickerControllerOriginalImage];
+    if (image) {
+        PFFile *file = [PFFile fileWithData:UIImageJPEGRepresentation(image, 0.1)];
+        PFObject *object = [PFObject objectWithClassName:@"Photo"];
+        object[@"photo"] = file;
+        object[@"user"] = [PFUser currentUser];
+        [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            hud.mode = MBProgressHUDModeText;
+            if (succeeded) {
+                hud.labelText = @"Photo saved";
+            } else {
+                hud.labelText = @"Error";
+                hud.detailsLabelText = [NSString stringWithFormat:@"Error : %@", error];
+                NSLog(@"photo not saved %@", error);
+            }
+            [hud hide:YES afterDelay:1.0f];
+        }];
+    }
 }
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
