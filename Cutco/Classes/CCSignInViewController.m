@@ -129,21 +129,28 @@
     
      //uncomment to add sign in check
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    hud.labelText = @"Loading";
-    hud.mode = MBProgressHUDModeIndeterminate;
-    [PFUser logInWithUsernameInBackground:self.emailTextField.text password:self.passwordTextField.text block:^(PFUser *user, NSError *error) {
-        if (!error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-                [self performTransition];
-            });
-        } else {
-            hud.mode = MBProgressHUDModeText;
-            hud.labelText = @"Error";
-            hud.detailsLabelText = [NSString stringWithFormat:@"%@", error.localizedDescription];
-            [hud hide:YES afterDelay:2.0];
-        }
-    }];
+    if (![self.emailTextField.text isEqualToString:@""] && ![self.passwordTextField.text isEqualToString:@""]) {
+        hud.labelText = @"Loading";
+        hud.mode = MBProgressHUDModeIndeterminate;
+        [PFUser logInWithUsernameInBackground:self.emailTextField.text password:self.passwordTextField.text block:^(PFUser *user, NSError *error) {
+            if (!error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                    [self performTransition];
+                });
+            } else {
+                hud.mode = MBProgressHUDModeText;
+                hud.labelText = @"Error";
+                hud.detailsLabelText = [NSString stringWithFormat:@"%@", error.localizedDescription];
+                [hud hide:YES afterDelay:2.0];
+            }
+        }];
+    } else {
+        hud.labelText = @"Error";
+        hud.detailsLabelText = @"Fill all field";
+        hud.mode = MBProgressHUDModeText;
+        [hud hide:YES afterDelay:1.5];
+    }
     
 //    [self performTransition];
 }

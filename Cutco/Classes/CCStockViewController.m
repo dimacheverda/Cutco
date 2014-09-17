@@ -43,8 +43,10 @@
 
 - (void)showCamera {
     if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        // TODO: add alert view if no camera
-        NSLog(@"device has no camera");
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        hud.labelText = @"No camera";
+        hud.mode = MBProgressHUDModeText;
+        [hud hide:YES afterDelay:1.0];
     } else {
         UIImagePickerController *picker = [[UIImagePickerController alloc] init];
         picker.delegate = self;
@@ -77,7 +79,7 @@
         _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
         _collectionView.delegate = self;
         _collectionView.dataSource = self;
-        _collectionView.backgroundColor = [UIColor grayColor];
+        _collectionView.backgroundColor = [UIColor lightGrayColor];
         [_collectionView registerClass:[CCStockCollectionViewCell class] forCellWithReuseIdentifier:@"Cell"];
     }
     return _collectionView;
@@ -117,7 +119,6 @@
 #pragma mark - Image Picker Controller Delegate
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
-    NSLog(@"photo taken");
     [picker dismissViewControllerAnimated:YES completion:nil];
     
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
