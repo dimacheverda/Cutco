@@ -162,6 +162,7 @@
     UIViewController *reportVC = [[UIViewController alloc] init];
     
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:stockVC];
+    UINavigationController *navControllerHistory = [[UINavigationController alloc] initWithRootViewController:historyVC];
     
     stockVC.title = @"Stock";
     historyVC.title = @"History";
@@ -174,7 +175,7 @@
     reportVC.tabBarItem.image = [UIImage imageNamed:@"cart"];
     
     UITabBarController *tabBarController = [[UITabBarController alloc] init];
-    tabBarController.viewControllers = @[navController, historyVC, tutorialVC, reportVC];
+    tabBarController.viewControllers = @[navController, navControllerHistory, tutorialVC, reportVC];
     
     [self presentViewController:tabBarController animated:YES completion:^{
 

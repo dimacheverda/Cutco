@@ -24,7 +24,7 @@
     if (self) {
         [self.contentView addSubview:self.imageView];
         [self.contentView addSubview:self.titleLabel];
-        self.contentView.backgroundColor = [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
+        self.contentView.backgroundColor = [UIColor whiteColor];
     }
     return self;
 }
@@ -36,9 +36,10 @@
         CGRect frame = CGRectMake(0.0,
                                   0.0,
                                   CGRectGetWidth(self.contentView.frame),
-                                  CGRectGetWidth(self.contentView.frame)/3*2);
+                                  CGRectGetWidth(self.contentView.frame)/4*3);
         _imageView = [[UIImageView alloc] initWithFrame:frame];
         _imageView.contentMode = UIViewContentModeScaleAspectFit;
+        _imageView.backgroundColor = [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
     }
     return _imageView;
 }

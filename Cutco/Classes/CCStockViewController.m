@@ -17,6 +17,7 @@
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) NSArray *stockItems;
+@property (strong, nonatomic) MBProgressHUD *hud;
 
 @end
 
@@ -33,9 +34,7 @@
     self.navigationItem.rightBarButtonItem = showCameraButton;
     
     [self.view addSubview:self.collectionView];
-    
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.collectionView animated:YES];
-    hud.labelText = @"Loading...";
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self loadStockItemsFromParse];
     });
@@ -75,7 +74,7 @@
         layout.minimumInteritemSpacing = 1.0;
         layout.minimumLineSpacing = 1.0;
         CGFloat width = (CGRectGetWidth(self.view.frame) - 2) / 3;
-        layout.itemSize = CGSizeMake(width, width);
+        layout.itemSize = CGSizeMake(width, width / 5 * 6);
         _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
         _collectionView.delegate = self;
         _collectionView.dataSource = self;
@@ -92,14 +91,14 @@
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return 40;
+    return self.stockItems.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *cellIdentifier = @"Cell";
     CCStockCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
 
-    CCStockItem *item = self.stockItems[0];
+    CCStockItem *item = self.stockItems[indexPath.row];
     cell.title = item.name;
     cell.image = item.image;
     
@@ -121,9 +120,9 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     [picker dismissViewControllerAnimated:YES completion:nil];
     
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    hud.labelText = @"Loading";
-    hud.mode = MBProgressHUDModeIndeterminate;
+    [self.hud show:YES];
+    self.hud.labelText = @"Loading";
+    self.hud.mode = MBProgressHUDModeIndeterminate;
     
     UIImage *image = info[UIImagePickerControllerOriginalImage];
     if (image) {
@@ -132,15 +131,15 @@
         object[@"photo"] = file;
         object[@"user"] = [PFUser currentUser];
         [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
-            hud.mode = MBProgressHUDModeText;
+            self.hud.mode = MBProgressHUDModeText;
             if (succeeded) {
-                hud.labelText = @"Photo saved";
+                self.hud.labelText = @"Photo saved";
             } else {
-                hud.labelText = @"Error";
-                hud.detailsLabelText = [NSString stringWithFormat:@"Error : %@", error];
+                self.hud.labelText = @"Error";
+                self.hud.detailsLabelText = [NSString stringWithFormat:@"Error : %@", error];
                 NSLog(@"photo not saved %@", error);
             }
-            [hud hide:YES afterDelay:1.0f];
+            [self.hud hide:YES afterDelay:1.0f];
         }];
     }
 }
@@ -154,9 +153,12 @@
 #define PARSE_CLASS_STOCK_ITEM @"StockItem"
 
 - (void)loadStockItemsFromParse {
+    self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    self.hud.mode = MBProgressHUDModeIndeterminate;
+    self.hud.labelText = @"Loading..";
+    
     PFQuery *query = [PFQuery queryWithClassName:PARSE_CLASS_STOCK_ITEM];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        [MBProgressHUD hideHUDForView:self.collectionView animated:YES];
         if (!error) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 NSMutableArray *items = [NSMutableArray array];
@@ -168,15 +170,14 @@
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self.collectionView reloadData];
+                    [self.hud hide:YES];
                 });
             });
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
-                MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.collectionView animated:YES];
-                hud.labelText = @"Error";
-                hud.removeFromSuperViewOnHide = YES;
-                hud.detailsLabelText = error.description;
-                [hud hide:YES afterDelay:2.0];
+                self.hud.labelText = @"Error";
+                self.hud.detailsLabelText = error.description;
+                [self.hud hide:YES afterDelay:2.0];
             });
         }
     }];

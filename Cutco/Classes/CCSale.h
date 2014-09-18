@@ -15,6 +15,7 @@
 @property (strong, nonatomic) CCStockItem *stockItem;
 @property (strong, nonatomic) PFUser *user;
 @property (nonatomic) BOOL returned;
+@property (strong, nonatomic) NSDate *createdAt;
 
 - (instancetype)initWithStockItem:(CCStockItem *)stockItem;
 - (instancetype)initWithPFObject:(PFObject *)object;

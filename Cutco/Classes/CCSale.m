@@ -30,6 +30,7 @@
         _user = [PFUser currentUser];
         _stockItem = object[@"stockItem"];
         _returned = [object[@"returned"] boolValue];
+        _createdAt = object.createdAt;
     }
     return self;
 }
