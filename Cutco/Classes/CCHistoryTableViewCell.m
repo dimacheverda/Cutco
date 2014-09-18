@@ -61,12 +61,25 @@
         CGRect frame = CGRectMake(CGRectGetMaxX(self.itemImageView.frame) + 4.0,
                                   2.0,
                                   CGRectGetWidth(self.contentView.frame) - CGRectGetMaxX(self.itemImageView.frame) - 12.0,
-                                  CGRectGetHeight(self.contentView.frame) - 4.0);
+                                  CGRectGetHeight(self.contentView.frame) / 2 - 2.0);
         _nameLabel = [[UILabel alloc] initWithFrame:frame];
         _nameLabel.numberOfLines = 2;
         _nameLabel.textAlignment = NSTextAlignmentLeft;
     }
     return _nameLabel;
+}
+
+- (UILabel *)dateLabel {
+    if (!_dateLabel) {
+        CGRect frame = CGRectMake(CGRectGetMinX(self.nameLabel.frame),
+                                  CGRectGetMaxY(self.nameLabel.frame) + 4.0,
+                                  CGRectGetWidth(self.contentView.frame) - CGRectGetMaxX(self.itemImageView.frame) - 12.0,
+                                  CGRectGetHeight(self.contentView.frame) / 2 - 2.0);
+        _dateLabel = [[UILabel alloc] initWithFrame:frame];
+        _dateLabel.numberOfLines = 1;
+        _dateLabel.textAlignment = NSTextAlignmentLeft;
+    }
+    return _dateLabel;
 }
 
 @end

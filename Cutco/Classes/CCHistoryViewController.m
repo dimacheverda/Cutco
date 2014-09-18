@@ -11,12 +11,14 @@
 #import <Parse/Parse.h>
 #import "CCSale.h"
 #import <MBProgressHUD.h>
+#import "CCHistoryTableView.h"
 
 @interface CCHistoryViewController () <UITableViewDelegate, UITableViewDataSource>
 
-@property (strong, nonatomic) UITableView *tableView;
+@property (strong, nonatomic) CCHistoryTableView *tableView;
 @property (strong, nonatomic) NSArray *sales;
 @property (strong, nonatomic) MBProgressHUD *hud;
+@property (strong, nonatomic) UIRefreshControl *refreshControl;
 
 @end
 
@@ -36,9 +38,9 @@
     
     self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     self.hud.labelText = @"Loading";
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self loadSalesFromParse];
-    });
+//    });
 }
 
 - (void)viewWillLayoutSubviews {
@@ -51,11 +53,13 @@
 
 - (UITableView *)tableView {
     if (!_tableView) {
-        _tableView = [[UITableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
+        _tableView = [[CCHistoryTableView alloc] initWithFrame:self.view.frame style:UITableViewStylePlain];
         _tableView.delegate = self;
         _tableView.dataSource = self;
-        _tableView.rowHeight = 60.0f;
         [_tableView registerClass:[CCHistoryTableViewCell class] forCellReuseIdentifier:@"Cell"];
+        [_tableView.refreshControl addTarget:self
+                                      action:@selector(loadSalesFromParse)
+                            forControlEvents:UIControlEventValueChanged];
     }
     return _tableView;
 }
@@ -105,6 +109,9 @@
             self.hud.detailsLabelText = error.localizedDescription;
             [self.hud hide:YES afterDelay:1.5f];
         }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.tableView.refreshControl endRefreshing];
+        });
     }];
 }
 
