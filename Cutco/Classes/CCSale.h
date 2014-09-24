@@ -16,6 +16,7 @@
 @property (strong, nonatomic) PFUser *user;
 @property (nonatomic) BOOL returned;
 @property (strong, nonatomic) NSDate *createdAt;
+@property (strong, nonatomic) NSString *objectId;
 
 - (instancetype)initWithStockItem:(CCStockItem *)stockItem;
 - (instancetype)initWithPFObject:(PFObject *)object;

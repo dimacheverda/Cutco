@@ -17,7 +17,6 @@
 @interface CCStockViewController () <UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
-@property (strong, nonatomic) NSArray *stockItems;
 @property (strong, nonatomic) MBProgressHUD *hud;
 
 @end
@@ -76,14 +75,14 @@
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return self.stockItems.count;
+    return [CCStock sharedStock].items.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *cellIdentifier = @"Cell";
     CCStockCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
 
-    CCStockItem *item = self.stockItems[indexPath.row];
+    CCStockItem *item = [CCStock sharedStock].items[indexPath.row];
     cell.title = item.name;
     cell.image = item.image;
     
@@ -93,7 +92,7 @@
 #pragma mark - Collection View Delegate
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    CCStockItem *item = self.stockItems[indexPath.row];
+    CCStockItem *item = [CCStock sharedStock].items[indexPath.row];
     if (item) {
         CCStockItemViewController *stockItemVC = [[CCStockItemViewController alloc] initWithStockItem:item];
         [self.navigationController pushViewController:stockItemVC animated:YES];
@@ -163,14 +162,15 @@
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (!error) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                // parse PFObjects to CCStockItem's
                 NSMutableArray *items = [NSMutableArray array];
                 for (id object in objects) {
                     CCStockItem *stockItem = [[CCStockItem alloc] initWithPFObject:object];
                     [items addObject:stockItem];
                 }
-                self.stockItems = items;
                 [CCStock sharedStock].items = items;
                 
+                // update UI
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self.collectionView reloadData];
                     [self.hud hide:YES];

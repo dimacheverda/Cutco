@@ -13,11 +13,11 @@
 #import <MBProgressHUD.h>
 #import "CCHistoryTableView.h"
 #import "CCStock.h"
+#import "CCSales.h"
 
 @interface CCHistoryViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (strong, nonatomic) CCHistoryTableView *tableView;
-@property (strong, nonatomic) NSArray *sales;
 @property (strong, nonatomic) MBProgressHUD *hud;
 @property (strong, nonatomic) UIRefreshControl *refreshControl;
 
@@ -69,14 +69,14 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.sales.count;
+    return [CCSales sharedSales].sales.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *cellIdentifier = @"Cell";
     CCHistoryTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
-    CCSale *sale = self.sales[indexPath.row];
+    CCSale *sale = [CCSales sharedSales].sales[indexPath.row];
     CCStockItem *item = [[CCStock sharedStock] itemForObjectId:sale.stockItem.objectId];
 
     cell.name = item.name;
@@ -92,12 +92,22 @@
     
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (!error) {
+            // parse PFObject to CCSale's
             NSMutableArray *sales = [NSMutableArray array];
             for (PFObject *object in objects) {
                 CCSale *sale = [[CCSale alloc] initWithPFObject:object];
                 [sales addObject:sale];
             }
-            self.sales = sales;
+            
+            // sort sales by date Descending
+            [sales sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+                NSDate *first = [(CCSale *)obj1 createdAt];
+                NSDate *second = [(CCSale *)obj2 createdAt];
+                return [second compare:first];
+            }];
+            [CCSales sharedSales].sales = sales;
+            
+            // update UI
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.hud hide:YES];
                 [self.tableView reloadData];
@@ -108,6 +118,7 @@
             self.hud.detailsLabelText = error.localizedDescription;
             [self.hud hide:YES afterDelay:1.5f];
         }
+        
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.tableView.refreshControl endRefreshing];
         });

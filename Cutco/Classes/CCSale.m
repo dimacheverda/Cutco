@@ -31,6 +31,7 @@
         _stockItem = object[@"stockItem"];
         _returned = [object[@"returned"] boolValue];
         _createdAt = object.createdAt;
+        _objectId = object.objectId;
     }
     return self;
 }
@@ -40,7 +41,12 @@
     object[@"user"] = self.user;
     object[@"stockItem"] = [PFObject objectWithoutDataWithClassName:@"StockItem" objectId:self.stockItem.objectId];
     object[@"returned"] = [NSNumber numberWithBool:self.returned];
+    object.objectId = self.objectId;
     return object;
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"objectId : %@,\ncreatedAt : %@\n", _objectId, _createdAt];
 }
 
 @end
