@@ -117,13 +117,26 @@
 #pragma mark - Action Handlers
 
 - (void)saveSaleButtonDidPressed {
-    PFQuery *quary = [PFQuery queryWithClassName:@"Photo"];
-    [quary whereKey:@"user" equalTo:[PFUser currentUser]];
-    
     self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     self.hud.labelText = @"Loading";
     self.hud.mode = MBProgressHUDModeIndeterminate;
     
+    if ([[self lastPhotoDate] isCurrentDay]) {
+        NSLog(@"loaded from user defaults");
+        [self saveSaleToParse];
+    } else {
+        NSLog(@"loaded from parse");
+        [self loadLastPhotoDateFromParseAndSaveSale];
+    }
+}
+
+- (NSDate *)lastPhotoDate {
+    return [[NSUserDefaults standardUserDefaults] valueForKey:@"lastPhotoDate"];
+}
+
+- (void)loadLastPhotoDateFromParseAndSaveSale {
+    PFQuery *quary = [PFQuery queryWithClassName:@"Photo"];
+    [quary whereKey:@"user" equalTo:[PFUser currentUser]];
     [quary findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (!error) {
             BOOL isDateFound = NO;
@@ -133,6 +146,7 @@
                 if ([object.createdAt isCurrentDay]) {
                     i = -1;
                     isDateFound = YES;
+                    [[NSUserDefaults standardUserDefaults] setValue:object.createdAt forKey:@"lastPhotoDate"];
                     [self saveSaleToParse];
                 }
             }
@@ -140,7 +154,7 @@
                 // no booth photo for current day found
                 self.hud.mode = MBProgressHUDModeText;
                 self.hud.labelText = @"Wait!";
-                self.hud.detailsLabelText = @"No booth photo found. Take photo first to make sales.";
+                self.hud.detailsLabelText = @"No booth photo found for today. Take photo first to make sales.";
                 [self.hud hide:YES afterDelay:3.0];
             }
         } else {

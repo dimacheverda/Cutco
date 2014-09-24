@@ -72,6 +72,9 @@
     [super viewDidAppear:animated];
     
     [self.emailTextField becomeFirstResponder];
+    
+    // reset lastPhotoDate key after logout
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"lastPhotoDate"];
 }
 
 #pragma mark - Accessors

@@ -40,22 +40,6 @@
     });
 }
 
-- (void)showCamera {
-    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
-        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        hud.labelText = @"No camera";
-        hud.mode = MBProgressHUDModeText;
-        [hud hide:YES afterDelay:1.0];
-    } else {
-        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-        picker.delegate = self;
-        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-        picker.allowsEditing = NO;
-        
-        [self presentViewController:picker animated:YES completion:nil];
-    }
-}
-
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
@@ -121,7 +105,7 @@
     [picker dismissViewControllerAnimated:YES completion:nil];
     
     [self.hud show:YES];
-    self.hud.labelText = @"Loading";
+    self.hud.labelText = @"Saving..";
     self.hud.mode = MBProgressHUDModeIndeterminate;
     
     UIImage *image = info[UIImagePickerControllerOriginalImage];
@@ -134,6 +118,7 @@
             self.hud.mode = MBProgressHUDModeText;
             if (succeeded) {
                 self.hud.labelText = @"Photo saved";
+                [[NSUserDefaults standardUserDefaults] setValue:[NSDate date] forKey:@"lastPhotoDate"];
             } else {
                 self.hud.labelText = @"Error";
                 self.hud.detailsLabelText = [NSString stringWithFormat:@"Error : %@", error];
@@ -146,6 +131,22 @@
 
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
     [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)showCamera {
+    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        hud.labelText = @"No camera";
+        hud.mode = MBProgressHUDModeText;
+        [hud hide:YES afterDelay:1.0];
+    } else {
+        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+        picker.delegate = self;
+        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        picker.allowsEditing = NO;
+        
+        [self presentViewController:picker animated:YES completion:nil];
+    }
 }
 
 #pragma mark - Parse methods
