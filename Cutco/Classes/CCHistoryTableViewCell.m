@@ -63,7 +63,7 @@
                                   CGRectGetWidth(self.contentView.frame) - CGRectGetMaxX(self.itemImageView.frame) - 12.0,
                                   CGRectGetHeight(self.contentView.frame) / 2 - 2.0);
         _nameLabel = [[UILabel alloc] initWithFrame:frame];
-        _nameLabel.numberOfLines = 2;
+        _nameLabel.numberOfLines = 1;
         _nameLabel.textAlignment = NSTextAlignmentLeft;
     }
     return _nameLabel;

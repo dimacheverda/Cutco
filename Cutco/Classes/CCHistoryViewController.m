@@ -12,6 +12,7 @@
 #import "CCSale.h"
 #import <MBProgressHUD.h>
 #import "CCHistoryTableView.h"
+#import "CCStock.h"
 
 @interface CCHistoryViewController () <UITableViewDelegate, UITableViewDataSource>
 
@@ -31,16 +32,13 @@
     
     UISegmentedControl *segmentedControl = [[UISegmentedControl alloc] initWithItems:@[@"Sold", @"Returned"]];
     segmentedControl.selectedSegmentIndex = 0;
-    
     self.navigationItem.titleView = segmentedControl;
     
     [self.view addSubview:self.tableView];
     
     self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     self.hud.labelText = @"Loading";
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self loadSalesFromParse];
-//    });
+    [self loadSalesFromParse];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -79,9 +77,10 @@
     CCHistoryTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     
     CCSale *sale = self.sales[indexPath.row];
-    
-    cell.name = sale.stockItem.objectId;
-    cell.image = [UIImage imageNamed:@"cart"];
+    CCStockItem *item = [[CCStock sharedStock] itemForObjectId:sale.stockItem.objectId];
+
+    cell.name = item.name;
+    cell.image = item.image;
     cell.date = sale.createdAt;
     
     return cell;

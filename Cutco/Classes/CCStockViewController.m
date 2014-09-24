@@ -12,6 +12,7 @@
 #import "CCStockItem.h"
 #import <Parse/Parse.h>
 #import <MBProgressHUD.h>
+#import "CCStock.h"
 
 @interface CCStockViewController () <UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
@@ -168,6 +169,7 @@
                     [items addObject:stockItem];
                 }
                 self.stockItems = items;
+                [CCStock sharedStock].items = items;
                 
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self.collectionView reloadData];
