@@ -11,8 +11,11 @@
 
 @interface CCSales : NSObject
 
-@property (nonatomic, retain) NSArray *sales;
+@property (nonatomic, retain) NSMutableArray *sales;
+@property (nonatomic, retain) NSMutableArray *returned;
 
 + (instancetype)sharedSales;
+- (void)addSale:(CCSale *)sale;
+- (void)moveSaleToReturnedAtIndex:(NSUInteger)index;
 
 @end

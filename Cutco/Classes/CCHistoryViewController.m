@@ -14,12 +14,14 @@
 #import "CCHistoryTableView.h"
 #import "CCStock.h"
 #import "CCSales.h"
+#import "NSDate+CCDate.h"
 
 @interface CCHistoryViewController () <UITableViewDelegate, UITableViewDataSource>
 
 @property (strong, nonatomic) CCHistoryTableView *tableView;
 @property (strong, nonatomic) MBProgressHUD *hud;
 @property (strong, nonatomic) UIRefreshControl *refreshControl;
+@property (strong, nonatomic) UISegmentedControl *segmentedControl;
 
 @end
 
@@ -30,15 +32,24 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    UISegmentedControl *segmentedControl = [[UISegmentedControl alloc] initWithItems:@[@"Sold", @"Returned"]];
-    segmentedControl.selectedSegmentIndex = 0;
-    self.navigationItem.titleView = segmentedControl;
+    self.segmentedControl = [[UISegmentedControl alloc] initWithItems:@[@"Sold", @"Returned"]];
+    self.segmentedControl.selectedSegmentIndex = 0;
+    [self.segmentedControl addTarget:self
+                              action:@selector(segmentedControlDidPressed)
+                    forControlEvents:UIControlEventValueChanged];
+    self.navigationItem.titleView = self.segmentedControl;
     
     [self.view addSubview:self.tableView];
     
     self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    self.hud.labelText = @"Loading";
+    self.hud.labelText = @"Loading..";
     [self loadSalesFromParse];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    [self.tableView reloadData];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -69,14 +80,22 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [CCSales sharedSales].sales.count;
+    if (self.segmentedControl.selectedSegmentIndex == 0) {
+        return [CCSales sharedSales].sales.count;
+    } else {
+        return [CCSales sharedSales].returned.count;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *cellIdentifier = @"Cell";
     CCHistoryTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
-    
-    CCSale *sale = [CCSales sharedSales].sales[indexPath.row];
+    CCSale *sale;
+    if (self.segmentedControl.selectedSegmentIndex == 0) {
+        sale = [CCSales sharedSales].sales[indexPath.row];
+    } else {
+        sale = [CCSales sharedSales].returned[indexPath.row];
+    }
     CCStockItem *item = [[CCStock sharedStock] itemForObjectId:sale.stockItem.objectId];
 
     cell.name = item.name;
@@ -84,6 +103,45 @@
     cell.date = sale.createdAt;
     
     return cell;
+}
+
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (self.segmentedControl.selectedSegmentIndex == 0) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        PFObject *saleObject = [PFObject objectWithClassName:@"Sale"];
+        CCSale *sale = [CCSales sharedSales].sales[indexPath.row];
+        saleObject = [sale getPFObject];
+        saleObject[@"returned"] = @YES;
+        
+        self.hud.mode = MBProgressHUDModeIndeterminate;
+        [self.hud show:YES];
+        self.hud.labelText = @"Deleting..";
+        
+        [saleObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            if (succeeded) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                });
+                [[CCSales sharedSales] moveSaleToReturnedAtIndex:indexPath.row];
+                
+                self.hud.mode = MBProgressHUDModeText;
+                self.hud.labelText = @"Success";
+                [self.hud hide:YES afterDelay:1.0];
+            } else {
+                self.hud.mode = MBProgressHUDModeText;
+                self.hud.labelText = @"Error";
+                self.hud.detailsLabelText = error.localizedDescription;
+                [self.hud hide:YES afterDelay:2.0];
+            }
+        }];
+    }
 }
 
 - (void)loadSalesFromParse {
@@ -96,15 +154,10 @@
             NSMutableArray *sales = [NSMutableArray array];
             for (PFObject *object in objects) {
                 CCSale *sale = [[CCSale alloc] initWithPFObject:object];
-                [sales addObject:sale];
+                if ([sale.createdAt isCurrentDay]) {
+                    [sales addObject:sale];
+                }
             }
-            
-            // sort sales by date Descending
-            [sales sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-                NSDate *first = [(CCSale *)obj1 createdAt];
-                NSDate *second = [(CCSale *)obj2 createdAt];
-                return [second compare:first];
-            }];
             [CCSales sharedSales].sales = sales;
             
             // update UI
@@ -123,6 +176,12 @@
             [self.tableView.refreshControl endRefreshing];
         });
     }];
+}
+
+#pragma mark - Action Handlers
+
+- (void)segmentedControlDidPressed {
+    [self.tableView reloadData];
 }
 
 @end

@@ -18,8 +18,6 @@
         NSDateComponents *todayComp = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit | NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:today];
         NSDateComponents *selfComp = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit | NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:self];
         
-//        NSLog(@"hours %d", [todayComp hour]);
-        
         if ([todayComp year] == [selfComp year] && [todayComp month] == [selfComp month] && [todayComp day] == [selfComp day]) {
             return YES;
         }

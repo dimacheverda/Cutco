@@ -20,6 +20,7 @@
         _refreshControl = [[UIRefreshControl alloc] init];
         [self addSubview:_refreshControl];
         self.rowHeight = 60.0f;
+        self.allowsSelectionDuringEditing = NO;
     }
     return self;
 }

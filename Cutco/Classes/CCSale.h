@@ -11,7 +11,6 @@
 
 @interface CCSale : NSObject
 
-@property (strong, nonatomic) NSDate *date;
 @property (strong, nonatomic) CCStockItem *stockItem;
 @property (strong, nonatomic) PFUser *user;
 @property (nonatomic) BOOL returned;

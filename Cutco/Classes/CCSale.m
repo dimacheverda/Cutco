@@ -20,6 +20,7 @@
         _user = [PFUser currentUser];
         _stockItem = stockItem;
         _returned = NO;
+        _createdAt = [NSDate date];
     }
     return self;
 }
@@ -46,7 +47,7 @@
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"objectId : %@,\ncreatedAt : %@\n", _objectId, _createdAt];
+    return [NSString stringWithFormat:@"objectId : %@,  createdAt : %@", _objectId, _createdAt];
 }
 
 @end

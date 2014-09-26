@@ -12,6 +12,7 @@
 #import <MBProgressHUD.h>
 #import "NSDate+CCDate.h"
 #import "CCStockItemView.h"
+#import "CCSales.h"
 
 @interface CCStockItemViewController ()
 
@@ -122,10 +123,8 @@
     self.hud.mode = MBProgressHUDModeIndeterminate;
     
     if ([[self lastPhotoDate] isCurrentDay]) {
-        NSLog(@"loaded from user defaults");
         [self saveSaleToParse];
     } else {
-        NSLog(@"loaded from parse");
         [self loadLastPhotoDateFromParseAndSaveSale];
     }
 }
@@ -173,9 +172,16 @@
     
     [saleObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
+            [[CCSales sharedSales] addSale:sale];
+            
             self.hud.mode = MBProgressHUDModeText;
             self.hud.labelText = @"Success";
             [self.hud hide:YES afterDelay:1.0];
+            
+            // pop VC after 1 sec
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                [self.navigationController popViewControllerAnimated:YES];
+            });
         } else {
             self.hud.mode = MBProgressHUDModeText;
             self.hud.labelText = @"Error";
