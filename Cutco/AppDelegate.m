@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import <Parse/Parse.h>
+#import <Crashlytics/Crashlytics.h>
 #import "CCSignInViewController.h"
 
 @interface AppDelegate ()
@@ -22,6 +23,8 @@
     [Parse setApplicationId:@"in1P0XGnoUdnVtp9a2jXLU0f2NOcAsyiOpqQydgA"
                   clientKey:@"bYy7fEK59sNtpY1JJWtZkyvPksfKJgt54AT1NjLa"];
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
+    
+    [Crashlytics startWithAPIKey:@"b4e0bfdc0e14fd2d3f5efc10f37ed1265a1520d8"];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
