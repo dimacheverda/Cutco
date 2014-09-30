@@ -18,6 +18,4 @@
 @property NSUInteger salePrice;
 @property (retain) PFFile *image;
 
-+ (NSString *)parseClassName;
-
 @end

@@ -17,7 +17,6 @@
 @property NSUInteger price;
 //@property (retain) CCEvent *event;
 
-+ (NSString *)parseClassName;
 - (instancetype)initWithStockItem:(CCStockItem *)stockItem;
 
 @end
