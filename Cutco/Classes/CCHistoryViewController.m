@@ -99,8 +99,15 @@
     CCStockItem *item = [[CCStock sharedStock] itemForObjectId:sale.stockItem.objectId];
 
     cell.name = item.name;
-    cell.image = item.image;
     cell.date = sale.createdAt;
+    [item.image getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+        if (!error) {
+            UIImage *image = [UIImage imageWithData:data];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                cell.image = image;
+            });
+        }
+    }];
     
     return cell;
 }
@@ -115,16 +122,14 @@
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        PFObject *saleObject = [PFObject objectWithClassName:@"Sale"];
         CCSale *sale = [CCSales sharedSales].sales[indexPath.row];
-        saleObject = [sale getPFObject];
-        saleObject[@"returned"] = @YES;
+        sale.returned = YES;
         
         self.hud.mode = MBProgressHUDModeIndeterminate;
         [self.hud show:YES];
         self.hud.labelText = @"Deleting..";
         
-        [saleObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        [sale saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
@@ -145,17 +150,16 @@
 }
 
 - (void)loadSalesFromParse {
-    PFQuery *query = [PFQuery queryWithClassName:@"Sale"];
+    PFQuery *query = [CCSale query];
     [query whereKey:@"user" equalTo:[PFUser currentUser]];
     
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (!error) {
             // parse PFObject to CCSale's
             NSMutableArray *sales = [NSMutableArray array];
-            for (PFObject *object in objects) {
-                CCSale *sale = [[CCSale alloc] initWithPFObject:object];
-                if ([sale.createdAt isCurrentDay]) {
-                    [sales addObject:sale];
+            for (CCSale *object in objects) {
+                if ([object.createdAt isCurrentDay]) {
+                    [sales addObject:object];
                 }
             }
             [CCSales sharedSales].sales = sales;

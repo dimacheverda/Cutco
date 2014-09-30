@@ -75,7 +75,7 @@
         [sold removeObject:sale];
         [returned addObject:sale];
         self.sales = sold;
-        self.returned = returned;
+        self.returned = [self sortedArrayByDate:returned];
     }
 }
 

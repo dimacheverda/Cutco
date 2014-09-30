@@ -55,12 +55,12 @@
     self.stockItemView = [[CCStockItemView alloc] initWithFrame:self.view.frame];
     [self.view addSubview:self.stockItemView];
     
-    self.stockItemView.imageView.image = self.stockItem.image;
+//    self.stockItemView.imageView.image = self.stockItem.image;
     self.stockItemView.nameLabel.text = self.stockItem.name;
-    self.stockItemView.descriptionLabel.text = self.stockItem.itemDescription;
-    self.stockItemView.retailPriceLabel.text = [NSString stringWithFormat:@"$%@", [self.stockItem.retailPrice stringValue]];
-    self.stockItemView.salePriceLabel.text = [NSString stringWithFormat:@"$%@", [self.stockItem.salePrice stringValue]];
-    self.stockItemView.UPCLabel.text = [self.stockItem.UPC stringValue];
+    self.stockItemView.descriptionLabel.text = self.stockItem.description;
+    self.stockItemView.retailPriceLabel.text = [NSString stringWithFormat:@"$%d", self.stockItem.retailPrice];
+    self.stockItemView.salePriceLabel.text = [NSString stringWithFormat:@"$%d", self.stockItem.salePrice];
+    self.stockItemView.UPCLabel.text = [NSString stringWithFormat:@"$%d", self.stockItem.UPC];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -168,9 +168,8 @@
 
 - (void)saveSaleToParse {
     CCSale *sale = [[CCSale alloc] initWithStockItem:self.stockItem];
-    PFObject *saleObject = [sale getPFObject];
     
-    [saleObject saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+    [sale saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
             [[CCSales sharedSales] addSale:sale];
             

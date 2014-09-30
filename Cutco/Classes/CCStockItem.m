@@ -7,38 +7,27 @@
 //
 
 #import "CCStockItem.h"
+#import <Parse/PFObject+Subclass.h>
+
+@interface CCStockItem ()
+
+@end
 
 @implementation CCStockItem
 
-- (instancetype)initWithPFObject:(PFObject *)object {
-    self = [super init];
-    if (self) {
-        _UPC = object[@"UPC"];
-        _name = object[@"name"];
-        _itemDescription = object[@"description"];
-        _salePrice = object[@"salePrice"];
-        _retailPrice = object[@"retailPrice"];
-        PFFile *imageFile = object[@"image"];
-        _image = [UIImage imageWithData:[imageFile getData]];
-        _objectId = object.objectId;
-    }
-    return self;
+@dynamic name;
+@dynamic description;
+@dynamic UPC;
+@dynamic retailPrice;
+@dynamic salePrice;
+@dynamic image;
+
++ (void)load {
+    [self registerSubclass];
 }
 
-- (PFObject *)getPFObject {
-    PFObject *object = [[PFObject alloc] initWithClassName:@"StockItem"];
-    object[@"name"] = self.name;
-    object[@"description"] = self.itemDescription;
-    object[@"retailPrice"] = self.retailPrice;
-    object[@"salePrice"] = self.salePrice;
-    object[@"UPC"] = self.UPC;
-    object[@"image"] = [PFFile fileWithData:UIImagePNGRepresentation(self.image)];
-    object.objectId = self.objectId;
-    return object;
-}
-
-- (NSString *)description {
-    return [NSString stringWithFormat:@"objectId : %@,\nUPC : %@,\nname : %@,\ndescription : %@,\nsale_price : %@,\nretail_price : %@\n", _objectId,_UPC,_name,_itemDescription,_salePrice,_retailPrice];
++ (NSString *)parseClassName {
+    return @"StockItem";
 }
 
 @end

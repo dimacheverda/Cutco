@@ -7,6 +7,7 @@
 //
 
 #import "CCSale.h"
+#import <Parse/PFObject+Subclass.h>
 
 @interface CCSale ()
 
@@ -14,40 +15,28 @@
 
 @implementation CCSale
 
+@dynamic stockItem;
+@dynamic user;
+@dynamic returned;
+@dynamic price;
+
++ (void)load {
+    [self registerSubclass];
+}
+
++ (NSString *)parseClassName {
+    return @"Sale";
+}
+
 - (instancetype)initWithStockItem:(CCStockItem *)stockItem {
     self = [super init];
     if (self) {
-        _user = [PFUser currentUser];
-        _stockItem = stockItem;
-        _returned = NO;
-        _createdAt = [NSDate date];
+        self.stockItem = stockItem;
+        self.user = [PFUser currentUser];
+        self.returned = NO;
+        self.price = stockItem.salePrice;
     }
     return self;
-}
-
-- (instancetype)initWithPFObject:(PFObject *)object {
-    self = [super init];
-    if (self) {
-        _user = [PFUser currentUser];
-        _stockItem = object[@"stockItem"];
-        _returned = [object[@"returned"] boolValue];
-        _createdAt = object.createdAt;
-        _objectId = object.objectId;
-    }
-    return self;
-}
-
-- (PFObject *)getPFObject {
-    PFObject *object = [[PFObject alloc] initWithClassName:@"Sale"];
-    object[@"user"] = self.user;
-    object[@"stockItem"] = [PFObject objectWithoutDataWithClassName:@"StockItem" objectId:self.stockItem.objectId];
-    object[@"returned"] = [NSNumber numberWithBool:self.returned];
-    object.objectId = self.objectId;
-    return object;
-}
-
-- (NSString *)description {
-    return [NSString stringWithFormat:@"objectId : %@,  createdAt : %@", _objectId, _createdAt];
 }
 
 @end

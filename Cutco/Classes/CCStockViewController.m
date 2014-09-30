@@ -84,7 +84,14 @@
 
     CCStockItem *item = [CCStock sharedStock].items[indexPath.row];
     cell.title = item.name;
-    cell.image = item.image;
+    [item.image getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+        if (!error) {
+            UIImage *image = [UIImage imageWithData:data];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                cell.image = image;
+            });
+        }
+    }];
     
     return cell;
 }
@@ -158,15 +165,14 @@
     self.hud.mode = MBProgressHUDModeIndeterminate;
     self.hud.labelText = @"Loading..";
     
-    PFQuery *query = [PFQuery queryWithClassName:PARSE_CLASS_STOCK_ITEM];
+    PFQuery *query = [CCStockItem query];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (!error) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                // parse PFObjects to CCStockItem's
+
                 NSMutableArray *items = [NSMutableArray array];
-                for (id object in objects) {
-                    CCStockItem *stockItem = [[CCStockItem alloc] initWithPFObject:object];
-                    [items addObject:stockItem];
+                for (CCStockItem *object in objects) {
+                    [items addObject:object];
                 }
                 [CCStock sharedStock].items = items;
                 

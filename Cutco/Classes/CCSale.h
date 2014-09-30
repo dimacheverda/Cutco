@@ -9,16 +9,15 @@
 #import <Foundation/Foundation.h>
 #import "CCStockItem.h"
 
-@interface CCSale : NSObject
+@interface CCSale : PFObject <PFSubclassing>
 
-@property (strong, nonatomic) CCStockItem *stockItem;
-@property (strong, nonatomic) PFUser *user;
-@property (nonatomic) BOOL returned;
-@property (strong, nonatomic) NSDate *createdAt;
-@property (strong, nonatomic) NSString *objectId;
+@property (retain) CCStockItem *stockItem;
+@property (retain) PFUser *user;
+@property BOOL returned;
+@property NSUInteger price;
+//@property (retain) CCEvent *event;
 
++ (NSString *)parseClassName;
 - (instancetype)initWithStockItem:(CCStockItem *)stockItem;
-- (instancetype)initWithPFObject:(PFObject *)object;
-- (PFObject *)getPFObject;
 
 @end
