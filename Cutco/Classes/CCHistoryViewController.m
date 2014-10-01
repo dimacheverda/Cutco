@@ -21,7 +21,6 @@
 @property (strong, nonatomic) CCHistoryTableView *tableView;
 @property (strong, nonatomic) MBProgressHUD *hud;
 @property (strong, nonatomic) UIRefreshControl *refreshControl;
-@property (strong, nonatomic) UISegmentedControl *segmentedControl;
 
 @end
 
@@ -31,13 +30,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.segmentedControl = [[UISegmentedControl alloc] initWithItems:@[@"Sold", @"Returned"]];
-    self.segmentedControl.selectedSegmentIndex = 0;
-    [self.segmentedControl addTarget:self
-                              action:@selector(segmentedControlDidPressed)
-                    forControlEvents:UIControlEventValueChanged];
-    self.navigationItem.titleView = self.segmentedControl;
     
     [self.view addSubview:self.tableView];
     
@@ -80,7 +72,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (self.segmentedControl.selectedSegmentIndex == 0) {
+    if (self.isShowingSold) {
         return [CCSales sharedSales].sales.count;
     } else {
         return [CCSales sharedSales].returned.count;
@@ -91,7 +83,7 @@
     static NSString *cellIdentifier = @"Cell";
     CCHistoryTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     CCSale *sale;
-    if (self.segmentedControl.selectedSegmentIndex == 0) {
+    if (self.isShowingSold) {
         sale = [CCSales sharedSales].sales[indexPath.row];
     } else {
         sale = [CCSales sharedSales].returned[indexPath.row];
@@ -113,7 +105,7 @@
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (self.segmentedControl.selectedSegmentIndex == 0) {
+    if (self.isShowingSold) {
         return YES;
     } else {
         return NO;

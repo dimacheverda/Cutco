@@ -154,31 +154,36 @@
         hud.mode = MBProgressHUDModeText;
         [hud hide:YES afterDelay:1.5];
     }
-    
-//    [self performTransition];
 }
 
 - (void)performTransition {
     CCStockViewController *stockVC = [[CCStockViewController alloc] init];
-    CCHistoryViewController *historyVC = [[CCHistoryViewController alloc] init];
+    CCHistoryViewController *soldVC = [[CCHistoryViewController alloc] init];
+    CCHistoryViewController *returnedVC = [[CCHistoryViewController alloc] init];
     UIViewController *tutorialVC = [[UIViewController alloc] init];
-    UIViewController *reportVC = [[UIViewController alloc] init];
+    UIViewController *statsVC = [[UIViewController alloc] init];
     
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:stockVC];
-    UINavigationController *navControllerHistory = [[UINavigationController alloc] initWithRootViewController:historyVC];
+    UINavigationController *stockNavController = [[UINavigationController alloc] initWithRootViewController:stockVC];
+//    UINavigationController *navControllerHistory = [[UINavigationController alloc] initWithRootViewController:historyVC];
     
-    stockVC.title = @"Stock";
-    historyVC.title = @"History";
+    stockVC.title = @"Add Sale";
+    soldVC.title = @"Sold";
+    returnedVC.title = @"Returned";
     tutorialVC.title = @"Tutorial";
-    reportVC.title = @"Report";
+    statsVC.title = @"Report";
+    
+    soldVC.isShowingSold = YES;
+    returnedVC.isShowingSold = NO;
     
     stockVC.tabBarItem.image = [UIImage imageNamed:@"cart"];
-    historyVC.tabBarItem.image = [UIImage imageNamed:@"cart"];
+    soldVC.tabBarItem.image = [UIImage imageNamed:@"cart"];
+    returnedVC.tabBarItem.image = [UIImage imageNamed:@"cart"];
     tutorialVC.tabBarItem.image = [UIImage imageNamed:@"cart"];
-    reportVC.tabBarItem.image = [UIImage imageNamed:@"cart"];
+    statsVC.tabBarItem.image = [UIImage imageNamed:@"cart"];
     
     UITabBarController *tabBarController = [[UITabBarController alloc] init];
-    tabBarController.viewControllers = @[navController, navControllerHistory, tutorialVC, reportVC];
+    tabBarController.viewControllers = @[returnedVC, stockNavController, soldVC];
+    [tabBarController setSelectedViewController:stockNavController];
     
     [self presentViewController:tabBarController animated:YES completion:^{
 

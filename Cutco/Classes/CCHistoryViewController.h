@@ -10,4 +10,6 @@
 
 @interface CCHistoryViewController : UIViewController
 
+@property (nonatomic) BOOL isShowingSold;
+
 @end
