@@ -24,6 +24,7 @@
     if (self) {
         [self.contentView addSubview:self.imageView];
         [self.contentView addSubview:self.titleLabel];
+        [self.contentView addSubview:self.checkMark];
         self.contentView.backgroundColor = [UIColor whiteColor];
     }
     return self;
@@ -64,6 +65,23 @@
 
 - (void)setImage:(UIImage *)image {
     self.imageView.image = image;
+}
+
+- (CCCheckMark *)checkMark {
+    if (!_checkMark) {
+        
+        CGFloat checkmarkSize = 30.0;
+        
+        CGRect frame = CGRectMake(CGRectGetMaxX(self.imageView.frame) - checkmarkSize,
+                                  CGRectGetMaxY(self.imageView.frame) - checkmarkSize,
+                                  checkmarkSize,
+                                  checkmarkSize);
+        _checkMark = [[CCCheckMark alloc] init];
+        _checkMark.frame = frame;
+        _checkMark.backgroundColor = [UIColor clearColor];
+//        _checkMark.checked = NO;
+    }
+    return  _checkMark;
 }
 
 @end

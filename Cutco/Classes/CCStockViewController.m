@@ -13,11 +13,15 @@
 #import <Parse/Parse.h>
 #import <MBProgressHUD.h>
 #import "CCStock.h"
+#import "CCCheckoutToolbar.h"
 
 @interface CCStockViewController () <UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) MBProgressHUD *hud;
+@property (strong, nonatomic) NSMutableSet *checkedIndexes;
+@property (strong, nonatomic) CCCheckoutToolbar *checkoutToolbar;
+@property (nonatomic, getter=isTabBarHidden) BOOL tabBarHidden;
 
 @end
 
@@ -35,6 +39,8 @@
     
     [self.view addSubview:self.collectionView];
 
+    self.tabBarHidden = NO;
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self loadStockItemsFromParse];
     });
@@ -68,6 +74,26 @@
     return _collectionView;
 }
 
+- (NSMutableSet *)checkedIndexes {
+    if (!_checkedIndexes) {
+        _checkedIndexes = [[NSMutableSet alloc] init];
+    }
+    return _checkedIndexes;
+}
+
+- (CCCheckoutToolbar *)checkoutToolbar {
+    if (!_checkoutToolbar) {
+        _checkoutToolbar = [[CCCheckoutToolbar alloc] init];
+        CGRect frame = CGRectMake(0.0,
+                                  CGRectGetHeight(self.view.frame) - CGRectGetHeight(self.tabBarController.tabBar.frame),
+                                  CGRectGetWidth(self.view.frame),
+                                  CGRectGetHeight(self.tabBarController.tabBar.frame));
+        _checkoutToolbar.frame = frame;
+        [_checkoutToolbar.cancelButton setAction:@selector(uncheckItems)];
+    }
+    return _checkoutToolbar;
+}
+
 #pragma mark - Collection View DataSource
 
 - (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
@@ -93,17 +119,23 @@
         }
     }];
     
+    cell.checkMark.checked = [self.checkedIndexes containsObject:indexPath];
+ 
     return cell;
 }
 
 #pragma mark - Collection View Delegate
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    CCStockItem *item = [CCStock sharedStock].items[indexPath.row];
-    if (item) {
-        CCStockItemViewController *stockItemVC = [[CCStockItemViewController alloc] initWithStockItem:item];
-        [self.navigationController pushViewController:stockItemVC animated:YES];
+    CCStockCollectionViewCell *cell = (CCStockCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
+    cell.checkMark.checked = !cell.checkMark.checked;
+    
+    if ([self.checkedIndexes containsObject:indexPath]) {
+        [self.checkedIndexes removeObject:indexPath];
+    } else {
+        [self.checkedIndexes addObject:indexPath];
     }
+    [self hideTabBarIfNeeded];
 }
 
 #pragma mark - Image Picker Controller Delegate
@@ -190,6 +222,26 @@
             });
         }
     }];
+}
+
+#pragma mark - Checkout methods
+
+- (void)hideTabBarIfNeeded {
+    if (self.checkedIndexes.count > 0 && !self.isTabBarHidden) {
+        self.tabBarController.tabBar.hidden = YES;
+        [self.view addSubview:self.checkoutToolbar];
+    } else {
+        self.tabBarController.tabBar.hidden = NO;
+    }
+}
+
+- (void)uncheckItems {
+    for (NSIndexPath *indexPath in self.checkedIndexes) {
+        CCStockCollectionViewCell *cell = (CCStockCollectionViewCell *)[self.collectionView cellForItemAtIndexPath:indexPath];
+        cell.checkMark.checked = NO;
+    }
+    [self.checkedIndexes removeAllObjects];
+    self.tabBarController.tabBar.hidden = NO;
 }
 
 @end

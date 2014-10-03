@@ -7,10 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CCCheckMark.h"
 
 @interface CCStockCollectionViewCell : UICollectionViewCell
 
 @property (strong, nonatomic) NSString *title;
 @property (strong, nonatomic) UIImage *image;
+@property (strong, nonatomic) CCCheckMark *checkMark;
 
 @end
