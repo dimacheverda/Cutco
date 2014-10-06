@@ -10,8 +10,6 @@
 
 @interface CCCheckoutToolbar ()
 
-@property (strong, nonatomic) UIBarButtonItem *checkoutButton;
-
 @end
 
 @implementation CCCheckoutToolbar

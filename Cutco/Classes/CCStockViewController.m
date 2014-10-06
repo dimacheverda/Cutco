@@ -14,8 +14,11 @@
 #import <MBProgressHUD.h>
 #import "CCStock.h"
 #import "CCCheckoutToolbar.h"
+#import "CCCheckoutViewController.h"
+#import "CCPopoverTransition.h"
+#import "CCPopoverDismissal.h"
 
-@interface CCStockViewController () <UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate>
+@interface CCStockViewController () <UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) MBProgressHUD *hud;
@@ -90,6 +93,8 @@
                                   CGRectGetHeight(self.tabBarController.tabBar.frame));
         _checkoutToolbar.frame = frame;
         [_checkoutToolbar.cancelButton setAction:@selector(uncheckItems)];
+        _checkoutToolbar.checkoutButton.target = self;
+        _checkoutToolbar.checkoutButton.action = @selector(checkoutButtonDidPressed);
     }
     return _checkoutToolbar;
 }
@@ -190,8 +195,6 @@
 
 #pragma mark - Parse methods
 
-#define PARSE_CLASS_STOCK_ITEM @"StockItem"
-
 - (void)loadStockItemsFromParse {
     self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     self.hud.mode = MBProgressHUDModeIndeterminate;
@@ -242,6 +245,33 @@
     }
     [self.checkedIndexes removeAllObjects];
     self.tabBarController.tabBar.hidden = NO;
+}
+
+- (void)checkoutButtonDidPressed {
+    NSMutableArray *items = [NSMutableArray array];
+    for (NSIndexPath *indexPath in self.checkedIndexes) {
+        [items addObject:[CCStock sharedStock].items[indexPath.row]];
+    }
+    
+    CCCheckoutViewController *checkoutVC = [[CCCheckoutViewController alloc] initWithStockItems:items];
+    checkoutVC.modalPresentationStyle = UIModalPresentationCustom;
+    checkoutVC.transitioningDelegate = self;
+    [self presentViewController:checkoutVC animated:YES completion:^{
+        
+    }];
+}
+
+#pragma mark - Transitioning Delegate
+
+- (id <UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
+    
+    CCPopoverTransition *popoverTransition = [[CCPopoverTransition alloc] init];
+    return popoverTransition;
+}
+
+- (id <UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
+    CCPopoverDismissal *popoverDismissal = [[CCPopoverDismissal alloc] init];
+    return popoverDismissal;
 }
 
 @end

@@ -23,7 +23,7 @@
         [self addSubview:_refreshControl];
         self.rowHeight = 60.0f;
         self.allowsSelectionDuringEditing = NO;
-        self.contentInset = UIEdgeInsetsMake(64.0, 0.0, 49.0, 0.0);
+        self.contentInset = UIEdgeInsetsMake(20.0, 0.0, 49.0, 0.0);
     }
     return self;
 }

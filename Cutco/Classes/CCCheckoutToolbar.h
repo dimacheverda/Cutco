@@ -11,5 +11,6 @@
 @interface CCCheckoutToolbar : UIToolbar
 
 @property (strong, nonatomic) UIBarButtonItem *cancelButton;
+@property (strong, nonatomic) UIBarButtonItem *checkoutButton;
 
 @end
