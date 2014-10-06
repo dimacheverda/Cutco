@@ -46,8 +46,6 @@
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
-    
-    self.tableView.contentInset = UIEdgeInsetsMake(64.0, 0.0, 49.0, 0.0);
 }
 
 #pragma mark - Accessors
