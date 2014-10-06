@@ -42,27 +42,23 @@
 - (void)viewWillLayoutSubviews
 {
     [super viewWillLayoutSubviews];
-    
-    // image
+
     CGRect logoFrame = CGRectMake(20.0,
                                   50.0,
                                   CGRectGetWidth(self.view.frame) - 40,
                                   100.0);
     _logoImage.frame = logoFrame;
-    
-    // email text field
+
     _emailTextField.frame = CGRectMake(20.0,
                                        CGRectGetMaxY(_logoImage.frame) + 20.0,
                                        CGRectGetWidth(self.view.frame) - 40,
                                        30.0);
-    
-    // password text field
+
     _passwordTextField.frame = CGRectMake(20.0,
                                           CGRectGetMaxY(_emailTextField.frame) + 20.0,
                                           CGRectGetWidth(self.view.frame) - 40,
                                           30.0);
-    
-    // sign in button
+
     _signInButton.frame = CGRectMake(110.0,
                                      CGRectGetMaxY(_passwordTextField.frame) + 20,
                                      CGRectGetWidth(self.view.frame) - 220.0,
@@ -176,7 +172,6 @@
     UIViewController *statsVC = [[UIViewController alloc] init];
     
     UINavigationController *stockNavController = [[UINavigationController alloc] initWithRootViewController:stockVC];
-//    UINavigationController *navControllerHistory = [[UINavigationController alloc] initWithRootViewController:historyVC];
     
     stockVC.title = @"Add Sale";
     soldVC.title = @"Sold";
@@ -187,14 +182,19 @@
     soldVC.isShowingSold = YES;
     returnedVC.isShowingSold = NO;
     
-    stockVC.tabBarItem.image = [UIImage imageNamed:@"cart"];
-    soldVC.tabBarItem.image = [UIImage imageNamed:@"cart"];
-    returnedVC.tabBarItem.image = [UIImage imageNamed:@"cart"];
-    tutorialVC.tabBarItem.image = [UIImage imageNamed:@"cart"];
-    statsVC.tabBarItem.image = [UIImage imageNamed:@"cart"];
+    stockVC.tabBarItem.image = [UIImage imageNamed:@"plus_line"];
+    stockVC.tabBarItem.selectedImage = [UIImage imageNamed:@"plus_fill"];
+    soldVC.tabBarItem.image = [UIImage imageNamed:@"cart_full_line"];
+    soldVC.tabBarItem.selectedImage = [UIImage imageNamed:@"cart_full_fill"];
+    returnedVC.tabBarItem.image = [UIImage imageNamed:@"cart_empty_line"];
+    returnedVC.tabBarItem.selectedImage = [UIImage imageNamed:@"cart_empty_fill"];
+    tutorialVC.tabBarItem.image = [UIImage imageNamed:@"briefcase_line"];
+    tutorialVC.tabBarItem.selectedImage = [UIImage imageNamed:@"briefcase_fill"];
+    statsVC.tabBarItem.image = [UIImage imageNamed:@"calculator_line"];
+    statsVC.tabBarItem.selectedImage = [UIImage imageNamed:@"calculator_fill"];
     
     UITabBarController *tabBarController = [[UITabBarController alloc] init];
-    tabBarController.viewControllers = @[returnedVC, stockNavController, soldVC];
+    tabBarController.viewControllers = @[tutorialVC, returnedVC, stockNavController, soldVC, statsVC];
     [tabBarController setSelectedViewController:stockNavController];
     
     [self presentViewController:tabBarController animated:YES completion:^{
