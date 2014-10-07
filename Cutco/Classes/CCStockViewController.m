@@ -17,6 +17,8 @@
 #import "CCCheckoutViewController.h"
 #import "CCPopoverTransition.h"
 #import "CCPopoverDismissal.h"
+#import "CCEvents.h"
+#import "CCEvent.h"
 
 @interface CCStockViewController () <UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate>
 
@@ -35,6 +37,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+//    NSLog(@"current event %@", [[CCEvents sharedEvents] currentEvent]);
+    
     UIBarButtonItem *showEventsButton = [[UIBarButtonItem alloc] initWithTitle:@"All Events"
                                                                          style:UIBarButtonItemStylePlain
                                                                         target:self
@@ -48,10 +52,11 @@
     [self.view addSubview:self.collectionView];
 
     self.tabBarHidden = NO;
-    
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self loadStockItemsFromParse];
-    });
+    if (![[CCStock sharedStock] isStockLoaded]) {
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+            [self loadStockItemsFromParse];
+        });
+    }
 }
 
 - (void)viewWillLayoutSubviews {
@@ -198,7 +203,8 @@
 }
 
 - (void)showEvents {
-    NSLog(@"show events");
+    [self dismissViewControllerAnimated:YES completion:nil];
+    self.collectionView = nil;
 }
 
 #pragma mark - Parse methods
@@ -217,7 +223,8 @@
                 for (CCStockItem *object in objects) {
                     [items addObject:object];
                 }
-                [CCStock sharedStock].items = items;
+                [CCStock sharedStock].items = objects;
+                [CCStock sharedStock].isStockLoaded = YES;
                 
                 // update UI
                 dispatch_async(dispatch_get_main_queue(), ^{

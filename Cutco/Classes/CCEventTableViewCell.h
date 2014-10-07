@@ -10,8 +10,8 @@
 
 @interface CCEventTableViewCell : UITableViewCell
 
-@property (strong, nonatomic) UILabel *locationTitleLabel;
-@property (strong, nonatomic) UILabel *startAtLabel;
-@property (strong, nonatomic) UILabel *endAtLabel;
+@property (strong, nonatomic) NSString *location;
+@property (strong, nonatomic) NSDate *startAt;
+@property (strong, nonatomic) NSDate *endAt;
 
 @end

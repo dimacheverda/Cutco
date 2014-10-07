@@ -10,4 +10,6 @@
 
 @interface CCStockViewController : UIViewController
 
+- (void)loadStockItemsFromParse;
+
 @end

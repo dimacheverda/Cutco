@@ -172,15 +172,15 @@
 - (void)performTransition {
     
     // present events
-    /*
+    
     CCEventsViewController *eventsVC = [[CCEventsViewController alloc] init];
     [self presentViewController:eventsVC animated:YES completion:^{
         
     }];
-    */
+
     
     // present Stock and Tabs
-    
+    /*
     CCStockViewController *stockVC = [[CCStockViewController alloc] init];
     CCHistoryViewController *soldVC = [[CCHistoryViewController alloc] init];
     CCHistoryViewController *returnedVC = [[CCHistoryViewController alloc] init];
@@ -216,7 +216,7 @@
     [self presentViewController:tabBarController animated:YES completion:^{
 
     }];
-    
+    */
 }
 
 - (void)tapGestureHandler {

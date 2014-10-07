@@ -9,11 +9,19 @@
 #import "CCEventsViewController.h"
 #import "CCEventsTableView.h"
 #import "CCEventTableViewCell.h"
+#import <MBProgressHUD.h>
+#import "CCEvents.h"
+#import "CCEvent.h"
+#import "CCEventMember.h"
+#import "CCLocation.h"
+#import "CCStockViewController.h"
+#import "CCHistoryViewController.h"
 
 @interface CCEventsViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) CCEventsTableView *tableView;
 @property (strong, nonatomic) UISegmentedControl *segmentedControl;
+@property (strong, nonatomic) MBProgressHUD *hud;
 
 @end
 
@@ -26,6 +34,8 @@
     
     [self.view addSubview:self.tableView];
     [self.view addSubview:self.segmentedControl];
+    
+    [self loadEventsMemberFromParse];
 }
 
 #pragma mark - Accessors
@@ -42,7 +52,7 @@
 
 - (UISegmentedControl *)segmentedControl {
     if (!_segmentedControl) {
-        _segmentedControl = [[UISegmentedControl alloc] initWithItems:@[@"Closed", @"Current", @"Future"]];
+        _segmentedControl = [[UISegmentedControl alloc] initWithItems:@[@"Closed", @"In Progress", @"Upcomming"]];
         _segmentedControl.frame = CGRectMake(20.0,
                                              28.0,
                                              CGRectGetWidth(self.view.frame) - 40.0,
@@ -59,15 +69,21 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 3;
+    return [CCEvents sharedEvents].allEvents.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     CCEventTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     
-    cell.locationTitleLabel.text = @"Costco store, Baltimore";
-    cell.startAtLabel.text = @"10-15-2014";
-    cell.endAtLabel.text = @"10-25-2014";
+    CCEvent *event = [[CCEvents sharedEvents] allEvents][indexPath.row];
+    for (CCLocation *location in [CCEvents sharedEvents].locations) {
+        if ([location.objectId isEqualToString:event.location.objectId]) {
+            cell.location = location.title;
+            break;
+        }
+    }
+    cell.startAt = event.startAt;
+    cell.endAt = event.endAt;
     
     return cell;
 }
@@ -75,7 +91,127 @@
 #pragma mark - Table View Delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [CCEvents sharedEvents].currentEvent = [CCEvents sharedEvents].allEvents[indexPath.row];
+    [self performTransition];
+}
+
+- (void)performTransition {
+    CCStockViewController *stockVC = [[CCStockViewController alloc] init];
+    CCHistoryViewController *soldVC = [[CCHistoryViewController alloc] init];
+    CCHistoryViewController *returnedVC = [[CCHistoryViewController alloc] init];
+    UIViewController *tutorialVC = [[UIViewController alloc] init];
+    UIViewController *statsVC = [[UIViewController alloc] init];
     
+    
+    UINavigationController *stockNavController = [[UINavigationController alloc] initWithRootViewController:stockVC];
+    
+    stockVC.title = @"Add Sale";
+    soldVC.title = @"Sold";
+    returnedVC.title = @"Returned";
+    tutorialVC.title = @"Tutorial";
+    statsVC.title = @"Report";
+    
+    soldVC.isShowingSold = YES;
+    returnedVC.isShowingSold = NO;
+    
+    stockVC.tabBarItem.image = [UIImage imageNamed:@"plus_line"];
+    stockVC.tabBarItem.selectedImage = [UIImage imageNamed:@"plus_fill"];
+    soldVC.tabBarItem.image = [UIImage imageNamed:@"cart_full_line"];
+    soldVC.tabBarItem.selectedImage = [UIImage imageNamed:@"cart_full_fill"];
+    returnedVC.tabBarItem.image = [UIImage imageNamed:@"cart_empty_line"];
+    returnedVC.tabBarItem.selectedImage = [UIImage imageNamed:@"cart_empty_fill"];
+    tutorialVC.tabBarItem.image = [UIImage imageNamed:@"briefcase_line"];
+    tutorialVC.tabBarItem.selectedImage = [UIImage imageNamed:@"briefcase_fill"];
+    statsVC.tabBarItem.image = [UIImage imageNamed:@"calculator_line"];
+    statsVC.tabBarItem.selectedImage = [UIImage imageNamed:@"calculator_fill"];
+    
+    UITabBarController *tabBarController = [[UITabBarController alloc] init];
+    tabBarController.viewControllers = @[tutorialVC, returnedVC, stockNavController, soldVC, statsVC];
+    [tabBarController setSelectedViewController:stockNavController];
+    
+    [self presentViewController:tabBarController animated:YES completion:^{
+    }];
+}
+
+#pragma mark - Parse methods
+
+- (void)loadEventsMemberFromParse {
+    self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    self.hud.mode = MBProgressHUDModeIndeterminate;
+    self.hud.labelText = @"Loading..";
+    
+    PFQuery *eventMemberQuary = [CCEventMember query];
+    [eventMemberQuary whereKey:@"user" equalTo:[PFUser currentUser]];
+    
+    [eventMemberQuary findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (!error) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [CCEvents sharedEvents].eventsMember = objects;
+                [self loadEventsFromParse];
+            });
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.hud.labelText = @"Error";
+                self.hud.detailsLabelText = error.description;
+                [self.hud hide:YES afterDelay:2.0];
+            });
+        }
+    }];
+
+}
+
+- (void)loadEventsFromParse {
+    NSArray *eventsMember = [CCEvents sharedEvents].eventsMember;
+    NSMutableArray *eventsId = [NSMutableArray array];
+    for (CCEventMember *eventMember in eventsMember) {
+        [eventsId addObject:eventMember.event.objectId];
+    }
+    PFQuery *query = [CCEvent query];
+    [query whereKey:@"objectId" containedIn:eventsId];
+    
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (!error) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [CCEvents sharedEvents].allEvents = objects;
+                [self loadLocationsFromParse];
+            });
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.hud.labelText = @"Error";
+                self.hud.detailsLabelText = error.description;
+                [self.hud hide:YES afterDelay:2.0];
+            });
+        }
+    }];
+}
+
+- (void)loadLocationsFromParse {
+    NSArray *events = [CCEvents sharedEvents].allEvents;
+    NSMutableArray *locationsId = [NSMutableArray array];
+    for (CCEvent *event in events) {
+        [locationsId addObject:event.location.objectId];
+    }
+    PFQuery *query = [CCLocation query];
+    [query whereKey:@"objectId" containedIn:locationsId];
+    
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (!error) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [CCEvents sharedEvents].locations = objects;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self.tableView reloadData];
+                    [self.hud hide:YES];
+                });
+            });
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.hud.labelText = @"Error";
+                self.hud.detailsLabelText = error.description;
+                [self.hud hide:YES afterDelay:2.0];
+            });
+        }
+    }];
 }
 
 @end

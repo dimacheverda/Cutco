@@ -12,6 +12,7 @@
 @interface CCStock : NSObject
 
 @property (nonatomic, retain) NSArray *items;
+@property (nonatomic) BOOL isStockLoaded;
 
 + (instancetype)sharedStock;
 - (CCStockItem *)itemForObjectId:(NSString *)objectId;

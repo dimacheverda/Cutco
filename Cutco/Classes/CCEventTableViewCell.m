@@ -10,6 +10,10 @@
 
 @interface CCEventTableViewCell ()
 
+@property (strong, nonatomic) UILabel *locationTitleLabel;
+@property (strong, nonatomic) UILabel *startAtLabel;
+@property (strong, nonatomic) UILabel *endAtLabel;
+
 @end
 
 @implementation CCEventTableViewCell
@@ -23,20 +27,6 @@
         [self.contentView addSubview:self.startAtLabel];
         [self.contentView addSubview:self.endAtLabel];
     
-        UILabel *startAtLabel = [[UILabel alloc] initWithFrame:self.startAtLabel.frame];
-        startAtLabel.numberOfLines = 1;
-        startAtLabel.font = [UIFont systemFontOfSize:13.0];
-        startAtLabel.text = @"Start At:";
-        startAtLabel.textColor = [UIColor darkGrayColor];
-        [self.contentView addSubview:startAtLabel];
-        
-        UILabel *endAtLabel = [[UILabel alloc] initWithFrame:self.endAtLabel.frame];
-        endAtLabel.numberOfLines = 1;
-        endAtLabel.font = [UIFont systemFontOfSize:13.0];
-        endAtLabel.text = @"End At:";
-        endAtLabel.textColor = [UIColor darkGrayColor];
-        [self.contentView addSubview:endAtLabel];
-        
         self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     return self;
@@ -60,13 +50,23 @@
 
 - (UILabel *)startAtLabel {
     if (!_startAtLabel) {
-        CGRect frame = CGRectMake(16.0,
+        UILabel *startAtLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0,
+                                                                          CGRectGetMaxY(self.locationTitleLabel.frame) + 10.0,
+                                                                          60.0,
+                                                                          16.0)];
+        startAtLabel.numberOfLines = 1;
+        startAtLabel.font = [UIFont systemFontOfSize:13.0];
+        startAtLabel.text = @"Start At:";
+        startAtLabel.textColor = [UIColor darkGrayColor];
+        [self.contentView addSubview:startAtLabel];
+        
+        CGRect frame = CGRectMake(CGRectGetMaxX(startAtLabel.frame),
                                   CGRectGetMaxY(self.locationTitleLabel.frame) + 10.0,
-                                  CGRectGetWidth(self.contentView.frame) / 2.5,
+                                  CGRectGetWidth(self.contentView.frame) / 2,
                                   16.0);
         _startAtLabel = [[UILabel alloc] initWithFrame:frame];
         _startAtLabel.numberOfLines = 1;
-        _startAtLabel.textAlignment = NSTextAlignmentRight;
+        _startAtLabel.textAlignment = NSTextAlignmentLeft;
         _startAtLabel.font = [UIFont systemFontOfSize:13.0];
     }
     return _startAtLabel;
@@ -74,16 +74,38 @@
 
 - (UILabel *)endAtLabel {
     if (!_endAtLabel) {
-        CGRect frame = CGRectMake(16.0,
+        UILabel *endAtLabel = [[UILabel alloc] initWithFrame:CGRectMake(16.0,
+                                                                        CGRectGetMaxY(self.startAtLabel.frame) + 4.0,
+                                                                        60.0,
+                                                                        16.0)];
+        endAtLabel.numberOfLines = 1;
+        endAtLabel.font = [UIFont systemFontOfSize:13.0];
+        endAtLabel.text = @"End At:";
+        endAtLabel.textColor = [UIColor darkGrayColor];
+        [self.contentView addSubview:endAtLabel];
+        
+        CGRect frame = CGRectMake(CGRectGetMaxX(endAtLabel.frame),
                                   CGRectGetMaxY(self.startAtLabel.frame) + 4.0,
-                                  CGRectGetWidth(self.contentView.frame) / 2.5,
+                                  CGRectGetWidth(self.contentView.frame) / 2,
                                   16.0);
         _endAtLabel = [[UILabel alloc] initWithFrame:frame];
         _endAtLabel.numberOfLines = 1;
-        _endAtLabel.textAlignment = NSTextAlignmentRight;
+        _endAtLabel.textAlignment = NSTextAlignmentLeft;
         _endAtLabel.font = [UIFont systemFontOfSize:13.0];
     }
     return _endAtLabel;
+}
+
+- (void)setLocation:(NSString *)location {
+    self.locationTitleLabel.text = location;
+}
+
+- (void)setStartAt:(NSDate *)startAt {
+    self.startAtLabel.text = [NSDateFormatter localizedStringFromDate:startAt dateStyle:NSDateFormatterLongStyle timeStyle:NSDateFormatterNoStyle];
+}
+
+- (void)setEndAt:(NSDate *)endAt {
+    self.endAtLabel.text = [NSDateFormatter localizedStringFromDate:endAt dateStyle:NSDateFormatterLongStyle timeStyle:NSDateFormatterNoStyle];
 }
 
 @end
