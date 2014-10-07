@@ -13,13 +13,15 @@
 #import <ProgressHUD.h>
 #import <MBProgressHUD.h>
 #import "CCEventsViewController.h"
+#import "CCTextField.h"
 
 @interface CCSignInViewController () <UITextFieldDelegate>
 
 @property (strong, nonatomic) UIImageView *logoImage;
-@property (strong, nonatomic) UITextField *emailTextField;
-@property (strong, nonatomic) UITextField *passwordTextField;
+@property (strong, nonatomic) CCTextField *emailTextField;
+@property (strong, nonatomic) CCTextField *passwordTextField;
 @property (strong, nonatomic) UIButton *signInButton;
+@property (strong, nonatomic) UIView *separatorView;
 
 @end
 
@@ -34,35 +36,38 @@
     [self.view addSubview:self.emailTextField];
     [self.view addSubview:self.passwordTextField];
     [self.view addSubview:self.signInButton];
+    [self.view addSubview:self.separatorView];
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureHandler)];
     [self.view addGestureRecognizer:tapGesture];
 }
 
+#define LEFT_PADDING 50.0
+
 - (void)viewWillLayoutSubviews
 {
     [super viewWillLayoutSubviews];
 
-    CGRect logoFrame = CGRectMake(20.0,
-                                  50.0,
-                                  CGRectGetWidth(self.view.frame) - 40,
-                                  100.0);
-    _logoImage.frame = logoFrame;
+    _logoImage.frame = self.view.frame;
+    
+    _emailTextField.frame = CGRectMake(LEFT_PADDING,
+                                       80.0,
+                                       CGRectGetWidth(self.view.frame) - LEFT_PADDING*2,
+                                       44.0);
 
-    _emailTextField.frame = CGRectMake(20.0,
-                                       CGRectGetMaxY(_logoImage.frame) + 20.0,
-                                       CGRectGetWidth(self.view.frame) - 40,
-                                       30.0);
+    _passwordTextField.frame = CGRectMake(LEFT_PADDING,
+                                          CGRectGetMaxY(_emailTextField.frame) + 16.0,
+                                          CGRectGetWidth(self.view.frame) - LEFT_PADDING*2,
+                                          44.0);
 
-    _passwordTextField.frame = CGRectMake(20.0,
-                                          CGRectGetMaxY(_emailTextField.frame) + 20.0,
-                                          CGRectGetWidth(self.view.frame) - 40,
-                                          30.0);
-
-    _signInButton.frame = CGRectMake(110.0,
-                                     CGRectGetMaxY(_passwordTextField.frame) + 20,
-                                     CGRectGetWidth(self.view.frame) - 220.0,
+    _signInButton.frame = CGRectMake(LEFT_PADDING,
+                                     CGRectGetMaxY(_passwordTextField.frame) + 20.0,
+                                     CGRectGetWidth(self.view.frame) - LEFT_PADDING*2,
                                      44.0);
+    _separatorView.frame = CGRectMake(CGRectGetMinX(self.emailTextField.frame),
+                                      (CGRectGetMaxY(self.emailTextField.frame) + CGRectGetMinY(self.passwordTextField.frame))/2,
+                                      CGRectGetWidth(self.emailTextField.frame),
+                                      1.0);
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -74,40 +79,39 @@
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"lastPhotoDate"];
 }
 
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
+}
+
 #pragma mark - Accessors
 
 - (UIImageView *)logoImage {
     if (!_logoImage) {
-        
-        _logoImage = [[UIImageView alloc] init];
-        _logoImage.backgroundColor = [UIColor lightGrayColor];
+        _logoImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"steak-knife-blur"]];
+        _logoImage.contentMode = UIViewContentModeScaleAspectFill;
     }
     return _logoImage;
 }
 
-- (UITextField *)emailTextField {
+- (CCTextField *)emailTextField {
     if (!_emailTextField) {
-        _emailTextField = [[UITextField alloc] init];
+        _emailTextField = [[CCTextField alloc] init];
         _emailTextField.delegate = self;
-        _emailTextField.placeholder = @"Username";
-        _emailTextField.keyboardType = UIKeyboardTypeDefault;
-        _emailTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-        _emailTextField.autocorrectionType = UITextAutocorrectionTypeNo;
-        _emailTextField.borderStyle = UITextBorderStyleBezel;
         _emailTextField.returnKeyType = UIReturnKeyNext;
+        UIColor *color = [UIColor colorWithRed:0.53 green:0.52 blue:0.52 alpha:1];
+        _emailTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"Username" attributes:@{NSForegroundColorAttributeName: color}];
     }
     return _emailTextField;
 }
 
-- (UITextField *)passwordTextField {
+- (CCTextField *)passwordTextField {
     if (!_passwordTextField) {
-        _passwordTextField = [[UITextField alloc] init];
+        _passwordTextField = [[CCTextField alloc] init];
         _passwordTextField.delegate = self;
-        _passwordTextField.placeholder = @"Password";
-        _passwordTextField.keyboardType = UIKeyboardTypeDefault;
-        _passwordTextField.borderStyle = UITextBorderStyleBezel;
         _passwordTextField.secureTextEntry = YES;
         _passwordTextField.returnKeyType = UIReturnKeyDone;
+        UIColor *color = [UIColor colorWithRed:0.53 green:0.52 blue:0.52 alpha:1];
+        _passwordTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"Password" attributes:@{NSForegroundColorAttributeName: color}];
     }
     return _passwordTextField;
 }
@@ -119,8 +123,20 @@
         [_signInButton addTarget:self
                           action:@selector(signInButtonDidPressed)
                 forControlEvents:UIControlEventTouchUpInside];
+        _signInButton.titleLabel.font = [UIFont systemFontOfSize:20.0];
+        _signInButton.backgroundColor = [UIColor colorWithRed:0.18 green:0.47 blue:0.58 alpha:1];
+        [_signInButton setTitleColor:[UIColor lightTextColor] forState:UIControlStateNormal];
+        _signInButton.layer.cornerRadius = 4.0;
     }
     return _signInButton;
+}
+
+- (UIView *)separatorView {
+    if (!_separatorView) {
+        _separatorView = [[UIView alloc] init];
+        _separatorView.backgroundColor = [UIColor whiteColor];
+    }
+    return _separatorView;
 }
 
 #pragma mark - Action Handlers

@@ -35,9 +35,14 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    UIBarButtonItem *showEventsButton = [[UIBarButtonItem alloc] initWithTitle:@"All Events"
+                                                                         style:UIBarButtonItemStylePlain
+                                                                        target:self
+                                                                        action:@selector(showEvents)];
     UIBarButtonItem *showCameraButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
                                                                                       target:self
                                                                                       action:@selector(showCamera)];
+    self.navigationItem.leftBarButtonItem = showEventsButton;
     self.navigationItem.rightBarButtonItem = showCameraButton;
     
     [self.view addSubview:self.collectionView];
@@ -123,7 +128,6 @@
             });
         }
     }];
-    
     cell.checkMark.checked = [self.checkedIndexes containsObject:indexPath];
  
     return cell;
@@ -191,6 +195,10 @@
         
         [self presentViewController:picker animated:YES completion:nil];
     }
+}
+
+- (void)showEvents {
+    NSLog(@"show events");
 }
 
 #pragma mark - Parse methods
