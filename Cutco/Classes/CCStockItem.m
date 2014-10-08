@@ -30,4 +30,8 @@
     return @"StockItem";
 }
 
+- (NSString *)description {
+    return [NSString stringWithFormat:@"name: %@                 UPC:  %lu", self.name, self.UPC];
+}
+
 @end

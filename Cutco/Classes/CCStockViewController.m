@@ -37,8 +37,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-//    NSLog(@"current event %@", [[CCEvents sharedEvents] currentEvent]);
-    
     UIBarButtonItem *showEventsButton = [[UIBarButtonItem alloc] initWithTitle:@"All Events"
                                                                          style:UIBarButtonItemStylePlain
                                                                         target:self
@@ -143,12 +141,13 @@
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     CCStockCollectionViewCell *cell = (CCStockCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
     cell.checkMark.checked = !cell.checkMark.checked;
-    
+
     if ([self.checkedIndexes containsObject:indexPath]) {
         [self.checkedIndexes removeObject:indexPath];
     } else {
         [self.checkedIndexes addObject:indexPath];
     }
+//    NSLog(@"checked indexes %@", self.checkedIndexes);
     [self hideTabBarIfNeeded];
 }
 
@@ -263,8 +262,21 @@
 }
 
 - (void)checkoutButtonDidPressed {
+    NSArray *checkedIndexesArray = [self.checkedIndexes allObjects];
+    checkedIndexesArray = [checkedIndexesArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        NSInteger r1 = [obj1 row];
+        NSInteger r2 = [obj2 row];
+        if (r1 > r2) {
+            return (NSComparisonResult)NSOrderedDescending;
+        }
+        if (r1 < r2) {
+            return (NSComparisonResult)NSOrderedAscending;
+        }
+        return (NSComparisonResult)NSOrderedSame;
+    }];
+
     NSMutableArray *items = [NSMutableArray array];
-    for (NSIndexPath *indexPath in self.checkedIndexes) {
+    for (NSIndexPath *indexPath in checkedIndexesArray) {
         [items addObject:[CCStock sharedStock].items[indexPath.row]];
     }
     
@@ -272,7 +284,6 @@
     checkoutVC.modalPresentationStyle = UIModalPresentationCustom;
     checkoutVC.transitioningDelegate = self;
     [self presentViewController:checkoutVC animated:YES completion:^{
-        
     }];
 }
 

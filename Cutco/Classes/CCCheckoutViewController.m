@@ -88,7 +88,7 @@
                                           (VIEW_HEIGHT) - BUTTON_HEIGHT,
                                           (VIEW_WIDTH)/2.0,
                                           BUTTON_HEIGHT);
-        [_confirmButton addTarget:self action:@selector(cancelButtonDidPressed) forControlEvents:UIControlEventTouchUpInside];
+        [_confirmButton addTarget:self action:@selector(confirmButtonDidPressed) forControlEvents:UIControlEventTouchUpInside];
     }
     return _confirmButton;
 }
@@ -142,6 +142,18 @@
 }
 
 - (void)confirmButtonDidPressed {
+    NSUInteger row = 0;
+    NSMutableArray *itemsForSale = [NSMutableArray array];
+    for (CCStockItem *item in self.items) {
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];
+        CCCheckoutTableViewCell *cell = (CCCheckoutTableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath];
+        NSInteger quantity = [cell.quantityLabel.text integerValue];
+        for (int i = 0; i < quantity; i++) {
+            [itemsForSale addObject:item];
+        }
+        row++;
+    }
+    NSLog(@"%@", itemsForSale);
     [self dismiss];
 }
 
