@@ -12,6 +12,7 @@
 #import <MBProgressHUD.h>
 #import "CCEvents.h"
 #import "CCEvent.h"
+#import "CCSales.h"
 #import "CCEventMember.h"
 #import "CCLocation.h"
 #import "CCStockViewController.h"
@@ -103,7 +104,6 @@
     UIViewController *tutorialVC = [[UIViewController alloc] init];
     UIViewController *statsVC = [[UIViewController alloc] init];
     
-    
     UINavigationController *stockNavController = [[UINavigationController alloc] initWithRootViewController:stockVC];
     
     stockVC.title = @"Add Sale";
@@ -158,7 +158,6 @@
             });
         }
     }];
-
 }
 
 - (void)loadEventsFromParse {

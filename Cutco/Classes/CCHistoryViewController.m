@@ -126,9 +126,9 @@
                 });
                 [[CCSales sharedSales] moveSaleToReturnedAtIndex:indexPath.row];
                 
-                self.hud.mode = MBProgressHUDModeText;
-                self.hud.labelText = @"Success";
-                [self.hud hide:YES afterDelay:1.0];
+//                self.hud.mode = MBProgressHUDModeText;
+//                self.hud.labelText = @"Success";
+                [self.hud hide:YES afterDelay:0.0];
             } else {
                 self.hud.mode = MBProgressHUDModeText;
                 self.hud.labelText = @"Error";
@@ -142,6 +142,7 @@
 - (void)loadSalesFromParse {
     PFQuery *query = [CCSale query];
     [query whereKey:@"user" equalTo:[PFUser currentUser]];
+    [query whereKey:@"event" equalTo:[[CCEvents sharedEvents] currentEvent]];
     
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (!error) {

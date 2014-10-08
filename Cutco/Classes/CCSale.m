@@ -19,6 +19,7 @@
 @dynamic user;
 @dynamic returned;
 @dynamic price;
+@dynamic event;
 
 + (void)load {
     [self registerSubclass];
@@ -35,8 +36,13 @@
         self.user = [PFUser currentUser];
         self.returned = NO;
         self.price = stockItem.salePrice;
+        self.event = [[CCEvents sharedEvents] currentEvent];
     }
     return self;
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"stockItem: %@      event: %@      returned: %d", self.stockItem, self.event, self.returned];
 }
 
 @end

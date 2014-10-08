@@ -11,6 +11,9 @@
 #import "CCCheckoutTableViewCell.h"
 #import "CCStockItem.h"
 #import "CCStock.h"
+#import "CCSale.h"
+#import "CCSales.h"
+#import <MBProgressHUD.h>
 
 @interface CCCheckoutViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -18,6 +21,7 @@
 @property (strong, nonatomic) UIButton *cancelButton;
 @property (strong, nonatomic) UIButton *confirmButton;
 @property (strong, nonatomic) NSArray *items;
+@property (strong, nonatomic) MBProgressHUD *hud;
 
 @end
 
@@ -142,6 +146,10 @@
 }
 
 - (void)confirmButtonDidPressed {
+    self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    self.hud.mode = MBProgressHUDModeIndeterminate;
+    self.hud.labelText = @"Loading..";
+    
     NSUInteger row = 0;
     NSMutableArray *itemsForSale = [NSMutableArray array];
     for (CCStockItem *item in self.items) {
@@ -153,8 +161,34 @@
         }
         row++;
     }
-    NSLog(@"%@", itemsForSale);
-    [self dismiss];
+    [self saveSalesToParse:itemsForSale];
+}
+
+- (void)saveSalesToParse:(NSArray *)items {
+    NSMutableArray *sales = [NSMutableArray array];
+    for (CCStockItem *item in items) {
+        CCSale *sale = [[CCSale alloc] initWithStockItem:item];
+        [sales addObject:sale];
+    }
+    
+    [PFObject saveAllInBackground:sales block:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            for (CCSale *sale in sales) {
+                [[CCSales sharedSales] addSale:sale];
+            }
+    
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.hud hide:YES];
+                [self dismiss];
+            });
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.hud.labelText = @"Error";
+                self.hud.detailsLabelText = error.description;
+                [self.hud hide:YES afterDelay:2.0];
+            });
+        }
+    }];
 }
 
 - (void)dismiss {

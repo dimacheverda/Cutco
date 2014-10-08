@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 #import "CCStockItem.h"
+#import "CCEvent.h"
+#import "CCEvents.h"
 
 @interface CCSale : PFObject <PFSubclassing>
 
@@ -15,7 +17,7 @@
 @property (retain) PFUser *user;
 @property BOOL returned;
 @property NSUInteger price;
-//@property (retain) CCEvent *event;
+@property (retain) CCEvent *event;
 
 - (instancetype)initWithStockItem:(CCStockItem *)stockItem;
 

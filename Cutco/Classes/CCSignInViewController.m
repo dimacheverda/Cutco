@@ -170,53 +170,9 @@
 }
 
 - (void)performTransition {
-    
-    // present events
-    
     CCEventsViewController *eventsVC = [[CCEventsViewController alloc] init];
     [self presentViewController:eventsVC animated:YES completion:^{
-        
     }];
-
-    
-    // present Stock and Tabs
-    /*
-    CCStockViewController *stockVC = [[CCStockViewController alloc] init];
-    CCHistoryViewController *soldVC = [[CCHistoryViewController alloc] init];
-    CCHistoryViewController *returnedVC = [[CCHistoryViewController alloc] init];
-    UIViewController *tutorialVC = [[UIViewController alloc] init];
-    UIViewController *statsVC = [[UIViewController alloc] init];
-    
-    UINavigationController *stockNavController = [[UINavigationController alloc] initWithRootViewController:stockVC];
-    
-    stockVC.title = @"Add Sale";
-    soldVC.title = @"Sold";
-    returnedVC.title = @"Returned";
-    tutorialVC.title = @"Tutorial";
-    statsVC.title = @"Report";
-    
-    soldVC.isShowingSold = YES;
-    returnedVC.isShowingSold = NO;
-    
-    stockVC.tabBarItem.image = [UIImage imageNamed:@"plus_line"];
-    stockVC.tabBarItem.selectedImage = [UIImage imageNamed:@"plus_fill"];
-    soldVC.tabBarItem.image = [UIImage imageNamed:@"cart_full_line"];
-    soldVC.tabBarItem.selectedImage = [UIImage imageNamed:@"cart_full_fill"];
-    returnedVC.tabBarItem.image = [UIImage imageNamed:@"cart_empty_line"];
-    returnedVC.tabBarItem.selectedImage = [UIImage imageNamed:@"cart_empty_fill"];
-    tutorialVC.tabBarItem.image = [UIImage imageNamed:@"briefcase_line"];
-    tutorialVC.tabBarItem.selectedImage = [UIImage imageNamed:@"briefcase_fill"];
-    statsVC.tabBarItem.image = [UIImage imageNamed:@"calculator_line"];
-    statsVC.tabBarItem.selectedImage = [UIImage imageNamed:@"calculator_fill"];
-    
-    UITabBarController *tabBarController = [[UITabBarController alloc] init];
-    tabBarController.viewControllers = @[tutorialVC, returnedVC, stockNavController, soldVC, statsVC];
-    [tabBarController setSelectedViewController:stockNavController];
-    
-    [self presentViewController:tabBarController animated:YES completion:^{
-
-    }];
-    */
 }
 
 - (void)tapGestureHandler {
