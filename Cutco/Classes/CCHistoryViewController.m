@@ -139,10 +139,15 @@
     }
 }
 
+#pragma mark - Parse methods
+
 - (void)loadSalesFromParse {
     PFQuery *query = [CCSale query];
     [query whereKey:@"user" equalTo:[PFUser currentUser]];
     [query whereKey:@"event" equalTo:[[CCEvents sharedEvents] currentEvent]];
+    
+    [CCSales sharedSales].sales = [NSMutableArray array];
+    [CCSales sharedSales].returned = [NSMutableArray array];
     
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (!error) {
