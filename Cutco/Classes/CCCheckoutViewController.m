@@ -14,6 +14,7 @@
 #import "CCSale.h"
 #import "CCSales.h"
 #import <MBProgressHUD.h>
+#import "CCStockViewController.h"
 
 @interface CCCheckoutViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -138,7 +139,7 @@
     if (currentQuantity == 0) {
         currentQuantity = 1;
     }
-    cell.quantityLabel.text = [NSString stringWithFormat:@"%lu", currentQuantity];
+    cell.quantityLabel.text = [NSString stringWithFormat:@"%d", (int)currentQuantity];
 }
 
 - (void)cancelButtonDidPressed {
@@ -192,6 +193,7 @@
 }
 
 - (void)dismiss {
+    [self.delegate checkoutWillDismiss];
     [self dismissViewControllerAnimated:YES completion:^{
     }];
 }

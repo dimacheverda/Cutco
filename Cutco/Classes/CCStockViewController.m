@@ -20,7 +20,12 @@
 #import "CCEvents.h"
 #import "CCEvent.h"
 
-@interface CCStockViewController () <UICollectionViewDelegate, UICollectionViewDataSource, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIViewControllerTransitioningDelegate>
+@interface CCStockViewController () <UICollectionViewDelegate,
+                                        UICollectionViewDataSource,
+                                        UIImagePickerControllerDelegate,
+                                        UINavigationControllerDelegate,
+                                        UIViewControllerTransitioningDelegate,
+                                        CCCheckoutTableViewControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
 @property (strong, nonatomic) MBProgressHUD *hud;
@@ -287,8 +292,15 @@
     CCCheckoutViewController *checkoutVC = [[CCCheckoutViewController alloc] initWithStockItems:items];
     checkoutVC.modalPresentationStyle = UIModalPresentationCustom;
     checkoutVC.transitioningDelegate = self;
+    checkoutVC.delegate = self;
     [self presentViewController:checkoutVC animated:YES completion:^{
     }];
+}
+
+#pragma mark - Checkout View Contorller Delegate
+
+- (void)checkoutWillDismiss {
+    [self uncheckItems];
 }
 
 #pragma mark - Transitioning Delegate

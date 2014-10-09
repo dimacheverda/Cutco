@@ -8,8 +8,18 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol CCCheckoutTableViewControllerDelegate;
+
 @interface CCCheckoutViewController : UIViewController
 
+@property (weak, nonatomic) id <CCCheckoutTableViewControllerDelegate> delegate;
+
 - (instancetype)initWithStockItems:(NSArray *)items;
+
+@end
+
+@protocol CCCheckoutTableViewControllerDelegate <NSObject>
+
+- (void)checkoutWillDismiss;
 
 @end
