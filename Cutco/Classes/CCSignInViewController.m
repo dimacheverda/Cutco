@@ -22,6 +22,7 @@
 @property (strong, nonatomic) CCTextField *passwordTextField;
 @property (strong, nonatomic) UIButton *signInButton;
 @property (strong, nonatomic) UIView *separatorView;
+@property (strong, nonatomic) MBProgressHUD *hud;
 
 @end
 
@@ -152,12 +153,10 @@
 #pragma mark - Action Handlers
 
 - (void)signInButtonDidPressed {
-    
-     //uncomment to add sign in check
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     if (![self.emailTextField.text isEqualToString:@""] && ![self.passwordTextField.text isEqualToString:@""]) {
-        hud.labelText = @"Loading";
-        hud.mode = MBProgressHUDModeIndeterminate;
+        self.hud.labelText = @"Loading";
+        self.hud.mode = MBProgressHUDModeIndeterminate;
         [PFUser logInWithUsernameInBackground:self.emailTextField.text password:self.passwordTextField.text block:^(PFUser *user, NSError *error) {
             if (!error) {
                 dispatch_async(dispatch_get_main_queue(), ^{
@@ -165,17 +164,21 @@
                     [self performTransition];
                 });
             } else {
-                hud.mode = MBProgressHUDModeText;
-                hud.labelText = @"Error";
-                hud.detailsLabelText = [NSString stringWithFormat:@"%@", error.localizedDescription];
-                [hud hide:YES afterDelay:2.0];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self.hud.mode = MBProgressHUDModeText;
+                    self.hud.labelText = @"Error";
+                    self.hud.detailsLabelText = [NSString stringWithFormat:@"%@", error.localizedDescription];
+                    [self.hud hide:YES afterDelay:2.0];
+                });
             }
         }];
     } else {
-        hud.labelText = @"Error";
-        hud.detailsLabelText = @"Fill all field";
-        hud.mode = MBProgressHUDModeText;
-        [hud hide:YES afterDelay:1.5];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.hud.labelText = @"Error";
+            self.hud.detailsLabelText = @"Fill all field";
+            self.hud.mode = MBProgressHUDModeText;
+            [self.hud hide:YES afterDelay:1.5];
+        });
     }
 }
 
