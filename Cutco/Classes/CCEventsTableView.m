@@ -16,7 +16,7 @@
     self = [super initWithFrame:frame style:style];
     if (self) {
         self.rowHeight = 96.0;
-        self.contentInset = UIEdgeInsetsMake(64.0, 0.0, 0.0, 0.0);
+        self.contentInset = UIEdgeInsetsMake(44.0, 0.0, 0.0, 0.0);
     }
     return self;
 }

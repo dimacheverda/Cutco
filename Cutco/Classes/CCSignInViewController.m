@@ -44,6 +44,14 @@
     [self.view addGestureRecognizer:tapGesture];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    self.emailTextField.text = @"";
+    self.passwordTextField.text = @"";
+    [self tapGestureHandler];
+}
+
 #define LEFT_PADDING 50.0
 
 - (void)viewWillLayoutSubviews
@@ -173,7 +181,8 @@
 
 - (void)performTransition {
     CCEventsViewController *eventsVC = [[CCEventsViewController alloc] init];
-    [self presentViewController:eventsVC animated:YES completion:^{
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:eventsVC];
+    [self presentViewController:navController animated:YES completion:^{
     }];
 }
 

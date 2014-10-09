@@ -22,6 +22,7 @@
 
 @property (strong, nonatomic) CCEventsTableView *tableView;
 @property (strong, nonatomic) UISegmentedControl *segmentedControl;
+@property (strong, nonatomic) UIToolbar *backgroundToolbar;
 @property (strong, nonatomic) MBProgressHUD *hud;
 @property (strong, nonatomic) NSArray *eventsDataSource;
 
@@ -34,8 +35,15 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.navigationItem.title = @"Events";
+    UIBarButtonItem *logOutButton = [[UIBarButtonItem alloc] initWithTitle:@"Log Out"
+                                                                     style:UIBarButtonItemStyleDone
+                                                                    target:self
+                                                                    action:@selector(logOutButtonDidPressed)];
+    self.navigationItem.leftBarButtonItem = logOutButton;
+    
     [self.view addSubview:self.tableView];
-    [self.view addSubview:self.segmentedControl];
+    [self.view addSubview:self.backgroundToolbar];
     
     [self loadEventsMemberFromParse];
 }
@@ -52,11 +60,24 @@
     return _tableView;
 }
 
+- (UIToolbar *)backgroundToolbar {
+    if (!_backgroundToolbar) {
+        _backgroundToolbar = [[UIToolbar alloc] init];
+        _backgroundToolbar.frame = CGRectMake(0.0,
+                                              64.0,
+                                              CGRectGetWidth(self.view.frame),
+                                              44.0);
+        [_backgroundToolbar addSubview:self.segmentedControl];
+    }
+    return _backgroundToolbar;
+}
+
 - (UISegmentedControl *)segmentedControl {
     if (!_segmentedControl) {
+        
         _segmentedControl = [[UISegmentedControl alloc] initWithItems:@[@"Closed", @"In Progress", @"Upcomming"]];
         _segmentedControl.frame = CGRectMake(20.0,
-                                             28.0,
+                                             8.0,
                                              CGRectGetWidth(self.view.frame) - 40.0,
                                              28.0);
         _segmentedControl.selectedSegmentIndex = 1;
@@ -225,6 +246,11 @@
 }
 
 #pragma mark - Action handlers
+
+- (void)logOutButtonDidPressed {
+    [self dismissViewControllerAnimated:YES completion:^{
+    }];
+}
 
 - (void)segmentedControlDidPressed {
     NSInteger index = self.segmentedControl.selectedSegmentIndex;
