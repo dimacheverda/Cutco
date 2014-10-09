@@ -14,6 +14,9 @@
 @interface CCEvents : NSObject
 
 @property (nonatomic, retain) NSArray *allEvents;
+@property (nonatomic, retain) NSArray *closedEvents;
+@property (nonatomic, retain) NSArray *inProgressEvents;
+@property (nonatomic, retain) NSArray *upcommingEvents;
 @property (nonatomic, retain) NSArray *eventsMember;
 @property (nonatomic, retain) NSArray *locations;
 @property (nonatomic, retain) CCEvent *currentEvent;

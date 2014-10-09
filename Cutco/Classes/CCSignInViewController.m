@@ -32,6 +32,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [UIView setAnimationsEnabled:YES];
+    
     [self.view addSubview:self.logoImage];
     [self.view addSubview:self.emailTextField];
     [self.view addSubview:self.passwordTextField];

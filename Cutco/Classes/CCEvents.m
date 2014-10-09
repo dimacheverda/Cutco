@@ -7,6 +7,7 @@
 //
 
 #import "CCEvents.h"
+#import "NSDate+CCDate.h"
 
 @implementation CCEvents
 
@@ -22,10 +23,38 @@
 - (id)init {
     if (self = [super init]) {
         self.allEvents = [NSArray array];
+        self.closedEvents = [NSArray array];
+        self.inProgressEvents = [NSArray array];
+        self.upcommingEvents = [NSArray array];
         self.eventsMember = [NSArray array];
         self.locations = [NSArray array];
     }
     return self;
+}
+
+- (void)setAllEvents:(NSArray *)allEvents {
+    if (allEvents) {
+        _allEvents = allEvents;
+        
+        NSMutableArray *closed = [NSMutableArray array];
+        NSMutableArray *inProgress = [NSMutableArray array];
+        NSMutableArray *upcomming = [NSMutableArray array];
+        NSDate *today = [NSDate date];
+        
+        for (CCEvent *event in allEvents) {
+            if ([today isBetweenDate:event.startAt andDate:event.endAt]) {
+                [inProgress addObject:event];
+            } else if ([event.startAt compare:today] == NSOrderedDescending) {           //// startAt is later in time than today
+                [upcomming addObject:event];
+            } else if ([event.endAt compare:today] == NSOrderedAscending) {              //// endAt is earlier in time than today
+                [closed addObject:event];
+            }
+        }
+        
+        self.closedEvents = closed;
+        self.inProgressEvents = inProgress;
+        self.upcommingEvents = upcomming;
+    }
 }
 
 @end

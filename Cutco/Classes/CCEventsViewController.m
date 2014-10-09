@@ -23,6 +23,7 @@
 @property (strong, nonatomic) CCEventsTableView *tableView;
 @property (strong, nonatomic) UISegmentedControl *segmentedControl;
 @property (strong, nonatomic) MBProgressHUD *hud;
+@property (strong, nonatomic) NSArray *eventsDataSource;
 
 @end
 
@@ -59,6 +60,9 @@
                                              CGRectGetWidth(self.view.frame) - 40.0,
                                              28.0);
         _segmentedControl.selectedSegmentIndex = 1;
+        [_segmentedControl addTarget:self
+                              action:@selector(segmentedControlDidPressed)
+                    forControlEvents:UIControlEventValueChanged];
     }
     return _segmentedControl;
 }
@@ -70,13 +74,13 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return [CCEvents sharedEvents].allEvents.count;
+    return self.eventsDataSource.count;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     CCEventTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     
-    CCEvent *event = [[CCEvents sharedEvents] allEvents][indexPath.row];
+    CCEvent *event = self.eventsDataSource[indexPath.row];
     for (CCLocation *location in [CCEvents sharedEvents].locations) {
         if ([location.objectId isEqualToString:event.location.objectId]) {
             cell.location = location.title;
@@ -93,8 +97,11 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-    [CCEvents sharedEvents].currentEvent = [CCEvents sharedEvents].allEvents[indexPath.row];
-    [self performTransition];
+    
+    if (self.segmentedControl.selectedSegmentIndex == 1) {
+        [CCEvents sharedEvents].currentEvent = self.eventsDataSource[indexPath.row];
+        [self performTransition];
+    }
 }
 
 - (void)performTransition {
@@ -163,6 +170,7 @@
 - (void)loadEventsFromParse {
     NSArray *eventsMember = [CCEvents sharedEvents].eventsMember;
     NSMutableArray *eventsId = [NSMutableArray array];
+    
     for (CCEventMember *eventMember in eventsMember) {
         [eventsId addObject:eventMember.event.objectId];
     }
@@ -199,7 +207,10 @@
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 [CCEvents sharedEvents].locations = objects;
                 dispatch_async(dispatch_get_main_queue(), ^{
+                    
+                    self.eventsDataSource = [NSArray arrayWithArray:[CCEvents sharedEvents].inProgressEvents];
                     [self.tableView reloadData];
+                    
                     [self.hud hide:YES];
                 });
             });
@@ -211,6 +222,26 @@
             });
         }
     }];
+}
+
+#pragma mark - Action handlers
+
+- (void)segmentedControlDidPressed {
+    NSInteger index = self.segmentedControl.selectedSegmentIndex;
+    switch (index) {
+        case 0:
+            self.eventsDataSource = [CCEvents sharedEvents].closedEvents;
+            break;
+        case 1:
+            self.eventsDataSource = [CCEvents sharedEvents].inProgressEvents;
+            break;
+        case 2:
+            self.eventsDataSource = [CCEvents sharedEvents].upcommingEvents;
+            break;
+        default:
+            break;
+    }
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
 }
 
 @end

@@ -11,5 +11,6 @@
 @interface NSDate (CCDate)
 
 - (BOOL)isCurrentDay;
+- (BOOL)isBetweenDate:(NSDate*)beginDate andDate:(NSDate*)endDate;
 
 @end

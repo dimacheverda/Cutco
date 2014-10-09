@@ -41,11 +41,15 @@
                                                                          style:UIBarButtonItemStylePlain
                                                                         target:self
                                                                         action:@selector(showEvents)];
-    UIBarButtonItem *showCameraButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
-                                                                                      target:self
-                                                                                      action:@selector(showCamera)];
     self.navigationItem.leftBarButtonItem = showEventsButton;
-    self.navigationItem.rightBarButtonItem = showCameraButton;
+    
+    // only for primary member
+    if ([CCEvents sharedEvents].currentEventMember.primaryMember) {
+        UIBarButtonItem *showCameraButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
+                                                                                          target:self
+                                                                                          action:@selector(showCamera)];
+        self.navigationItem.rightBarButtonItem = showCameraButton;
+    }
     
     [self.view addSubview:self.collectionView];
 
