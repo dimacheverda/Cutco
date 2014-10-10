@@ -20,6 +20,6 @@
 
 @protocol CCCheckoutTableViewControllerDelegate <NSObject>
 
-- (void)checkoutWillDismiss;
+- (void)checkoutWillDismissWithSuccess:(BOOL)success;
 
 @end

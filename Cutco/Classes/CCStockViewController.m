@@ -32,6 +32,7 @@
 @property (strong, nonatomic) NSMutableSet *checkedIndexes;
 @property (strong, nonatomic) CCCheckoutToolbar *checkoutToolbar;
 @property (nonatomic, getter=isTabBarHidden) BOOL tabBarHidden;
+@property (nonatomic, getter=isCheckoutSuccessful) BOOL checkoutSuccessful;
 
 @end
 
@@ -293,14 +294,14 @@
     checkoutVC.modalPresentationStyle = UIModalPresentationCustom;
     checkoutVC.transitioningDelegate = self;
     checkoutVC.delegate = self;
-    [self presentViewController:checkoutVC animated:YES completion:^{
-    }];
+    [self presentViewController:checkoutVC animated:YES completion:nil];
 }
 
 #pragma mark - Checkout View Contorller Delegate
 
-- (void)checkoutWillDismiss {
+- (void)checkoutWillDismissWithSuccess:(BOOL)success {
     [self uncheckItems];
+    self.checkoutSuccessful = success;
 }
 
 #pragma mark - Transitioning Delegate
@@ -312,7 +313,7 @@
 }
 
 - (id <UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
-    CCPopoverDismissal *popoverDismissal = [[CCPopoverDismissal alloc] init];
+    CCPopoverDismissal *popoverDismissal = [[CCPopoverDismissal alloc] initWithCheckoutSuccess:self.isCheckoutSuccessful];
     return popoverDismissal;
 }
 

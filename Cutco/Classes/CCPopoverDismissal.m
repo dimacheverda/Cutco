@@ -10,6 +10,18 @@
 
 @implementation CCPopoverDismissal
 
+#pragma mark - Init
+
+- (instancetype)initWithCheckoutSuccess:(BOOL)success {
+    self = [super init];
+    if (self) {
+        self.checkoutSuccessful = success;
+    }
+    return self;
+}
+
+#pragma mark - Transitioning Delegate
+
 - (NSTimeInterval)transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext {
     return 0.5;
 }
@@ -21,18 +33,28 @@
     CGRect presentedFrame = [transitionContext initialFrameForViewController:fromVC];
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext]
-                                                   delay:0.0
-                                                 options:UIViewAnimationOptionCurveEaseInOut
-                                              animations:^{
-                                                  fromVC.view.frame = CGRectMake(CGRectGetMinX(presentedFrame),
-                                                                                 -CGRectGetMaxY(toVC.view.frame),
-                                                                                 CGRectGetWidth(presentedFrame),
-                                                                                 CGRectGetHeight(presentedFrame));
-                                                  [[transitionContext containerView] setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]];
-                                              }
-                                              completion:^(BOOL finished) {
-                                                  [transitionContext completeTransition:YES];
-                                              }];
+                          delay:0.0
+         usingSpringWithDamping:0.9
+          initialSpringVelocity:10.0
+                        options:UIViewAnimationOptionCurveEaseInOut
+                     animations:^{
+                         if (self.isCheckoutSuccessful) {
+                             fromVC.view.frame = CGRectMake(CGRectGetMinX(presentedFrame),
+                                                            -CGRectGetMaxY(toVC.view.frame),
+                                                            CGRectGetWidth(presentedFrame),
+                                                            CGRectGetHeight(presentedFrame));
+                         } else {
+                             fromVC.view.frame = CGRectMake(CGRectGetMinX(presentedFrame),
+                                                            CGRectGetMaxY(toVC.view.frame),
+                                                            CGRectGetWidth(presentedFrame),
+                                                            CGRectGetHeight(presentedFrame));
+                         }
+                         NSLog(@"%d", self.isCheckoutSuccessful);
+                         [[transitionContext containerView] setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]];
+                     }
+                     completion:^(BOOL finished) {
+                         [transitionContext completeTransition:YES];
+                     }];
 }
 
 @end

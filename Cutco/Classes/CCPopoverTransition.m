@@ -35,7 +35,7 @@
     [UIView animateWithDuration:[self transitionDuration:transitionContext]
                           delay:0.0
          usingSpringWithDamping:0.9
-          initialSpringVelocity:0.9
+          initialSpringVelocity:10.0
                         options:UIViewAnimationOptionCurveEaseInOut
                      animations:^{
                          toVC.view.frame = CGRectMake(LEFT_PADDING,

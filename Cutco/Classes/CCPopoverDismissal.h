@@ -11,4 +11,8 @@
 
 @interface CCPopoverDismissal : NSObject <UIViewControllerAnimatedTransitioning>
 
+@property (nonatomic, getter=isCheckoutSuccessful) BOOL checkoutSuccessful;
+
+- (instancetype)initWithCheckoutSuccess:(BOOL)success;
+
 @end

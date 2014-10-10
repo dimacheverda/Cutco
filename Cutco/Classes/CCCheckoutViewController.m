@@ -143,7 +143,8 @@
 }
 
 - (void)cancelButtonDidPressed {
-    [self dismiss];
+    [self.delegate checkoutWillDismissWithSuccess:NO];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)confirmButtonDidPressed {
@@ -180,7 +181,8 @@
     
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.hud hide:YES];
-                [self dismiss];
+                [self.delegate checkoutWillDismissWithSuccess:YES];
+                [self dismissViewControllerAnimated:YES completion:nil];
             });
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -189,12 +191,6 @@
                 [self.hud hide:YES afterDelay:2.0];
             });
         }
-    }];
-}
-
-- (void)dismiss {
-    [self.delegate checkoutWillDismiss];
-    [self dismissViewControllerAnimated:YES completion:^{
     }];
 }
 
