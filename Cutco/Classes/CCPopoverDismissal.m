@@ -49,7 +49,6 @@
                                                             CGRectGetWidth(presentedFrame),
                                                             CGRectGetHeight(presentedFrame));
                          }
-                         NSLog(@"%d", self.isCheckoutSuccessful);
                          [[transitionContext containerView] setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]];
                      }
                      completion:^(BOOL finished) {

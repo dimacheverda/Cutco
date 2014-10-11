@@ -157,7 +157,6 @@
     } else {
         [self.checkedIndexes addObject:indexPath];
     }
-//    NSLog(@"checked indexes %@", self.checkedIndexes);
     [self hideTabBarIfNeeded];
 }
 

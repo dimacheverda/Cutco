@@ -23,6 +23,7 @@
 @property (strong, nonatomic) UIButton *confirmButton;
 @property (strong, nonatomic) NSArray *items;
 @property (strong, nonatomic) MBProgressHUD *hud;
+@property (strong, nonatomic) NSMutableArray *quantity;
 
 @end
 
@@ -34,6 +35,11 @@
     self = [super init];
     if (self) {
         self.items = [NSArray arrayWithArray:items];
+        
+        self.quantity = [[NSMutableArray alloc] init];
+        for (int i = 0; i < items.count; i++) {
+            [self.quantity addObject:[NSNumber numberWithInteger:1]];
+        }
     }
     return self;
 }
@@ -43,6 +49,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+
     self.view.backgroundColor = [UIColor lightGrayColor];
     
     [self.view addSubview:self.cancelButton];
@@ -58,7 +65,11 @@
 
 - (CCCheckoutTableView *)tableView {
     if (!_tableView) {
-        _tableView = [[CCCheckoutTableView alloc] initWithFrame:CGRectMake(0.0, 0.0, VIEW_WIDTH, VIEW_HEIGHT - BUTTON_HEIGHT) style:UITableViewStylePlain];
+        _tableView = [[CCCheckoutTableView alloc] initWithFrame:CGRectMake(0.0,
+                                                                           0.0,
+                                                                           VIEW_WIDTH,
+                                                                           VIEW_HEIGHT - BUTTON_HEIGHT)
+                                                          style:UITableViewStylePlain];
         [_tableView registerClass:[CCCheckoutTableViewCell class] forCellReuseIdentifier:@"Cell"];
         _tableView.dataSource = self;
         _tableView.delegate = self;
@@ -77,7 +88,9 @@
                                          (VIEW_HEIGHT) - BUTTON_HEIGHT,
                                          (VIEW_WIDTH)/2.0,
                                          BUTTON_HEIGHT);
-        [_cancelButton addTarget:self action:@selector(cancelButtonDidPressed) forControlEvents:UIControlEventTouchUpInside];
+        [_cancelButton addTarget:self
+                          action:@selector(cancelButtonDidPressed)
+                forControlEvents:UIControlEventTouchUpInside];
     }
     return _cancelButton;
 }
@@ -93,7 +106,9 @@
                                           (VIEW_HEIGHT) - BUTTON_HEIGHT,
                                           (VIEW_WIDTH)/2.0,
                                           BUTTON_HEIGHT);
-        [_confirmButton addTarget:self action:@selector(confirmButtonDidPressed) forControlEvents:UIControlEventTouchUpInside];
+        [_confirmButton addTarget:self
+                           action:@selector(confirmButtonDidPressed)
+                 forControlEvents:UIControlEventTouchUpInside];
     }
     return _confirmButton;
 }
@@ -111,8 +126,13 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     CCCheckoutTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
     
-    [cell.plusButton addTarget:self action:@selector(quantityButtonDidPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [cell.minusButton addTarget:self action:@selector(quantityButtonDidPressed:) forControlEvents:UIControlEventTouchUpInside];
+    [cell.plusButton addTarget:self
+                        action:@selector(quantityButtonDidPressed:)
+              forControlEvents:UIControlEventTouchUpInside];
+    
+    [cell.minusButton addTarget:self
+                         action:@selector(quantityButtonDidPressed:)
+               forControlEvents:UIControlEventTouchUpInside];
 
     CCStockItem *item = self.items[indexPath.row];
     [item.image getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
@@ -123,6 +143,9 @@
             });
         }
     }];
+    
+    cell.quantityLabel.text = [NSString stringWithFormat:@"%@", self.quantity[indexPath.row]];
+    
     return cell;
 }
 
@@ -130,16 +153,24 @@
 
 - (void)quantityButtonDidPressed:(UIButton *)sender {
     CCCheckoutTableViewCell *cell = (CCCheckoutTableViewCell *)[[sender superview] superview];
-    NSInteger currentQuantity = [cell.quantityLabel.text integerValue];
-    if ([sender.titleLabel.text isEqualToString:@"-"]) {
-        currentQuantity--;
-    } else if ([sender.titleLabel.text isEqualToString:@"+"]) {
-        currentQuantity++;
+    NSInteger index = [self.tableView indexPathForCell:cell].row;
+    
+    NSNumber *currentQuantity = self.quantity[index];
+    NSInteger quantity = [currentQuantity integerValue];
+
+    if (sender.tag == 0) {
+        quantity--;
+    } else if (sender.tag == 1) {
+        quantity++;
     }
-    if (currentQuantity == 0) {
-        currentQuantity = 1;
+    if (quantity == 0) {
+        quantity = 1;
     }
-    cell.quantityLabel.text = [NSString stringWithFormat:@"%d", (int)currentQuantity];
+    
+    currentQuantity = [NSNumber numberWithInteger:quantity];
+    self.quantity[index] = currentQuantity;
+    
+    cell.quantityLabel.text = [NSString stringWithFormat:@"%@", self.quantity[index]];
 }
 
 - (void)cancelButtonDidPressed {

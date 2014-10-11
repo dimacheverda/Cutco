@@ -66,6 +66,7 @@
         [_minusButton setTitle:@"-" forState:UIControlStateNormal];
         _minusButton.titleLabel.font = [UIFont systemFontOfSize:30.0];
         [_minusButton setImage:[UIImage imageNamed:@"minus"] forState:UIControlStateNormal];
+        _minusButton.tag = 0;
     }
     return _minusButton;
 }
@@ -81,6 +82,7 @@
         [_plusButton setTitle:@"+" forState:UIControlStateNormal];
         _plusButton.titleLabel.font = [UIFont systemFontOfSize:30.0];
         [_plusButton setImage:[UIImage imageNamed:@"plus"] forState:UIControlStateNormal];
+        _plusButton.tag = 1;
     }
     return _plusButton;
 }
