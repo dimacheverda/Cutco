@@ -42,7 +42,7 @@
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"stockItem: %@      event: %@      returned: %d", self.stockItem, self.event, self.returned];
+    return [NSString stringWithFormat:@"stockItem: %@      event: %@      returned: %d", self.stockItem.objectId, self.event.objectId, self.returned];
 }
 
 @end

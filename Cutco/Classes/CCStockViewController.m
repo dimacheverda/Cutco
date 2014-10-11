@@ -19,6 +19,7 @@
 #import "CCPopoverDismissal.h"
 #import "CCEvents.h"
 #import "CCEvent.h"
+#import "CCSales.h"
 
 @interface CCStockViewController () <UICollectionViewDelegate,
                                         UICollectionViewDataSource,
@@ -61,10 +62,10 @@
 
     self.tabBarHidden = NO;
     if (![[CCStock sharedStock] isStockLoaded]) {
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [self loadStockItemsFromParse];
-        });
+        [self loadStockItemsFromParse];
     }
+    
+    [self clearSingletonSales];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -75,6 +76,11 @@
                                                     0.0,
                                                     49.0,
                                                     0.0);
+}
+
+- (void)clearSingletonSales {
+    [CCSales sharedSales].sales = [NSMutableArray array];
+    [CCSales sharedSales].returned = [NSMutableArray array];
 }
 
 #pragma mark - Accessors
