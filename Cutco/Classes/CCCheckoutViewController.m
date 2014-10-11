@@ -80,13 +80,13 @@
 - (UIButton *)cancelButton {
     if (!_cancelButton) {
         _cancelButton = [UIButton buttonWithType:UIButtonTypeSystem];
-        [_cancelButton setTitle:@"Cancel" forState:UIControlStateNormal];
-        [_cancelButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        _cancelButton.titleLabel.font = [UIFont systemFontOfSize:20.0];
-        _cancelButton.backgroundColor = [UIColor colorWithRed:0.83 green:0.33 blue:0 alpha:1];
+        [_cancelButton setImage:[UIImage imageNamed:@"x-mark"] forState:UIControlStateNormal];
+        _cancelButton.contentMode = UIViewContentModeCenter;
+        _cancelButton.tintColor = [UIColor whiteColor];
+        _cancelButton.backgroundColor = [UIColor colorWithRed:0.32 green:0.64 blue:0.42 alpha:1];
         _cancelButton.frame = CGRectMake(0.0,
                                          (VIEW_HEIGHT) - BUTTON_HEIGHT,
-                                         (VIEW_WIDTH)/2.0,
+                                         (VIEW_WIDTH)/3.0,
                                          BUTTON_HEIGHT);
         [_cancelButton addTarget:self
                           action:@selector(cancelButtonDidPressed)
@@ -100,11 +100,11 @@
         _confirmButton = [UIButton buttonWithType:UIButtonTypeSystem];
         [_confirmButton setTitle:@"Confirm" forState:UIControlStateNormal];
         [_confirmButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        _confirmButton.backgroundColor = [UIColor colorWithRed:0.18 green:0.8 blue:0.44 alpha:1];
+        _confirmButton.backgroundColor = [UIColor colorWithRed:0.4 green:0.79 blue:0.52 alpha:1];
         _confirmButton.titleLabel.font = [UIFont systemFontOfSize:20.0];
         _confirmButton.frame = CGRectMake(CGRectGetMaxX(self.cancelButton.frame),
                                           (VIEW_HEIGHT) - BUTTON_HEIGHT,
-                                          (VIEW_WIDTH)/2.0,
+                                          (VIEW_WIDTH)/3.0*2.0,
                                           BUTTON_HEIGHT);
         [_confirmButton addTarget:self
                            action:@selector(confirmButtonDidPressed)

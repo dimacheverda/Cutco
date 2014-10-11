@@ -52,19 +52,17 @@
     [self.stockImageView setNeedsDisplay];
 }
 
-#define BUTTON_HEIGHT 30.0
-#define QUANTITY_ITEMS_SPACING 15.0
+#define BUTTON_HEIGHT 60.0
+#define QUANTITY_ITEMS_SPACING 0.0
 
 - (UIButton *)minusButton {
     if (!_minusButton) {
-        CGRect frame = CGRectMake(CGRectGetMaxX(self.stockImageView.frame) + 20.0,
+        CGRect frame = CGRectMake(CGRectGetMaxX(self.stockImageView.frame) + 0.0,
                                   (CELL_HEIGHT - BUTTON_HEIGHT) / 2,
                                   BUTTON_HEIGHT,
                                   BUTTON_HEIGHT);
         _minusButton = [UIButton buttonWithType:UIButtonTypeCustom];
         _minusButton.frame = frame;
-        [_minusButton setTitle:@"-" forState:UIControlStateNormal];
-        _minusButton.titleLabel.font = [UIFont systemFontOfSize:30.0];
         [_minusButton setImage:[UIImage imageNamed:@"minus"] forState:UIControlStateNormal];
         _minusButton.tag = 0;
     }
@@ -79,8 +77,6 @@
                                   BUTTON_HEIGHT);
         _plusButton = [UIButton buttonWithType:UIButtonTypeCustom];
         _plusButton.frame = frame;
-        [_plusButton setTitle:@"+" forState:UIControlStateNormal];
-        _plusButton.titleLabel.font = [UIFont systemFontOfSize:30.0];
         [_plusButton setImage:[UIImage imageNamed:@"plus"] forState:UIControlStateNormal];
         _plusButton.tag = 1;
     }
@@ -91,7 +87,7 @@
     if (!_quantityLabel) {
         CGRect frame = CGRectMake(CGRectGetMaxX(self.minusButton.frame) + QUANTITY_ITEMS_SPACING,
                                   CGRectGetMinY(self.minusButton.frame),
-                                  BUTTON_HEIGHT,
+                                  BUTTON_HEIGHT / 2,
                                   BUTTON_HEIGHT);
         _quantityLabel = [[UILabel alloc] initWithFrame:frame];
         _quantityLabel.numberOfLines = 1;

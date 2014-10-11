@@ -11,7 +11,7 @@
 @implementation CCPopoverTransition
 
 - (NSTimeInterval)transitionDuration:(id<UIViewControllerContextTransitioning>)transitionContext {
-    return 0.5;
+    return 0.4;
 }
 
 #define TOP_PADDING 80.0
