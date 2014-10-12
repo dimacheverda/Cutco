@@ -37,8 +37,10 @@
     [self.view addSubview:self.counterView];
     
     // show HUD only on first loading, not when pull-to-refresh triggered
-
-    [self loadSalesFromParse];
+    
+    if (![CCSales sharedSales].isLoaded) {
+        [self loadSalesFromParse];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -192,6 +194,7 @@
                 }
             }
             [CCSales sharedSales].sales = sales;
+            [CCSales sharedSales].loaded = YES;
             
             // update UI
             dispatch_async(dispatch_get_main_queue(), ^{

@@ -81,6 +81,7 @@
 - (void)clearSingletonSales {
     [CCSales sharedSales].sales = [NSMutableArray array];
     [CCSales sharedSales].returned = [NSMutableArray array];
+    [CCSales sharedSales].loaded = NO;
 }
 
 #pragma mark - Accessors

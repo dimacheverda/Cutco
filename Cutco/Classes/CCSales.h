@@ -13,6 +13,7 @@
 
 @property (nonatomic, retain) NSMutableArray *sales;
 @property (nonatomic, retain) NSMutableArray *returned;
+@property (nonatomic, assign, getter=isLoaded) BOOL loaded;
 
 + (instancetype)sharedSales;
 - (void)addSale:(CCSale *)sale;
