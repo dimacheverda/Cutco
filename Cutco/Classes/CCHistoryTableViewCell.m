@@ -62,8 +62,8 @@
     }
 }
 
-#define kIndexLabelWidth 30.0
-#define kCellHeight 60.0
+#define kIndexLabelWidth 40.0
+#define kCellHeight 70.0
 
 - (UILabel *)indexLabel {
     if (!_indexLabel) {
@@ -83,7 +83,7 @@
     if (!_itemImageView) {
         CGRect frame = CGRectMake(CGRectGetMaxX(self.indexLabel.frame) + 2.0,
                                   4.0,
-                                  CGRectGetWidth(self.contentView.frame) / 4,
+                                  (kCellHeight - 8.0) / 3.0 * 4.0,
                                   kCellHeight - 8.0);
         _itemImageView = [[UIImageView alloc] initWithFrame:frame];
         _itemImageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -100,7 +100,7 @@
 
 - (UILabel *)nameLabel {
     if (!_nameLabel) {
-        CGRect frame = CGRectMake(CGRectGetMaxX(self.itemImageView.frame) + 4.0,
+        CGRect frame = CGRectMake(CGRectGetMaxX(self.itemImageView.frame) + 8.0,
                                   4.0,
                                   CGRectGetWidth(self.contentView.frame) - CGRectGetMaxX(self.itemImageView.frame) - 12.0,
                                   kCellHeight / 2 - 2.0);

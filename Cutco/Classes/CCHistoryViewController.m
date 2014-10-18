@@ -30,6 +30,8 @@
 
 #pragma mark - View Controller LifeCycle
 
+#define kSeparatorInset UIEdgeInsetsMake(0.0, 135.0, 0.0, 0.0)
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -53,13 +55,12 @@
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
 
-//    UIEdgeInsets insets = UIEdgeInsetsMake(0.0, 120.0, 0.0, 0.0);
 //    if ([self.tableView respondsToSelector:@selector(setSeparatorInset:)]) {
-//        [self.tableView setSeparatorInset:insets];
+//        [self.tableView setSeparatorInset:kSeparatorInset];
 //    }
 //    
 //    if ([self.tableView respondsToSelector:@selector(setLayoutMargins:)]) {
-//        [self.tableView setLayoutMargins:insets];
+//        [self.tableView setLayoutMargins:kSeparatorInset];
 //    }
 }
 
@@ -115,17 +116,16 @@
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 60.0;
+    return 70.0;
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    UIEdgeInsets insets = UIEdgeInsetsMake(0.0, 117.0, 0.0, 0.0);
     if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
-        [cell setSeparatorInset:insets];
+        [cell setSeparatorInset:kSeparatorInset];
     }
     
     if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
-        [cell setLayoutMargins:insets];
+        [cell setLayoutMargins:kSeparatorInset];
     }
 }
 
