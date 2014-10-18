@@ -8,9 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface CCCheckoutToolbar : UIToolbar
+@interface CCCheckoutToolbar : UIView
 
-@property (strong, nonatomic) UIBarButtonItem *cancelButton;
-@property (strong, nonatomic) UIBarButtonItem *checkoutButton;
+@property (strong, nonatomic) UIButton *cancelButton;
+@property (strong, nonatomic) UIButton *checkoutButton;
 
 @end

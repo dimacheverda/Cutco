@@ -24,22 +24,43 @@
     self = [super initWithFrame:frame];
     if (self) {
         [self.contentView addSubview:self.imageView];
-        [self.contentView addSubview:self.titleLabel];
+//        [self.contentView addSubview:self.titleLabel];
         [self.contentView addSubview:self.checkMark];
         self.contentView.backgroundColor = [UIColor whiteColor];
+        
+//        self.imageView.center = CGPointMake(CGRectGetMidX(frame), CGRectGetMidY(frame));
     }
     return self;
+}
+
+#define kCheckmarkSize 30.0
+#define kCheckmarkPadding 10.0
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    
+    _imageView.frame = CGRectMake(0.0,
+                                  0.0,
+                                  CGRectGetWidth(self.contentView.frame),
+                                  CGRectGetWidth(self.contentView.frame) / 4.0 * 3.0);
+    _imageView.center = CGPointMake(CGRectGetMidX(self.contentView.frame), CGRectGetMidY(self.contentView.frame));
+    
+    _checkMark.frame = CGRectMake(CGRectGetMaxX(self.contentView.frame) - kCheckmarkSize - kCheckmarkPadding,
+                                  CGRectGetMaxY(self.contentView.frame) - kCheckmarkSize - kCheckmarkPadding,
+                                  kCheckmarkSize,
+                                  kCheckmarkSize);
+    
+    _titleLabel.frame = CGRectMake(0.0,
+                                   CGRectGetMaxY(self.imageView.frame) + 4.0,
+                                   CGRectGetWidth(self.contentView.frame),
+                                   CGRectGetHeight(self.contentView.frame) / 3 - 8.0);
 }
 
 #pragma mark - Accessors
 
 - (UIImageView *)imageView {
     if (!_imageView) {
-        CGRect frame = CGRectMake(0.0,
-                                  0.0,
-                                  CGRectGetWidth(self.contentView.frame),
-                                  CGRectGetWidth(self.contentView.frame)/4*3);
-        _imageView = [[UIImageView alloc] initWithFrame:frame];
+        _imageView = [[UIImageView alloc] init];
         _imageView.contentMode = UIViewContentModeScaleAspectFit;
         _imageView.backgroundColor = [UIColor imagePlaceholderColor];
     }
@@ -48,16 +69,20 @@
 
 - (UILabel *)titleLabel {
     if (!_titleLabel) {
-        CGRect frame = CGRectMake(0.0,
-                                  CGRectGetMaxY(self.imageView.frame) + 4.0,
-                                  CGRectGetWidth(self.contentView.frame),
-                                  CGRectGetHeight(self.contentView.frame) / 3 - 8.0);
-        _titleLabel = [[UILabel alloc] initWithFrame:frame];
+        _titleLabel = [[UILabel alloc] init];
         _titleLabel.numberOfLines = 2;
         _titleLabel.textAlignment = NSTextAlignmentCenter;
         _titleLabel.font = [UIFont fontWithName:@"Arial" size:12.0f];
     }
     return _titleLabel;
+}
+
+- (CCCheckMark *)checkMark {
+    if (!_checkMark) {
+        _checkMark = [[CCCheckMark alloc] init];
+        _checkMark.backgroundColor = [UIColor clearColor];
+    }
+    return  _checkMark;
 }
 
 - (void)setTitle:(NSString *)title {
@@ -73,22 +98,6 @@
         self.imageView.image = _image;
         self.imageView.backgroundColor = [UIColor whiteColor];
     }
-}
-
-- (CCCheckMark *)checkMark {
-    if (!_checkMark) {
-        
-        CGFloat checkmarkSize = 30.0;
-        
-        CGRect frame = CGRectMake(CGRectGetMaxX(self.imageView.frame) - checkmarkSize,
-                                  CGRectGetMaxY(self.imageView.frame) - checkmarkSize,
-                                  checkmarkSize,
-                                  checkmarkSize);
-        _checkMark = [[CCCheckMark alloc] init];
-        _checkMark.frame = frame;
-        _checkMark.backgroundColor = [UIColor clearColor];
-    }
-    return  _checkMark;
 }
 
 @end

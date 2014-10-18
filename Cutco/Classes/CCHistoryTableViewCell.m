@@ -33,6 +33,33 @@
     return self;
 }
 
+#define kIndexLabelWidth 40.0
+#define kCellHeight 70.0
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    
+    _indexLabel.frame = CGRectMake(2.0,
+                                   4.0,
+                                   kIndexLabelWidth ,
+                                   kCellHeight / 2 - 2.0);
+    
+    _itemImageView.frame = CGRectMake(CGRectGetMaxX(self.indexLabel.frame) + 2.0,
+                                      4.0,
+                                      (kCellHeight - 8.0) / 3.0 * 4.0,
+                                      kCellHeight - 8.0);
+    _nameLabel.frame = CGRectMake(CGRectGetMaxX(self.itemImageView.frame) + 8.0,
+                                  4.0,
+                                  CGRectGetWidth(self.contentView.frame) - CGRectGetMaxX(self.itemImageView.frame) - 12.0,
+                                  kCellHeight / 2 - 2.0);
+    _dateLabel.frame = CGRectMake(CGRectGetMinX(self.nameLabel.frame),
+                                  CGRectGetMaxY(self.nameLabel.frame),
+                                  CGRectGetWidth(self.contentView.frame) - CGRectGetMaxX(self.itemImageView.frame) - 12.0,
+                                  kCellHeight / 2 - 2.0);
+    
+    [self applyShadowForImageView:_itemImageView];
+}
+
 #pragma mark - Accessors
 
 - (void)setIndex:(NSInteger)index {
@@ -62,16 +89,9 @@
     }
 }
 
-#define kIndexLabelWidth 40.0
-#define kCellHeight 70.0
-
 - (UILabel *)indexLabel {
     if (!_indexLabel) {
-        CGRect frame = CGRectMake(2.0,
-                                  4.0,
-                                  kIndexLabelWidth ,
-                                  kCellHeight / 2 - 2.0);
-        _indexLabel = [[UILabel alloc] initWithFrame:frame];
+        _indexLabel = [[UILabel alloc] init];
         _indexLabel.numberOfLines = 1;
         _indexLabel.textAlignment = NSTextAlignmentCenter;
         _indexLabel.textColor = [UIColor placeholderTextColor];
@@ -81,30 +101,15 @@
 
 - (UIImageView *)itemImageView {
     if (!_itemImageView) {
-        CGRect frame = CGRectMake(CGRectGetMaxX(self.indexLabel.frame) + 2.0,
-                                  4.0,
-                                  (kCellHeight - 8.0) / 3.0 * 4.0,
-                                  kCellHeight - 8.0);
-        _itemImageView = [[UIImageView alloc] initWithFrame:frame];
+        _itemImageView = [[UIImageView alloc] init];
         _itemImageView.contentMode = UIViewContentModeScaleAspectFit;
-        
-        _itemImageView.layer.shadowColor = [UIColor darkGrayColor].CGColor;
-        _itemImageView.layer.shadowOffset = CGSizeMake(0, 1);
-        _itemImageView.layer.shadowOpacity = 0.8;
-        _itemImageView.layer.shadowPath = [UIBezierPath bezierPathWithRect:_itemImageView.bounds].CGPath;
-        _itemImageView.layer.shadowRadius = 1.0;
-        _itemImageView.clipsToBounds = NO;
     }
     return _itemImageView;
 }
 
 - (UILabel *)nameLabel {
     if (!_nameLabel) {
-        CGRect frame = CGRectMake(CGRectGetMaxX(self.itemImageView.frame) + 8.0,
-                                  4.0,
-                                  CGRectGetWidth(self.contentView.frame) - CGRectGetMaxX(self.itemImageView.frame) - 12.0,
-                                  kCellHeight / 2 - 2.0);
-        _nameLabel = [[UILabel alloc] initWithFrame:frame];
+        _nameLabel = [[UILabel alloc] init];
         _nameLabel.numberOfLines = 1;
         _nameLabel.textAlignment = NSTextAlignmentLeft;
         _nameLabel.textColor = [UIColor colorWithWhite:0.1 alpha:1.0];
@@ -114,17 +119,22 @@
 
 - (UILabel *)dateLabel {
     if (!_dateLabel) {
-        CGRect frame = CGRectMake(CGRectGetMinX(self.nameLabel.frame),
-                                  CGRectGetMaxY(self.nameLabel.frame),
-                                  CGRectGetWidth(self.contentView.frame) - CGRectGetMaxX(self.itemImageView.frame) - 12.0,
-                                  kCellHeight / 2 - 2.0);
-        _dateLabel = [[UILabel alloc] initWithFrame:frame];
+        _dateLabel = [[UILabel alloc] init];
         _dateLabel.numberOfLines = 1;
         _dateLabel.textAlignment = NSTextAlignmentLeft;
         _dateLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
         _dateLabel.font = [UIFont systemFontOfSize:13.0];
     }
     return _dateLabel;
+}
+
+- (void)applyShadowForImageView:(UIImageView *)imageView {
+    imageView.layer.shadowColor = [UIColor darkGrayColor].CGColor;
+    imageView.layer.shadowOffset = CGSizeMake(0, 1);
+    imageView.layer.shadowOpacity = 0.8;
+    imageView.layer.shadowPath = [UIBezierPath bezierPathWithRect:imageView.bounds].CGPath;
+    imageView.layer.shadowRadius = 1.0;
+    imageView.clipsToBounds = NO;
 }
 
 @end

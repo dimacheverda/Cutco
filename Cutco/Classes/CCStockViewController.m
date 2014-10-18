@@ -32,7 +32,6 @@
 @property (strong, nonatomic) MBProgressHUD *hud;
 @property (strong, nonatomic) NSMutableSet *checkedIndexes;
 @property (strong, nonatomic) CCCheckoutToolbar *checkoutToolbar;
-@property (nonatomic, getter=isTabBarHidden) BOOL tabBarHidden;
 @property (nonatomic, getter=isCheckoutSuccessful) BOOL checkoutSuccessful;
 
 @end
@@ -59,8 +58,9 @@
     }
     
     [self.view addSubview:self.collectionView];
-
-    self.tabBarHidden = NO;
+    
+    [self.view addSubview:self.checkoutToolbar];
+    
     if (![[CCStock sharedStock] isStockLoaded]) {
         [self loadStockItemsFromParse];
     }
@@ -92,7 +92,8 @@
         layout.minimumInteritemSpacing = 1.0;
         layout.minimumLineSpacing = 1.0;
         CGFloat width = (CGRectGetWidth(self.view.frame) - 2) / 3;
-        layout.itemSize = CGSizeMake(width, width / 5 * 6);
+//        layout.itemSize = CGSizeMake(width, width / 5 * 6);
+        layout.itemSize = CGSizeMake(width, width);
         _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
         _collectionView.delegate = self;
         _collectionView.dataSource = self;
@@ -111,15 +112,18 @@
 
 - (CCCheckoutToolbar *)checkoutToolbar {
     if (!_checkoutToolbar) {
-        _checkoutToolbar = [[CCCheckoutToolbar alloc] init];
         CGRect frame = CGRectMake(0.0,
                                   CGRectGetHeight(self.view.frame) - CGRectGetHeight(self.tabBarController.tabBar.frame),
                                   CGRectGetWidth(self.view.frame),
                                   CGRectGetHeight(self.tabBarController.tabBar.frame));
-        _checkoutToolbar.frame = frame;
-        [_checkoutToolbar.cancelButton setAction:@selector(uncheckItems)];
-        _checkoutToolbar.checkoutButton.target = self;
-        _checkoutToolbar.checkoutButton.action = @selector(checkoutButtonDidPressed);
+        _checkoutToolbar = [[CCCheckoutToolbar alloc] initWithFrame:frame];
+        [_checkoutToolbar.checkoutButton addTarget:self
+                                            action:@selector(checkoutButtonDidPressed)
+                                  forControlEvents:UIControlEventTouchUpInside];
+        [_checkoutToolbar.cancelButton addTarget:self
+                                          action:@selector(uncheckItems)
+                                forControlEvents:UIControlEventTouchUpInside];
+        _checkoutToolbar.hidden = YES;
     }
     return _checkoutToolbar;
 }
@@ -139,7 +143,7 @@
     CCStockCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
 
     CCStockItem *item = [CCStock sharedStock].items[indexPath.row];
-    cell.title = item.name;
+//    cell.title = item.name;
     [item.image getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
         if (!error) {
             UIImage *image = [UIImage imageWithData:data];
@@ -260,11 +264,12 @@
 #pragma mark - Checkout methods
 
 - (void)hideTabBarIfNeeded {
-    if (self.checkedIndexes.count > 0 && !self.isTabBarHidden) {
+    if (self.checkedIndexes.count > 0) {
         self.tabBarController.tabBar.hidden = YES;
-        [self.view addSubview:self.checkoutToolbar];
+        self.checkoutToolbar.hidden = NO;
     } else {
         self.tabBarController.tabBar.hidden = NO;
+        self.checkoutToolbar.hidden = YES;
     }
 }
 
@@ -275,6 +280,7 @@
     }
     [self.checkedIndexes removeAllObjects];
     self.tabBarController.tabBar.hidden = NO;
+    self.checkoutToolbar.hidden = YES;
 }
 
 - (void)checkoutButtonDidPressed {

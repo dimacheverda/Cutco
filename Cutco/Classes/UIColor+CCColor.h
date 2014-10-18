@@ -19,5 +19,7 @@
 + (UIColor *)textFieldTextColor;
 + (UIColor *)imagePlaceholderColor;
 + (UIColor *)countToolbarTintColor;
++ (UIColor *)checkoutToolbarCancelColor;
++ (UIColor *)checkoutToolbarCheckoutColor;
 
 @end

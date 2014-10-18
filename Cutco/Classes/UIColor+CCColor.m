@@ -46,4 +46,12 @@
     return [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
 }
 
++ (UIColor *)checkoutToolbarCancelColor {
+    return [UIColor colorWithRed:0.38 green:0.63 blue:0.87 alpha:1];
+}
+
++ (UIColor *)checkoutToolbarCheckoutColor {
+    return [UIColor colorWithRed:0.45 green:0.71 blue:0.95 alpha:1];
+}
+
 @end
