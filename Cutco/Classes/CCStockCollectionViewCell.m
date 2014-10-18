@@ -7,6 +7,7 @@
 //
 
 #import "CCStockCollectionViewCell.h"
+#import "UIColor+CCColor.h"
 
 @interface CCStockCollectionViewCell ()
 
@@ -40,7 +41,7 @@
                                   CGRectGetWidth(self.contentView.frame)/4*3);
         _imageView = [[UIImageView alloc] initWithFrame:frame];
         _imageView.contentMode = UIViewContentModeScaleAspectFit;
-        _imageView.backgroundColor = [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
+        _imageView.backgroundColor = [UIColor imagePlaceholderColor];
     }
     return _imageView;
 }

@@ -49,7 +49,7 @@
                                                             CGRectGetWidth(presentedFrame),
                                                             CGRectGetHeight(presentedFrame));
                          }
-                         [[transitionContext containerView] setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]];
+                         [[transitionContext containerView] setBackgroundColor:[UIColor colorWithWhite:0 alpha:0]];
                      }
                      completion:^(BOOL finished) {
                          [transitionContext completeTransition:YES];

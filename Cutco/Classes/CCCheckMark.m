@@ -7,6 +7,7 @@
 //
 
 #import "CCCheckMark.h"
+#import "UIColor+CCColor.h"
 
 @implementation CCCheckMark
 
@@ -33,7 +34,7 @@
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     //// Color Declarations
-    UIColor *checkmarkBlue2 = [UIColor colorWithRed:0.078 green:0.435 blue: 0.875 alpha: 1];
+    UIColor *checkmarkBlue2 = [UIColor checkmarkColor];
     
     //// Shadow Declarations
     UIColor *shadow2 = [UIColor blackColor];
@@ -111,7 +112,7 @@
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     //// Color Declarations
-    UIColor *grayTranslucent = [UIColor colorWithRed: 1 green: 1 blue: 1 alpha: 0.6];
+    UIColor *grayTranslucent = [UIColor colorWithWhite:1.0 alpha:0.6];
     
     //// Shadow Declarations
     UIColor *shadow2 = [UIColor blackColor];

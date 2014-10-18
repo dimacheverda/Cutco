@@ -29,7 +29,7 @@
                                  CGRectGetWidth(fullFrame) - LEFT_PADDING*2,
                                  height - TOP_PADDING*2);
 
-    [[transitionContext containerView] setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.0]];
+    [[transitionContext containerView] setBackgroundColor:[UIColor colorWithWhite:0 alpha:0]];
     [[transitionContext containerView] addSubview:toVC.view];
     
     [UIView animateWithDuration:[self transitionDuration:transitionContext]
@@ -42,7 +42,7 @@
                                                       TOP_PADDING,
                                                       CGRectGetWidth(fullFrame) - LEFT_PADDING*2,
                                                       height - TOP_PADDING*2);
-                         [[transitionContext containerView] setBackgroundColor:[UIColor colorWithRed:0.0 green:0.0 blue:0.0 alpha:0.8]];
+                         [[transitionContext containerView] setBackgroundColor:[UIColor colorWithWhite:0 alpha:0.8]];
                          
                      } completion:^(BOOL finished) {
                          [transitionContext completeTransition:YES];

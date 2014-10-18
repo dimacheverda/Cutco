@@ -8,6 +8,7 @@
 
 #import "CCTextField.h"
 #import "UIFont+CCFont.h"
+#import "UIColor+CCColor.h"
 
 @implementation CCTextField
 
@@ -18,7 +19,7 @@
         self.autocapitalizationType = UITextAutocapitalizationTypeNone;
         self.autocorrectionType = UITextAutocorrectionTypeNo;
         self.borderStyle = UITextBorderStyleNone;
-        self.textColor = [UIColor colorWithRed:0.18 green:0.18 blue:0.18 alpha:1];
+        self.textColor = [UIColor textFieldTextColor];
         self.clearButtonMode = UITextFieldViewModeNever;
         self.tintColor = [UIColor lightTextColor];
         self.textColor = [UIColor whiteColor];

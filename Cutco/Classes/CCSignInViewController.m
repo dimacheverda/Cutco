@@ -14,6 +14,7 @@
 #import <MBProgressHUD.h>
 #import "CCEventsViewController.h"
 #import "CCTextField.h"
+#import "UIColor+CCColor.h"
 
 @interface CCSignInViewController () <UITextFieldDelegate>
 
@@ -109,8 +110,7 @@
         _emailTextField = [[CCTextField alloc] init];
         _emailTextField.delegate = self;
         _emailTextField.returnKeyType = UIReturnKeyNext;
-        UIColor *color = [UIColor colorWithRed:0.53 green:0.52 blue:0.52 alpha:1];
-        _emailTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"Username" attributes:@{NSForegroundColorAttributeName: color}];
+        _emailTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"Username" attributes:@{NSForegroundColorAttributeName: [UIColor placeholderTextColor]}];
     }
     return _emailTextField;
 }
@@ -121,8 +121,7 @@
         _passwordTextField.delegate = self;
         _passwordTextField.secureTextEntry = YES;
         _passwordTextField.returnKeyType = UIReturnKeyDone;
-        UIColor *color = [UIColor colorWithRed:0.53 green:0.52 blue:0.52 alpha:1];
-        _passwordTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"Password" attributes:@{NSForegroundColorAttributeName: color}];
+        _passwordTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"Password" attributes:@{NSForegroundColorAttributeName: [UIColor placeholderTextColor]}];
     }
     return _passwordTextField;
 }
@@ -135,7 +134,7 @@
                           action:@selector(signInButtonDidPressed)
                 forControlEvents:UIControlEventTouchUpInside];
         _signInButton.titleLabel.font = [UIFont systemFontOfSize:20.0];
-        _signInButton.backgroundColor = [UIColor colorWithRed:0.18 green:0.47 blue:0.58 alpha:1];
+        _signInButton.backgroundColor = [UIColor signInButtonColor];
         [_signInButton setTitleColor:[UIColor lightTextColor] forState:UIControlStateNormal];
         _signInButton.layer.cornerRadius = 4.0;
     }

@@ -121,6 +121,14 @@
     
     if (self.segmentedControl.selectedSegmentIndex == 1) {
         [CCEvents sharedEvents].currentEvent = self.eventsDataSource[indexPath.row];
+        
+        for (CCEventMember *member in [CCEvents sharedEvents].eventsMember) {
+            if ([member.event.objectId isEqualToString:[CCEvents sharedEvents].currentEvent.objectId] &&
+                [member.user.objectId isEqualToString:[PFUser currentUser].objectId]) {
+            
+                [CCEvents sharedEvents].currentEventMember = member;
+            }
+        }
         [self performTransition];
     }
 }

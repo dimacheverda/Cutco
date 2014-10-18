@@ -7,6 +7,7 @@
 //
 
 #import "CCCounterView.h"
+#import "UIColor+CCColor.h"
 
 @interface CCCounterView ()
 
@@ -28,7 +29,7 @@
         
         UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:self.bounds];
         toolbar.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-        toolbar.barTintColor = [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1];
+        toolbar.barTintColor = [UIColor countToolbarTintColor];
         [self insertSubview:toolbar atIndex:0];
         
         [self addSubview:self.counterLabel];
