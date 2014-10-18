@@ -96,7 +96,7 @@
         _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
         _collectionView.delegate = self;
         _collectionView.dataSource = self;
-        _collectionView.backgroundColor = [UIColor lightGrayColor];
+        _collectionView.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1.0];
         [_collectionView registerClass:[CCStockCollectionViewCell class] forCellWithReuseIdentifier:@"Cell"];
     }
     return _collectionView;

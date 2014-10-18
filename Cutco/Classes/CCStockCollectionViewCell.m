@@ -61,11 +61,18 @@
 }
 
 - (void)setTitle:(NSString *)title {
-    self.titleLabel.text = title;
+    if (title) {
+        _title = title;
+        self.titleLabel.text = _title;
+    }
 }
 
 - (void)setImage:(UIImage *)image {
-    self.imageView.image = image;
+    if (image) {
+        _image = image;
+        self.imageView.image = _image;
+        self.imageView.backgroundColor = [UIColor whiteColor];
+    }
 }
 
 - (CCCheckMark *)checkMark {
@@ -80,7 +87,6 @@
         _checkMark = [[CCCheckMark alloc] init];
         _checkMark.frame = frame;
         _checkMark.backgroundColor = [UIColor clearColor];
-//        _checkMark.checked = NO;
     }
     return  _checkMark;
 }

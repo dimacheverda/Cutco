@@ -14,5 +14,6 @@
 @property (strong, nonatomic) NSString *name;
 @property (strong, nonatomic) NSDate *date;
 @property (nonatomic) BOOL returned;
+@property (nonatomic) NSInteger index;
 
 @end

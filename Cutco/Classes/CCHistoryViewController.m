@@ -52,6 +52,15 @@
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
+
+//    UIEdgeInsets insets = UIEdgeInsetsMake(0.0, 120.0, 0.0, 0.0);
+//    if ([self.tableView respondsToSelector:@selector(setSeparatorInset:)]) {
+//        [self.tableView setSeparatorInset:insets];
+//    }
+//    
+//    if ([self.tableView respondsToSelector:@selector(setLayoutMargins:)]) {
+//        [self.tableView setLayoutMargins:insets];
+//    }
 }
 
 #pragma mark - Accessors
@@ -105,10 +114,26 @@
     }
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 60.0;
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    UIEdgeInsets insets = UIEdgeInsetsMake(0.0, 117.0, 0.0, 0.0);
+    if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+        [cell setSeparatorInset:insets];
+    }
+    
+    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+        [cell setLayoutMargins:insets];
+    }
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *cellIdentifier = @"Cell";
     CCHistoryTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier];
     CCSale *sale;
+    
     if (self.isShowingSold) {
         sale = [CCSales sharedSales].sales[indexPath.row];
     } else {
@@ -116,6 +141,7 @@
     }
     CCStockItem *item = [[CCStock sharedStock] itemForObjectId:sale.stockItem.objectId];
     
+    cell.index = self.counterView.count - indexPath.row;
     cell.name = item.name;
     cell.date = sale.createdAt;
     [item.image getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
@@ -152,6 +178,7 @@
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
                     [self refreshCounter];
+                    [self updateCellIndexLabels];
                 });
                 [[CCSales sharedSales] moveSaleToReturnedAtIndex:indexPath.row];
                 [self.hud hide:YES afterDelay:0.0];
@@ -223,6 +250,14 @@
         self.counterView.count = [CCSales sharedSales].sales.count;
     } else {
         self.counterView.count = [CCSales sharedSales].returned.count;
+    }
+}
+
+- (void)updateCellIndexLabels {
+    NSInteger cellsCount = self.counterView.count;
+    for (NSInteger i = 0; i < cellsCount; i++) {
+        CCHistoryTableViewCell *cell = (CCHistoryTableViewCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
+        cell.index = cellsCount - i;
     }
 }
 

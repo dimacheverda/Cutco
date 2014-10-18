@@ -58,9 +58,9 @@
 //    self.stockItemView.imageView.image = self.stockItem.image;
     self.stockItemView.nameLabel.text = self.stockItem.name;
     self.stockItemView.descriptionLabel.text = self.stockItem.description;
-    self.stockItemView.retailPriceLabel.text = [NSString stringWithFormat:@"$%d", self.stockItem.retailPrice];
-    self.stockItemView.salePriceLabel.text = [NSString stringWithFormat:@"$%d", self.stockItem.salePrice];
-    self.stockItemView.UPCLabel.text = [NSString stringWithFormat:@"$%d", self.stockItem.UPC];
+    self.stockItemView.retailPriceLabel.text = [NSString stringWithFormat:@"$%d", (int)self.stockItem.retailPrice];
+    self.stockItemView.salePriceLabel.text = [NSString stringWithFormat:@"$%d", (int)self.stockItem.salePrice];
+    self.stockItemView.UPCLabel.text = [NSString stringWithFormat:@"$%d", (int)self.stockItem.UPC];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -139,7 +139,7 @@
     [quary findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (!error) {
             BOOL isDateFound = NO;
-            for (int i = objects.count-1; i >= 0; i--) {
+            for (int i = (int)objects.count - 1; i >= 0; i--) {
                 PFObject *object = objects[i];
                 
                 if ([object.createdAt isCurrentDay]) {
