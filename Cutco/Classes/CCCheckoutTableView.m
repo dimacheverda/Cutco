@@ -15,7 +15,6 @@
 - (instancetype)initWithFrame:(CGRect)frame style:(UITableViewStyle)style {
     self = [super initWithFrame:frame style:style];
     if (self) {
-        self.rowHeight = 68.0;
         self.allowsSelection = NO;
     }
     return self;

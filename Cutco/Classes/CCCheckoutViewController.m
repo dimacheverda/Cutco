@@ -58,18 +58,33 @@
     [self.view addSubview:self.tableView];
 }
 
-#pragma mark - Accessors
+#define kBottomButtonsHeight 44.0
 
-#define VIEW_WIDTH self.view.frame.size.width-40.0
-#define VIEW_HEIGHT self.view.frame.size.height-160.0
-#define BUTTON_HEIGHT 44.0
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+    
+    _tableView.frame = CGRectMake(0.0,
+                                  0.0,
+                                  CGRectGetWidth(self.view.frame),
+                                  CGRectGetHeight(self.view.frame) - kBottomButtonsHeight);
+    
+    _cancelButton.frame = CGRectMake(0.0,
+                                     CGRectGetHeight(self.view.frame) - kBottomButtonsHeight,
+                                     CGRectGetWidth(self.view.frame) / 3.0,
+                                     kBottomButtonsHeight);
+    
+
+    _confirmButton.frame = CGRectMake(CGRectGetMaxX(self.cancelButton.frame),
+                                      (CGRectGetHeight(self.view.frame)) - kBottomButtonsHeight,
+                                      CGRectGetWidth(self.view.frame) / 3.0 * 2.0,
+                                      kBottomButtonsHeight);
+}
+
+#pragma mark - Accessors
 
 - (CCCheckoutTableView *)tableView {
     if (!_tableView) {
-        _tableView = [[CCCheckoutTableView alloc] initWithFrame:CGRectMake(0.0,
-                                                                           0.0,
-                                                                           VIEW_WIDTH,
-                                                                           VIEW_HEIGHT - BUTTON_HEIGHT)
+        _tableView = [[CCCheckoutTableView alloc] initWithFrame:CGRectZero
                                                           style:UITableViewStylePlain];
         [_tableView registerClass:[CCCheckoutTableViewCell class] forCellReuseIdentifier:@"Cell"];
         _tableView.dataSource = self;
@@ -85,10 +100,6 @@
         _cancelButton.contentMode = UIViewContentModeCenter;
         _cancelButton.tintColor = [UIColor whiteColor];
         _cancelButton.backgroundColor = [UIColor checkoutCancelColor];
-        _cancelButton.frame = CGRectMake(0.0,
-                                         (VIEW_HEIGHT) - BUTTON_HEIGHT,
-                                         (VIEW_WIDTH)/3.0,
-                                         BUTTON_HEIGHT);
         [_cancelButton addTarget:self
                           action:@selector(cancelButtonDidPressed)
                 forControlEvents:UIControlEventTouchUpInside];
@@ -103,10 +114,6 @@
         [_confirmButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         _confirmButton.backgroundColor = [UIColor checkoutConfirmColor];
         _confirmButton.titleLabel.font = [UIFont systemFontOfSize:20.0];
-        _confirmButton.frame = CGRectMake(CGRectGetMaxX(self.cancelButton.frame),
-                                          (VIEW_HEIGHT) - BUTTON_HEIGHT,
-                                          (VIEW_WIDTH)/3.0*2.0,
-                                          BUTTON_HEIGHT);
         [_confirmButton addTarget:self
                            action:@selector(confirmButtonDidPressed)
                  forControlEvents:UIControlEventTouchUpInside];
@@ -122,6 +129,10 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.items.count;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return CGRectGetWidth(self.view.frame) / 3.0;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

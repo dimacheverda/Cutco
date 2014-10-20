@@ -34,7 +34,7 @@
 }
 
 #define kIndexLabelWidth 40.0
-#define kCellHeight 70.0
+#define kCellHeight (self.contentView.frame.size.height)
 
 - (void)layoutSubviews {
     [super layoutSubviews];
@@ -46,7 +46,7 @@
     
     _itemImageView.frame = CGRectMake(CGRectGetMaxX(self.indexLabel.frame) + 2.0,
                                       4.0,
-                                      (kCellHeight - 8.0) / 3.0 * 4.0,
+                                      (kCellHeight - 8.0), // / 3.0 * 4.0,
                                       kCellHeight - 8.0);
     _nameLabel.frame = CGRectMake(CGRectGetMaxX(self.itemImageView.frame) + 8.0,
                                   4.0,
@@ -57,7 +57,7 @@
                                   CGRectGetWidth(self.contentView.frame) - CGRectGetMaxX(self.itemImageView.frame) - 12.0,
                                   kCellHeight / 2 - 2.0);
     
-    [self applyShadowForImageView:_itemImageView];
+//    [self applyShadowForImageView:_itemImageView];
 }
 
 #pragma mark - Accessors

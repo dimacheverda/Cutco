@@ -27,8 +27,6 @@
 //        [self.contentView addSubview:self.titleLabel];
         [self.contentView addSubview:self.checkMark];
         self.contentView.backgroundColor = [UIColor whiteColor];
-        
-//        self.imageView.center = CGPointMake(CGRectGetMidX(frame), CGRectGetMidY(frame));
     }
     return self;
 }
@@ -42,7 +40,7 @@
     _imageView.frame = CGRectMake(0.0,
                                   0.0,
                                   CGRectGetWidth(self.contentView.frame),
-                                  CGRectGetWidth(self.contentView.frame) / 4.0 * 3.0);
+                                  CGRectGetWidth(self.contentView.frame));
     _imageView.center = CGPointMake(CGRectGetMidX(self.contentView.frame), CGRectGetMidY(self.contentView.frame));
     
     _checkMark.frame = CGRectMake(CGRectGetMaxX(self.contentView.frame) - kCheckmarkSize - kCheckmarkPadding,

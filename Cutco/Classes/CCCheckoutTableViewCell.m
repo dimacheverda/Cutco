@@ -29,16 +29,50 @@
     return self;
 }
 
+#define kCellHeight CGRectGetHeight(self.contentView.frame)
+#define kButtonHeight (CGRectGetHeight(self.contentView.frame) / 2.0)
+#define kQuantityButtonsOffset 10.0
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    
+    _stockImageView.frame = CGRectMake(0.0,
+                                       0.0,
+                                       kCellHeight,
+                                       kCellHeight);
+    
+    _quantityLabel.frame = CGRectMake(0.0,
+                                      0.0,
+                                      kButtonHeight / 2.0,
+                                      kButtonHeight);
+    
+    CGFloat quantityCenterX = ((CGRectGetWidth(self.frame) - CGRectGetMaxX(_stockImageView.frame)) / 2.0) + CGRectGetMaxX(_stockImageView.frame);
+    _quantityLabel.center =  CGPointMake(quantityCenterX,
+                                         CGRectGetHeight(self.frame) / 2.0);
+    
+    _minusButton.frame = CGRectMake(0.0,
+                                    0.0,
+                                    kButtonHeight,
+                                    kButtonHeight);
+    
+    _minusButton.center = CGPointMake((CGRectGetMinX(_quantityLabel.frame) - CGRectGetMaxX(_stockImageView.frame)) / 2.0 + CGRectGetMaxX(_stockImageView.frame) + kQuantityButtonsOffset,
+                                      CGRectGetMidY(_quantityLabel.frame));
+    
+    _plusButton.frame = CGRectMake(0.0,
+                                   0.0,
+                                   kButtonHeight,
+                                   kButtonHeight);
+    
+    _plusButton.center = CGPointMake((CGRectGetMaxX(self.frame) - CGRectGetMaxX(_quantityLabel.frame)) / 2.0 + CGRectGetMaxX(_quantityLabel.frame) - kQuantityButtonsOffset,
+                                     CGRectGetMidY(_quantityLabel.frame));
+}
+
 #pragma mark - Accessors
 
-#define CELL_HEIGHT 68.0
 
 - (UIImageView *)stockImageView {
     if (!_stockImageView) {
-        _stockImageView = [[UIImageView alloc] initWithFrame:CGRectMake(2.0,
-                                                                        2.0,
-                                                                        (CELL_HEIGHT - 4.0) / 2.0 * 3.0,
-                                                                        CELL_HEIGHT - 4.0)];
+        _stockImageView = [[UIImageView alloc] init];
         _stockImageView.contentMode = UIViewContentModeScaleAspectFit;
     }
     return _stockImageView;
@@ -52,17 +86,9 @@
     [self.stockImageView setNeedsDisplay];
 }
 
-#define BUTTON_HEIGHT 60.0
-#define QUANTITY_ITEMS_SPACING 0.0
-
 - (UIButton *)minusButton {
     if (!_minusButton) {
-        CGRect frame = CGRectMake(CGRectGetMaxX(self.stockImageView.frame) + 0.0,
-                                  (CELL_HEIGHT - BUTTON_HEIGHT) / 2,
-                                  BUTTON_HEIGHT,
-                                  BUTTON_HEIGHT);
         _minusButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        _minusButton.frame = frame;
         [_minusButton setImage:[UIImage imageNamed:@"minus"] forState:UIControlStateNormal];
         _minusButton.tag = 0;
     }
@@ -71,12 +97,7 @@
 
 - (UIButton *)plusButton {
     if (!_plusButton) {
-        CGRect frame = CGRectMake(CGRectGetMaxX(self.quantityLabel.frame) + QUANTITY_ITEMS_SPACING,
-                                  CGRectGetMinY(self.minusButton.frame),
-                                  BUTTON_HEIGHT,
-                                  BUTTON_HEIGHT);
         _plusButton = [UIButton buttonWithType:UIButtonTypeCustom];
-        _plusButton.frame = frame;
         [_plusButton setImage:[UIImage imageNamed:@"plus"] forState:UIControlStateNormal];
         _plusButton.tag = 1;
     }
@@ -85,11 +106,7 @@
 
 - (UILabel *)quantityLabel {
     if (!_quantityLabel) {
-        CGRect frame = CGRectMake(CGRectGetMaxX(self.minusButton.frame) + QUANTITY_ITEMS_SPACING,
-                                  CGRectGetMinY(self.minusButton.frame),
-                                  BUTTON_HEIGHT / 2,
-                                  BUTTON_HEIGHT);
-        _quantityLabel = [[UILabel alloc] initWithFrame:frame];
+        _quantityLabel = [[UILabel alloc] init];
         _quantityLabel.numberOfLines = 1;
         _quantityLabel.textAlignment = NSTextAlignmentCenter;
         _quantityLabel.font = [UIFont systemFontOfSize:22.0];
