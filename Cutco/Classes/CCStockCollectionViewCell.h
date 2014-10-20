@@ -13,6 +13,7 @@
 
 @property (strong, nonatomic) NSString *title;
 @property (strong, nonatomic) UIImage *image;
+@property (nonatomic, getter=isChecked) BOOL checked;
 @property (strong, nonatomic) CCCheckMark *checkMark;
 
 @end

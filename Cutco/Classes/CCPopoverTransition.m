@@ -20,8 +20,7 @@
 - (void)animateTransition:(id<UIViewControllerContextTransitioning>)transitionContext {
     UIViewController *toVC = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
     UIViewController *fromVC = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
-    
-    
+
     CGRect fullFrame = [transitionContext initialFrameForViewController:fromVC];
     CGFloat height = CGRectGetHeight(fullFrame);
     toVC.view.frame = CGRectMake(fullFrame.origin.x + LEFT_PADDING,

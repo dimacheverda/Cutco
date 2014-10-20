@@ -21,5 +21,6 @@
 + (UIColor *)countToolbarTintColor;
 + (UIColor *)checkoutToolbarCancelColor;
 + (UIColor *)checkoutToolbarCheckoutColor;
++ (UIColor *)stockCheckedTintColor;
 
 @end

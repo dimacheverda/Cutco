@@ -161,8 +161,9 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     CCStockCollectionViewCell *cell = (CCStockCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
-    cell.checkMark.checked = !cell.checkMark.checked;
 
+    [cell setChecked:!cell.isChecked];
+    
     if ([self.checkedIndexes containsObject:indexPath]) {
         [self.checkedIndexes removeObject:indexPath];
     } else {
@@ -276,7 +277,7 @@
 - (void)uncheckItems {
     for (NSIndexPath *indexPath in self.checkedIndexes) {
         CCStockCollectionViewCell *cell = (CCStockCollectionViewCell *)[self.collectionView cellForItemAtIndexPath:indexPath];
-        cell.checkMark.checked = NO;
+        [cell setChecked:NO];
     }
     [self.checkedIndexes removeAllObjects];
     self.tabBarController.tabBar.hidden = NO;

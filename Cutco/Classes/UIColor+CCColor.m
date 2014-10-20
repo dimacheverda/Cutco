@@ -54,4 +54,8 @@
     return [UIColor colorWithRed:0.45 green:0.71 blue:0.95 alpha:1];
 }
 
++ (UIColor *)stockCheckedTintColor {
+    return [UIColor colorWithWhite:0.8 alpha:0.2];
+}
+
 @end
