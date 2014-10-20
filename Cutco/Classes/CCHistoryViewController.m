@@ -54,14 +54,6 @@
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
-
-//    if ([self.tableView respondsToSelector:@selector(setSeparatorInset:)]) {
-//        [self.tableView setSeparatorInset:kSeparatorInset];
-//    }
-//    
-//    if ([self.tableView respondsToSelector:@selector(setLayoutMargins:)]) {
-//        [self.tableView setLayoutMargins:kSeparatorInset];
-//    }
 }
 
 #pragma mark - Accessors
@@ -207,6 +199,7 @@
     PFQuery *query = [CCSale query];
     [query whereKey:@"user" equalTo:[PFUser currentUser]];
     [query whereKey:@"event" equalTo:[[CCEvents sharedEvents] currentEvent]];
+    query.limit = 1000;
     
     [CCSales sharedSales].sales = [NSMutableArray array];
     [CCSales sharedSales].returned = [NSMutableArray array];
@@ -222,6 +215,9 @@
             }
             [CCSales sharedSales].sales = sales;
             [CCSales sharedSales].loaded = YES;
+            
+            NSLog(@"sold %d", (int)[CCSales sharedSales].sales.count);
+            NSLog(@"returned %d", (int)[CCSales sharedSales].returned.count);
             
             // update UI
             dispatch_async(dispatch_get_main_queue(), ^{

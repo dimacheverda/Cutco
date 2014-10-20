@@ -31,7 +31,7 @@
 
 #define kCellHeight CGRectGetHeight(self.contentView.frame)
 #define kButtonHeight (CGRectGetHeight(self.contentView.frame) / 2.0)
-#define kQuantityButtonsOffset 10.0
+#define kQuantityButtonsOffset 15.0
 
 - (void)layoutSubviews {
     [super layoutSubviews];
@@ -43,7 +43,7 @@
     
     _quantityLabel.frame = CGRectMake(0.0,
                                       0.0,
-                                      kButtonHeight / 2.0,
+                                      kButtonHeight,
                                       kButtonHeight);
     
     CGFloat quantityCenterX = ((CGRectGetWidth(self.frame) - CGRectGetMaxX(_stockImageView.frame)) / 2.0) + CGRectGetMaxX(_stockImageView.frame);

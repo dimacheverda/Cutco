@@ -14,7 +14,7 @@
     return 0.4;
 }
 
-#define TOP_PADDING 80.0
+#define TOP_PADDING 40.0
 #define LEFT_PADDING 20.0
 
 - (void)animateTransition:(id<UIViewControllerContextTransitioning>)transitionContext {

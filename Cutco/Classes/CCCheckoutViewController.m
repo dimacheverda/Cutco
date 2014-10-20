@@ -195,17 +195,17 @@
     self.hud.mode = MBProgressHUDModeIndeterminate;
     self.hud.labelText = @"Loading..";
     
-    NSUInteger row = 0;
     NSMutableArray *itemsForSale = [NSMutableArray array];
-    for (CCStockItem *item in self.items) {
-        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:row inSection:0];
-        CCCheckoutTableViewCell *cell = (CCCheckoutTableViewCell *)[self.tableView cellForRowAtIndexPath:indexPath];
-        NSInteger quantity = [cell.quantityLabel.text integerValue];
-        for (int i = 0; i < quantity; i++) {
-            [itemsForSale addObject:item];
+    
+    for (int itemIndex = 0; itemIndex < self.items.count; itemIndex++) {
+        NSInteger quantity = [self.quantity[itemIndex] integerValue];
+        for (int i = 1; i <= quantity; i++) {
+            [itemsForSale addObject:self.items[itemIndex]];
         }
-        row++;
     }
+
+    NSLog(@"items for sale: %d", (int)itemsForSale.count);
+    
     [self saveSalesToParse:itemsForSale];
 }
 

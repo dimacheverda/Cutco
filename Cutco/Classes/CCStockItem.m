@@ -31,7 +31,7 @@
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"name: %@                 UPC:  %lu", self.name, self.UPC];
+    return [NSString stringWithFormat:@"name: %@                 UPC:  %d", self.name, (int)self.UPC];
 }
 
 @end
