@@ -17,6 +17,8 @@
 #import "CCLocation.h"
 #import "CCStockViewController.h"
 #import "CCHistoryViewController.h"
+#import "CCTutorialViewController.h"
+#import "CCReportViewController.h"
 
 @interface CCEventsViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -137,8 +139,8 @@
     CCStockViewController *stockVC = [[CCStockViewController alloc] init];
     CCHistoryViewController *soldVC = [[CCHistoryViewController alloc] init];
     CCHistoryViewController *returnedVC = [[CCHistoryViewController alloc] init];
-    UIViewController *tutorialVC = [[UIViewController alloc] init];
-    UIViewController *statsVC = [[UIViewController alloc] init];
+    CCTutorialViewController *tutorialVC = [[CCTutorialViewController alloc] init];
+    CCReportViewController *statsVC = [[CCReportViewController alloc] init];
     
     UINavigationController *stockNavController = [[UINavigationController alloc] initWithRootViewController:stockVC];
     
