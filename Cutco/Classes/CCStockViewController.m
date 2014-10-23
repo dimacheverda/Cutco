@@ -12,11 +12,27 @@
 #import "CCStockItem.h"
 #import <Parse/Parse.h>
 #import <MBProgressHUD.h>
+#import "CCStock.h"
+#import "CCCheckoutToolbar.h"
+#import "CCCheckoutViewController.h"
+#import "CCPopoverTransition.h"
+#import "CCPopoverDismissal.h"
+#import "CCEvents.h"
+#import "CCEvent.h"
+#import "CCSales.h"
 
-@interface CCStockViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
+@interface CCStockViewController () <UICollectionViewDelegate,
+                                        UICollectionViewDataSource,
+                                        UIImagePickerControllerDelegate,
+                                        UINavigationControllerDelegate,
+                                        UIViewControllerTransitioningDelegate,
+                                        CCCheckoutTableViewControllerDelegate>
 
 @property (strong, nonatomic) UICollectionView *collectionView;
-@property (strong, nonatomic) NSArray *stockItems;
+@property (strong, nonatomic) MBProgressHUD *hud;
+@property (strong, nonatomic) NSMutableSet *checkedIndexes;
+@property (strong, nonatomic) CCCheckoutToolbar *checkoutToolbar;
+@property (nonatomic, getter=isCheckoutSuccessful) BOOL checkoutSuccessful;
 
 @end
 
@@ -27,13 +43,35 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    UIBarButtonItem *showEventsButton = [[UIBarButtonItem alloc] initWithTitle:@"All Events"
+                                                                         style:UIBarButtonItemStylePlain
+                                                                        target:self
+                                                                        action:@selector(showEvents)];
+    self.navigationItem.leftBarButtonItem = showEventsButton;
+    self.navigationItem.title = @"";
+    
+    UIBarButtonItem *beBackButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemReply
+                                                                                  target:self
+                                                                                  action:@selector(beBackButtonDidPressed)];
+    
+    UIBarButtonItem *showCameraButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
+                                                                                      target:self
+                                                                                      action:@selector(showCamera)];
+    if ([CCEvents sharedEvents].currentEventMember.primaryMember) {
+        self.navigationItem.rightBarButtonItems = @[beBackButton, showCameraButton];
+    } else {
+        self.navigationItem.rightBarButtonItems = @[beBackButton];
+    }
+    
     [self.view addSubview:self.collectionView];
     
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.collectionView animated:YES];
-    hud.labelText = @"Loading...";
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    [self.view addSubview:self.checkoutToolbar];
+    
+    if (![[CCStock sharedStock] isStockLoaded]) {
         [self loadStockItemsFromParse];
-    });
+    }
+    
+    [self clearSingletonSales];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -46,22 +84,54 @@
                                                     0.0);
 }
 
+- (void)clearSingletonSales {
+    [CCSales sharedSales].sales = [NSMutableArray array];
+    [CCSales sharedSales].returned = [NSMutableArray array];
+    [CCSales sharedSales].loaded = NO;
+}
+
 #pragma mark - Accessors
 
 - (UICollectionView *)collectionView {
     if (!_collectionView) {
         UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc] init];
         layout.minimumInteritemSpacing = 1.0;
-        layout.minimumLineSpacing = 3.0;
+        layout.minimumLineSpacing = 1.0;
         CGFloat width = (CGRectGetWidth(self.view.frame) - 2) / 3;
+//        layout.itemSize = CGSizeMake(width, width / 5 * 6);
         layout.itemSize = CGSizeMake(width, width);
         _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
         _collectionView.delegate = self;
         _collectionView.dataSource = self;
-        _collectionView.backgroundColor = [UIColor whiteColor];
+        _collectionView.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1.0];
         [_collectionView registerClass:[CCStockCollectionViewCell class] forCellWithReuseIdentifier:@"Cell"];
     }
     return _collectionView;
+}
+
+- (NSMutableSet *)checkedIndexes {
+    if (!_checkedIndexes) {
+        _checkedIndexes = [[NSMutableSet alloc] init];
+    }
+    return _checkedIndexes;
+}
+
+- (CCCheckoutToolbar *)checkoutToolbar {
+    if (!_checkoutToolbar) {
+        CGRect frame = CGRectMake(0.0,
+                                  CGRectGetHeight(self.view.frame) - CGRectGetHeight(self.tabBarController.tabBar.frame),
+                                  CGRectGetWidth(self.view.frame),
+                                  CGRectGetHeight(self.tabBarController.tabBar.frame));
+        _checkoutToolbar = [[CCCheckoutToolbar alloc] initWithFrame:frame];
+        [_checkoutToolbar.checkoutButton addTarget:self
+                                            action:@selector(checkoutButtonDidPressed)
+                                  forControlEvents:UIControlEventTouchUpInside];
+        [_checkoutToolbar.cancelButton addTarget:self
+                                          action:@selector(uncheckItems)
+                                forControlEvents:UIControlEventTouchUpInside];
+        _checkoutToolbar.hidden = YES;
+    }
+    return _checkoutToolbar;
 }
 
 #pragma mark - Collection View DataSource
@@ -71,61 +141,209 @@
 }
 
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return self.stockItems.count;
+    return [CCStock sharedStock].items.count;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *cellIdentifier = @"Cell";
     CCStockCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
 
-    CCStockItem *item = self.stockItems[indexPath.row];
-    cell.title = item.name;
-    cell.image = item.image;
-    
+    CCStockItem *item = [CCStock sharedStock].items[indexPath.row];
+    [item.image getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
+        if (!error) {
+            UIImage *image = [UIImage imageWithData:data];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                cell.image = image;
+            });
+        }
+    }];
+    cell.checkMark.checked = [self.checkedIndexes containsObject:indexPath];
+ 
     return cell;
 }
 
 #pragma mark - Collection View Delegate
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    CCStockItem *item = self.stockItems[indexPath.row];
-    if (item) {
-        CCStockItemViewController *stockItemVC = [[CCStockItemViewController alloc] initWithStockItem:item];
-        [self.navigationController pushViewController:stockItemVC animated:YES];
+    CCStockCollectionViewCell *cell = (CCStockCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
+
+    [cell setChecked:!cell.isChecked];
+    
+    if ([self.checkedIndexes containsObject:indexPath]) {
+        [self.checkedIndexes removeObject:indexPath];
+    } else {
+        [self.checkedIndexes addObject:indexPath];
     }
+    [self hideTabBarIfNeeded];
+}
+
+#pragma mark - Image Picker Controller Delegate
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
+    [picker dismissViewControllerAnimated:YES completion:nil];
+    
+    [self.hud show:YES];
+    self.hud.labelText = @"Saving..";
+    self.hud.mode = MBProgressHUDModeIndeterminate;
+    
+    UIImage *image = info[UIImagePickerControllerOriginalImage];
+    if (image) {
+        PFFile *file = [PFFile fileWithData:UIImageJPEGRepresentation(image, 0.1)];
+        PFObject *object = [PFObject objectWithClassName:@"Photo"];
+        object[@"photo"] = file;
+        object[@"user"] = [PFUser currentUser];
+        [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            self.hud.mode = MBProgressHUDModeText;
+            if (succeeded) {
+                self.hud.labelText = @"Photo saved";
+                [[NSUserDefaults standardUserDefaults] setValue:[NSDate date] forKey:@"lastPhotoDate"];
+            } else {
+                self.hud.labelText = @"Error";
+                self.hud.detailsLabelText = [NSString stringWithFormat:@"Error : %@", error];
+                NSLog(@"photo not saved %@", error);
+            }
+            [self.hud hide:YES afterDelay:1.0f];
+        }];
+    }
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)showCamera {
+    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        hud.labelText = @"No camera";
+        hud.mode = MBProgressHUDModeText;
+        [hud hide:YES afterDelay:1.0];
+    } else {
+        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+        picker.delegate = self;
+        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        picker.allowsEditing = NO;
+        
+        [self presentViewController:picker animated:YES completion:nil];
+    }
+}
+
+- (void)showEvents {
+    [self dismissViewControllerAnimated:YES completion:nil];
+    self.collectionView = nil;
 }
 
 #pragma mark - Parse methods
 
-#define StockItemParseClassName @"Knifes"
-
 - (void)loadStockItemsFromParse {
-    PFQuery *query = [PFQuery queryWithClassName:StockItemParseClassName];
+    self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    self.hud.mode = MBProgressHUDModeIndeterminate;
+    self.hud.labelText = @"Loading..";
+    
+    PFQuery *query = [CCStockItem query];
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        [MBProgressHUD hideHUDForView:self.collectionView animated:YES];
         if (!error) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+
                 NSMutableArray *items = [NSMutableArray array];
-                for (id object in objects) {
-                    CCStockItem *stockItem = [[CCStockItem alloc] initWithPFObject:object];
-                    [items addObject:stockItem];
+                for (CCStockItem *object in objects) {
+                    [items addObject:object];
                 }
-                self.stockItems = items;
+                [CCStock sharedStock].items = objects;
+                [CCStock sharedStock].isStockLoaded = YES;
                 
+                // update UI
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self.collectionView reloadData];
+                    [self.hud hide:YES];
                 });
             });
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
-                MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.collectionView animated:YES];
-                hud.labelText = @"Error";
-                hud.removeFromSuperViewOnHide = YES;
-                hud.detailsLabelText = error.description;
-                [hud hide:YES afterDelay:2.0];
+                self.hud.labelText = @"Error";
+                self.hud.detailsLabelText = error.description;
+                [self.hud hide:YES afterDelay:2.0];
             });
         }
     }];
+}
+
+#pragma mark - Action Methods
+
+- (void)beBackButtonDidPressed {
+    [self uncheckItems];
+    
+    [self.hud show:YES];
+    self.hud.labelText = @"'Be back' saved";
+    self.hud.mode = MBProgressHUDModeText;
+    [self.hud hide:YES afterDelay:1.0];
+}
+
+#pragma mark - Checkout methods
+
+- (void)hideTabBarIfNeeded {
+    if (self.checkedIndexes.count > 0) {
+        self.tabBarController.tabBar.hidden = YES;
+        self.checkoutToolbar.hidden = NO;
+    } else {
+        self.tabBarController.tabBar.hidden = NO;
+        self.checkoutToolbar.hidden = YES;
+    }
+}
+
+- (void)uncheckItems {
+    for (NSIndexPath *indexPath in self.checkedIndexes) {
+        CCStockCollectionViewCell *cell = (CCStockCollectionViewCell *)[self.collectionView cellForItemAtIndexPath:indexPath];
+        [cell setChecked:NO];
+    }
+    [self.checkedIndexes removeAllObjects];
+    self.tabBarController.tabBar.hidden = NO;
+    self.checkoutToolbar.hidden = YES;
+}
+
+- (void)checkoutButtonDidPressed {
+    NSArray *checkedIndexesArray = [self.checkedIndexes allObjects];
+    checkedIndexesArray = [checkedIndexesArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        NSInteger r1 = [obj1 row];
+        NSInteger r2 = [obj2 row];
+        if (r1 > r2) {
+            return (NSComparisonResult)NSOrderedDescending;
+        }
+        if (r1 < r2) {
+            return (NSComparisonResult)NSOrderedAscending;
+        }
+        return (NSComparisonResult)NSOrderedSame;
+    }];
+
+    NSMutableArray *items = [NSMutableArray array];
+    for (NSIndexPath *indexPath in checkedIndexesArray) {
+        [items addObject:[CCStock sharedStock].items[indexPath.row]];
+    }
+    
+    CCCheckoutViewController *checkoutVC = [[CCCheckoutViewController alloc] initWithStockItems:items];
+    checkoutVC.modalPresentationStyle = UIModalPresentationCustom;
+    checkoutVC.transitioningDelegate = self;
+    checkoutVC.delegate = self;
+    [self presentViewController:checkoutVC animated:YES completion:nil];
+}
+
+#pragma mark - Checkout View Contorller Delegate
+
+- (void)checkoutWillDismissWithSuccess:(BOOL)success {
+    [self uncheckItems];
+    self.checkoutSuccessful = success;
+}
+
+#pragma mark - Transitioning Delegate
+
+- (id <UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source {
+    
+    CCPopoverTransition *popoverTransition = [[CCPopoverTransition alloc] init];
+    return popoverTransition;
+}
+
+- (id <UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
+    CCPopoverDismissal *popoverDismissal = [[CCPopoverDismissal alloc] initWithCheckoutSuccess:self.isCheckoutSuccessful];
+    return popoverDismissal;
 }
 
 @end

@@ -12,13 +12,18 @@
 #import <Parse/Parse.h>
 #import <ProgressHUD.h>
 #import <MBProgressHUD.h>
+#import "CCEventsViewController.h"
+#import "CCTextField.h"
+#import "UIColor+CCColor.h"
 
 @interface CCSignInViewController () <UITextFieldDelegate>
 
 @property (strong, nonatomic) UIImageView *logoImage;
-@property (strong, nonatomic) UITextField *emailTextField;
-@property (strong, nonatomic) UITextField *passwordTextField;
+@property (strong, nonatomic) CCTextField *emailTextField;
+@property (strong, nonatomic) CCTextField *passwordTextField;
 @property (strong, nonatomic) UIButton *signInButton;
+@property (strong, nonatomic) UIView *separatorView;
+@property (strong, nonatomic) MBProgressHUD *hud;
 
 @end
 
@@ -29,85 +34,94 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [UIView setAnimationsEnabled:YES];
+    
     [self.view addSubview:self.logoImage];
     [self.view addSubview:self.emailTextField];
     [self.view addSubview:self.passwordTextField];
     [self.view addSubview:self.signInButton];
+    [self.view addSubview:self.separatorView];
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureHandler)];
     [self.view addGestureRecognizer:tapGesture];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    self.emailTextField.text = @"";
+    self.passwordTextField.text = @"";
+    [self tapGestureHandler];
+}
+
+#define LEFT_PADDING 50.0
+
 - (void)viewWillLayoutSubviews
 {
     [super viewWillLayoutSubviews];
+
+    _logoImage.frame = self.view.frame;
     
-    // image
-    CGRect logoFrame = CGRectMake(20.0,
-                                  50.0,
-                                  CGRectGetWidth(self.view.frame) - 40,
-                                  100.0);
-    _logoImage.frame = logoFrame;
-    
-    // email text field
-    _emailTextField.frame = CGRectMake(20.0,
-                                       CGRectGetMaxY(_logoImage.frame) + 20.0,
-                                       CGRectGetWidth(self.view.frame) - 40,
-                                       30.0);
-    
-    // password text field
-    _passwordTextField.frame = CGRectMake(20.0,
-                                          CGRectGetMaxY(_emailTextField.frame) + 20.0,
-                                          CGRectGetWidth(self.view.frame) - 40,
-                                          30.0);
-    
-    // sign in button
-    _signInButton.frame = CGRectMake(110.0,
-                                     CGRectGetMaxY(_passwordTextField.frame) + 20,
-                                     CGRectGetWidth(self.view.frame) - 220.0,
+    _emailTextField.frame = CGRectMake(LEFT_PADDING,
+                                       80.0,
+                                       CGRectGetWidth(self.view.frame) - LEFT_PADDING*2,
+                                       44.0);
+
+    _passwordTextField.frame = CGRectMake(LEFT_PADDING,
+                                          CGRectGetMaxY(_emailTextField.frame) + 16.0,
+                                          CGRectGetWidth(self.view.frame) - LEFT_PADDING*2,
+                                          44.0);
+
+    _signInButton.frame = CGRectMake(LEFT_PADDING,
+                                     CGRectGetMaxY(_passwordTextField.frame) + 20.0,
+                                     CGRectGetWidth(self.view.frame) - LEFT_PADDING*2,
                                      44.0);
+    _separatorView.frame = CGRectMake(CGRectGetMinX(self.emailTextField.frame),
+                                      (CGRectGetMaxY(self.emailTextField.frame) + CGRectGetMinY(self.passwordTextField.frame))/2,
+                                      CGRectGetWidth(self.emailTextField.frame),
+                                      1.0);
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
     [self.emailTextField becomeFirstResponder];
+    
+    // reset lastPhotoDate key after logout
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"lastPhotoDate"];
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
 }
 
 #pragma mark - Accessors
 
 - (UIImageView *)logoImage {
     if (!_logoImage) {
-        
-        _logoImage = [[UIImageView alloc] init];
-        _logoImage.backgroundColor = [UIColor lightGrayColor];
+        _logoImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"steak-knife-blur"]];
+        _logoImage.contentMode = UIViewContentModeScaleAspectFill;
     }
     return _logoImage;
 }
 
-- (UITextField *)emailTextField {
+- (CCTextField *)emailTextField {
     if (!_emailTextField) {
-        _emailTextField = [[UITextField alloc] init];
+        _emailTextField = [[CCTextField alloc] init];
         _emailTextField.delegate = self;
-        _emailTextField.placeholder = @"Username";
-        _emailTextField.keyboardType = UIKeyboardTypeDefault;
-        _emailTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
-        _emailTextField.autocorrectionType = UITextAutocorrectionTypeNo;
-        _emailTextField.borderStyle = UITextBorderStyleBezel;
         _emailTextField.returnKeyType = UIReturnKeyNext;
+        _emailTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"Username" attributes:@{NSForegroundColorAttributeName: [UIColor placeholderTextColor]}];
     }
     return _emailTextField;
 }
 
-- (UITextField *)passwordTextField {
+- (CCTextField *)passwordTextField {
     if (!_passwordTextField) {
-        _passwordTextField = [[UITextField alloc] init];
+        _passwordTextField = [[CCTextField alloc] init];
         _passwordTextField.delegate = self;
-        _passwordTextField.placeholder = @"Password";
-        _passwordTextField.keyboardType = UIKeyboardTypeDefault;
-        _passwordTextField.borderStyle = UITextBorderStyleBezel;
         _passwordTextField.secureTextEntry = YES;
         _passwordTextField.returnKeyType = UIReturnKeyDone;
+        _passwordTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:@"Password" attributes:@{NSForegroundColorAttributeName: [UIColor placeholderTextColor]}];
     }
     return _passwordTextField;
 }
@@ -119,55 +133,58 @@
         [_signInButton addTarget:self
                           action:@selector(signInButtonDidPressed)
                 forControlEvents:UIControlEventTouchUpInside];
+        _signInButton.titleLabel.font = [UIFont systemFontOfSize:20.0];
+        _signInButton.backgroundColor = [UIColor signInButtonColor];
+        [_signInButton setTitleColor:[UIColor lightTextColor] forState:UIControlStateNormal];
+        _signInButton.layer.cornerRadius = 4.0;
     }
     return _signInButton;
+}
+
+- (UIView *)separatorView {
+    if (!_separatorView) {
+        _separatorView = [[UIView alloc] init];
+        _separatorView.backgroundColor = [UIColor whiteColor];
+    }
+    return _separatorView;
 }
 
 #pragma mark - Action Handlers
 
 - (void)signInButtonDidPressed {
-    /*
-     //uncomment to add sign in check
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    hud.labelText = @"Loading";
-    hud.mode = MBProgressHUDModeIndeterminate;
-    [PFUser logInWithUsernameInBackground:self.emailTextField.text password:self.passwordTextField.text block:^(PFUser *user, NSError *error) {
-        if (!error) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
-                [self performTransition];
-            });
-            
-        } else {
-            hud.mode = MBProgressHUDModeText;
-            hud.labelText = @"Error";
-            hud.detailsLabelText = [NSString stringWithFormat:@"%@", error.description];
-            [hud hide:YES afterDelay:2.0];
-        }
-    }];
-     */
-    
-    [self performTransition];
+    self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    if (![self.emailTextField.text isEqualToString:@""] && ![self.passwordTextField.text isEqualToString:@""]) {
+        self.hud.labelText = @"Loading";
+        self.hud.mode = MBProgressHUDModeIndeterminate;
+        [PFUser logInWithUsernameInBackground:self.emailTextField.text password:self.passwordTextField.text block:^(PFUser *user, NSError *error) {
+            if (!error) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                    [self performTransition];
+                });
+            } else {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    self.hud.mode = MBProgressHUDModeText;
+                    self.hud.labelText = @"Error";
+                    self.hud.detailsLabelText = [NSString stringWithFormat:@"%@", error.localizedDescription];
+                    [self.hud hide:YES afterDelay:2.0];
+                });
+            }
+        }];
+    } else {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.hud.labelText = @"Error";
+            self.hud.detailsLabelText = @"Fill all field";
+            self.hud.mode = MBProgressHUDModeText;
+            [self.hud hide:YES afterDelay:1.5];
+        });
+    }
 }
 
 - (void)performTransition {
-    CCStockViewController *stockVC = [[CCStockViewController alloc] init];
-    CCHistoryViewController *historyVC = [[CCHistoryViewController alloc] init];
-    UIViewController *tutorialVC = [[UIViewController alloc] init];
-    UIViewController *reportVC = [[UIViewController alloc] init];
-    
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:stockVC];
-    
-    stockVC.title = @"Stock";
-    historyVC.title = @"History";
-    tutorialVC.title = @"Tutorial";
-    reportVC.title = @"Report";
-    
-    UITabBarController *tabBarController = [[UITabBarController alloc] init];
-    tabBarController.viewControllers = @[navController, historyVC, tutorialVC, reportVC];
-    
-    [self presentViewController:tabBarController animated:YES completion:^{
-
+    CCEventsViewController *eventsVC = [[CCEventsViewController alloc] init];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:eventsVC];
+    [self presentViewController:navController animated:YES completion:^{
     }];
 }
 

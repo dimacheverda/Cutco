@@ -2,6 +2,7 @@ DerivedData/
 Pods/
 Parse.*
 Bolts.*
+Crashlytics.*
 Cutco.*
 
 # Xcode

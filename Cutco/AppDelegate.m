@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import <Parse/Parse.h>
+#import <Crashlytics/Crashlytics.h>
 #import "CCSignInViewController.h"
 
 @interface AppDelegate ()
@@ -23,9 +24,9 @@
                   clientKey:@"bYy7fEK59sNtpY1JJWtZkyvPksfKJgt54AT1NjLa"];
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
     
+    [Crashlytics startWithAPIKey:@"b4e0bfdc0e14fd2d3f5efc10f37ed1265a1520d8"];
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    CGRect r = [[UIScreen mainScreen] bounds];
-    NSLog(@"%f  %f", r.size.width, r.size.height);
     self.window.backgroundColor = [UIColor whiteColor];
     self.window.rootViewController = [[CCSignInViewController alloc] init];
     [self.window makeKeyAndVisible];
@@ -53,6 +54,7 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    [PFUser logOut];
 }
 
 @end

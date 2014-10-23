@@ -7,21 +7,31 @@
 //
 
 #import "CCStockItem.h"
+#import <Parse/PFObject+Subclass.h>
+
+@interface CCStockItem ()
+
+@end
 
 @implementation CCStockItem
 
-- (instancetype)initWithPFObject:(PFObject *)object {
-    self = [super init];
-    if (self) {
-        _UPC = object[@"UPC"];
-        _name = object[@"name"];
-        _itemDescription = object[@"description"];
-        _salePrice = object[@"sale_price"];
-        _retailsPrice = object[@"retail_price"];
-        PFFile *imageFile = object[@"image"];
-        _image = [UIImage imageWithData:[imageFile getData]];
-    }
-    return self;
+@dynamic name;
+@dynamic description;
+@dynamic UPC;
+@dynamic retailPrice;
+@dynamic salePrice;
+@dynamic image;
+
++ (void)load {
+    [self registerSubclass];
+}
+
++ (NSString *)parseClassName {
+    return @"StockItem";
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"name: %@                 UPC:  %d", self.name, (int)self.UPC];
 }
 
 @end
