@@ -209,9 +209,9 @@
             
             NSMutableArray *sales = [NSMutableArray array];
             for (CCSale *object in objects) {
-                if ([object.createdAt isCurrentDay]) {
+//                if ([object.createdAt isCurrentDay]) {
                     [sales addObject:object];
-                }
+//                }
             }
             [CCSales sharedSales].sales = sales;
             [CCSales sharedSales].loaded = YES;

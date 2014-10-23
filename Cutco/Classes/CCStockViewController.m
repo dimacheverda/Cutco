@@ -48,13 +48,19 @@
                                                                         target:self
                                                                         action:@selector(showEvents)];
     self.navigationItem.leftBarButtonItem = showEventsButton;
+    self.navigationItem.title = @"";
     
-    // only for primary member
+    UIBarButtonItem *beBackButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemReply
+                                                                                  target:self
+                                                                                  action:@selector(beBackButtonDidPressed)];
+    
+    UIBarButtonItem *showCameraButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
+                                                                                      target:self
+                                                                                      action:@selector(showCamera)];
     if ([CCEvents sharedEvents].currentEventMember.primaryMember) {
-        UIBarButtonItem *showCameraButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
-                                                                                          target:self
-                                                                                          action:@selector(showCamera)];
-        self.navigationItem.rightBarButtonItem = showCameraButton;
+        self.navigationItem.rightBarButtonItems = @[beBackButton, showCameraButton];
+    } else {
+        self.navigationItem.rightBarButtonItems = @[beBackButton];
     }
     
     [self.view addSubview:self.collectionView];
@@ -143,7 +149,6 @@
     CCStockCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
 
     CCStockItem *item = [CCStock sharedStock].items[indexPath.row];
-//    cell.title = item.name;
     [item.image getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
         if (!error) {
             UIImage *image = [UIImage imageWithData:data];
@@ -260,6 +265,17 @@
             });
         }
     }];
+}
+
+#pragma mark - Action Methods
+
+- (void)beBackButtonDidPressed {
+    [self uncheckItems];
+    
+    [self.hud show:YES];
+    self.hud.labelText = @"'Be back' saved";
+    self.hud.mode = MBProgressHUDModeText;
+    [self.hud hide:YES afterDelay:1.0];
 }
 
 #pragma mark - Checkout methods
