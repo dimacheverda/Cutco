@@ -25,6 +25,8 @@
 @property (strong, nonatomic) NSArray *items;
 @property (strong, nonatomic) MBProgressHUD *hud;
 @property (strong, nonatomic) NSMutableArray *quantity;
+@property (strong, nonatomic) UISwitch *switchToggle;
+@property (strong, nonatomic) UILabel *switchLabel;
 
 @end
 
@@ -50,12 +52,13 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-
-    self.view.backgroundColor = [UIColor lightGrayColor];
+    self.view.backgroundColor = [UIColor colorWithWhite:0.7 alpha:1.0];
     
     [self.view addSubview:self.cancelButton];
     [self.view addSubview:self.confirmButton];
     [self.view addSubview:self.tableView];
+    [self.view addSubview:self.switchToggle];
+    [self.view addSubview:self.switchLabel];
 }
 
 #define kBottomButtonsHeight 44.0
@@ -63,10 +66,22 @@
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
+    _switchLabel.frame = CGRectMake(16.0,
+                                    0.0,
+                                    CGRectGetWidth(self.view.frame),
+                                    kBottomButtonsHeight);
+    
+    _switchToggle.frame = CGRectMake(CGRectGetWidth(self.view.frame) - 60.0,
+                                     0.0,
+                                     64.0,
+                                     kBottomButtonsHeight);
+    _switchToggle.center = CGPointMake(CGRectGetMidX(_switchToggle.frame),
+                                       kBottomButtonsHeight / 2.0);
+    
     _tableView.frame = CGRectMake(0.0,
-                                  0.0,
+                                  kBottomButtonsHeight,
                                   CGRectGetWidth(self.view.frame),
-                                  CGRectGetHeight(self.view.frame) - kBottomButtonsHeight);
+                                  CGRectGetHeight(self.view.frame) - kBottomButtonsHeight * 2);
     
     _cancelButton.frame = CGRectMake(0.0,
                                      CGRectGetHeight(self.view.frame) - kBottomButtonsHeight,
@@ -119,6 +134,23 @@
                  forControlEvents:UIControlEventTouchUpInside];
     }
     return _confirmButton;
+}
+
+- (UILabel *)switchLabel {
+    if (!_switchLabel) {
+        _switchLabel = [[UILabel alloc] init];
+        _switchLabel.numberOfLines = 0;
+        _switchLabel.text = @"New customer";
+        _switchLabel.font = [UIFont systemFontOfSize:20.0];
+    }
+    return _switchLabel;
+}
+
+- (UISwitch *)switchToggle {
+    if (!_switchToggle) {
+        _switchToggle = [[UISwitch alloc] init];
+    }
+    return _switchToggle;
 }
 
 #pragma mark - Table View DataSource
