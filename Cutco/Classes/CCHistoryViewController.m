@@ -40,6 +40,14 @@
     
     // show HUD only on first loading, not when pull-to-refresh triggered
     
+    // add notification observer only for returned VC
+    if (!self.isShowingSold) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(updateNotificationDidRecieved)
+                                                     name:@"kSalesUpdatedNotificationName"
+                                                   object:nil];
+    }
+    
     if (![CCSales sharedSales].isLoaded) {
         [self loadSalesFromParse];
     }
@@ -255,6 +263,11 @@
         CCHistoryTableViewCell *cell = (CCHistoryTableViewCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
         cell.index = cellsCount - i;
     }
+}
+
+- (void)updateNotificationDidRecieved {
+    [self refreshCounter];
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 @end

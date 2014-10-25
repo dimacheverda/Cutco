@@ -76,7 +76,13 @@
         [returned addObject:sale];
         self.sales = sold;
         self.returned = [self sortedArrayByDate:returned];
+        
+        [self postUpdateNotification];
     }
+}
+
+- (void)postUpdateNotification {
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"kSalesUpdatedNotificationName" object:nil]];
 }
 
 @end
