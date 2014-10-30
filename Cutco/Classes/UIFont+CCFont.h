@@ -13,5 +13,7 @@
 + (UIFont *)signInFont;
 + (UIFont *)primaryHeadlineTypefaceWithSize:(CGFloat)size;
 + (UIFont *)primaryCopyTypefaceWithSize:(CGFloat)size;
++ (UIFont *)progressHUDTitleFontWithSize:(CGFloat)size;
++ (UIFont *)progressHUDDetailFontWithSize:(CGFloat)size;
 
 @end

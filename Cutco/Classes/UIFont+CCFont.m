@@ -39,4 +39,22 @@
     return font;
 }
 
++ (UIFont *)progressHUDTitleFontWithSize:(CGFloat)size {
+    UIFontDescriptor *desc = [UIFontDescriptor fontDescriptorWithFontAttributes:@{
+                                                                                  UIFontDescriptorFamilyAttribute: @"Myriad Pro",
+                                                                                  UIFontDescriptorNameAttribute: @"MyriadPro-Bold"
+                                                                                  }];
+    UIFont *font = [UIFont fontWithDescriptor:desc size:size];
+    return font;
+}
+
++ (UIFont *)progressHUDDetailFontWithSize:(CGFloat)size {
+    UIFontDescriptor *desc = [UIFontDescriptor fontDescriptorWithFontAttributes:@{
+                                                                                  UIFontDescriptorFamilyAttribute: @"Myriad Pro",
+                                                                                  UIFontDescriptorNameAttribute: @"MyriadPro-Bold"
+                                                                                  }];
+    UIFont *font = [UIFont fontWithDescriptor:desc size:size];
+    return font;
+}
+
 @end

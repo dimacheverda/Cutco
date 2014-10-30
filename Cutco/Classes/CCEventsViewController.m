@@ -20,6 +20,7 @@
 #import "CCTutorialViewController.h"
 #import "CCReportViewController.h"
 #import "UIFont+CCFont.h"
+#import "UIColor+CCColor.h"
 
 @interface CCEventsViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -38,21 +39,37 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [self applyAppearanceToNavigationBar];
+
     self.navigationItem.title = @"Events";
     UIBarButtonItem *logOutButton = [[UIBarButtonItem alloc] initWithTitle:@"Log Out"
                                                                      style:UIBarButtonItemStyleDone
                                                                     target:self
                                                                     action:@selector(logOutButtonDidPressed)];
-    NSDictionary *attributes = [NSDictionary dictionaryWithObject:[UIFont primaryCopyTypefaceWithSize:17]
-                                                           forKey:NSFontAttributeName];
-    [logOutButton setTitleTextAttributes:attributes
-                                forState:UIControlStateNormal];
     self.navigationItem.leftBarButtonItem = logOutButton;
     
     [self.view addSubview:self.tableView];
     [self.view addSubview:self.backgroundToolbar];
     
     [self loadEventsMemberFromParse];
+}
+
+- (void)applyAppearanceToNavigationBar {
+    // changing UIBarButtonItem Appearance
+    NSDictionary *attributes = [NSDictionary dictionaryWithObject:[UIFont primaryCopyTypefaceWithSize:17]
+                                                           forKey:NSFontAttributeName];
+    [[UIBarButtonItem appearance] setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    
+    // changing NavigationBar title appearance
+    [[UINavigationBar appearance] setTitleTextAttributes:@{
+                                                           NSFontAttributeName: [UIFont primaryCopyTypefaceWithSize:20.0]
+                                                           }];
+    
+    [[UIBarButtonItem appearance] setTintColor:[UIColor eventTypeSegmentedControlTintColor]];
+    
+    [[UISegmentedControl appearance] setTintColor:[UIColor eventTypeSegmentedControlTintColor]];
+    
+    [[UITabBar appearance] setTintColor:[UIColor eventTypeSegmentedControlTintColor]];
 }
 
 #pragma mark - Accessors

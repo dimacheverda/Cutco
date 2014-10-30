@@ -36,7 +36,7 @@
 
 #define kCheckmarkSize 30.0
 #define kCheckmarkPadding 8.0
-#define kTitleLabelHeight 20.0
+#define kTitleLabelHeight 23.0
 
 - (void)layoutSubviews {
     [super layoutSubviews];
@@ -78,6 +78,7 @@
         _titleLabel.textAlignment = NSTextAlignmentLeft;
         _titleLabel.font = [UIFont primaryCopyTypefaceWithSize:13.0];
         _titleLabel.backgroundColor = [UIColor stockItemTitleBackgroundColor];
+        _titleLabel.textColor = [UIColor stockItemTitleColor];
     }
     return _titleLabel;
 }

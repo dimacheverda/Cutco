@@ -10,7 +10,6 @@
 #import "CCStockViewController.h"
 #import "CCHistoryViewController.h"
 #import <Parse/Parse.h>
-#import <ProgressHUD.h>
 #import <MBProgressHUD.h>
 #import "CCEventsViewController.h"
 #import "CCTextField.h"

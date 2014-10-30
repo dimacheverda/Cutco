@@ -14,7 +14,6 @@
 + (UIColor *)placeholderTextColor;
 + (UIColor *)checkmarkColor;
 + (UIColor *)checkmarkGrayTranslucentColor;
-+ (UIColor *)checkoutButtonColor;
 + (UIColor *)checkoutConfirmColor;
 + (UIColor *)checkoutCancelColor;
 + (UIColor *)textFieldTextColor;
@@ -29,5 +28,7 @@
 + (UIColor *)checkoutViewBackgroundColor;
 + (UIColor *)stockItemTitleBackgroundColor;
 + (UIColor *)stockCollectionViewBackgroundColor;
++ (UIColor *)eventTypeSegmentedControlTintColor;
++ (UIColor *)stockItemTitleColor;
 
 @end

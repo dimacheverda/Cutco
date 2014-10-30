@@ -26,8 +26,10 @@
 @property (strong, nonatomic) NSArray *items;
 @property (strong, nonatomic) MBProgressHUD *hud;
 @property (strong, nonatomic) NSMutableArray *quantity;
-@property (strong, nonatomic) UISwitch *switchToggle;
-@property (strong, nonatomic) UILabel *switchLabel;
+@property (strong, nonatomic) UISwitch *newCustomerSwitch;
+@property (strong, nonatomic) UILabel *newCustomerLabel;
+@property (strong, nonatomic) UISwitch *cameBackSwitch;
+@property (strong, nonatomic) UILabel *cameBackLabel;
 
 @end
 
@@ -58,8 +60,10 @@
     [self.view addSubview:self.cancelButton];
     [self.view addSubview:self.confirmButton];
     [self.view addSubview:self.tableView];
-    [self.view addSubview:self.switchToggle];
-    [self.view addSubview:self.switchLabel];
+    [self.view addSubview:self.newCustomerLabel];
+    [self.view addSubview:self.newCustomerSwitch];
+    [self.view addSubview:self.cameBackLabel];
+    [self.view addSubview:self.cameBackSwitch];
 }
 
 #define kBottomButtonsHeight 44.0
@@ -67,29 +71,42 @@
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
-    _switchLabel.frame = CGRectMake(16.0,
-                                    0.0,
-                                    CGRectGetWidth(self.view.frame),
-                                    kBottomButtonsHeight);
+    _newCustomerLabel.frame = CGRectMake(16.0,
+                                         0.0,
+                                         CGRectGetWidth(self.view.frame),
+                                         kBottomButtonsHeight);
     
-    _switchToggle.frame = CGRectMake(CGRectGetWidth(self.view.frame) - 60.0,
-                                     0.0,
-                                     64.0,
-                                     kBottomButtonsHeight);
-    _switchToggle.center = CGPointMake(CGRectGetMidX(_switchToggle.frame),
-                                       kBottomButtonsHeight / 2.0);
+    _newCustomerSwitch.frame = CGRectMake(CGRectGetWidth(self.view.frame) - 60.0,
+                                          0.0,
+                                          64.0,
+                                          kBottomButtonsHeight);
+    _newCustomerSwitch.center = CGPointMake(CGRectGetMidX(_newCustomerSwitch.frame),
+                                            CGRectGetMidY(_newCustomerLabel.frame));
+    
+    _cameBackLabel.frame = CGRectMake(16.0,
+                                      CGRectGetMaxY(_newCustomerLabel.frame),
+                                      CGRectGetWidth(self.view.frame),
+                                      kBottomButtonsHeight);
+    
+    _cameBackSwitch.frame = CGRectMake(CGRectGetWidth(self.view.frame) - 60.0,
+                                       0.0,
+                                       64.0,
+                                       kBottomButtonsHeight);
+    _cameBackSwitch.center = CGPointMake(CGRectGetMidX(_cameBackSwitch.frame),
+                                         CGRectGetMidY(_cameBackLabel.frame));
+    
     
     _tableView.frame = CGRectMake(0.0,
-                                  kBottomButtonsHeight,
+                                  CGRectGetMaxY(_cameBackLabel.frame),
                                   CGRectGetWidth(self.view.frame),
-                                  CGRectGetHeight(self.view.frame) - kBottomButtonsHeight * 2);
+                                  CGRectGetHeight(self.view.frame) - kBottomButtonsHeight * 3);
     
     _cancelButton.frame = CGRectMake(0.0,
-                                     CGRectGetHeight(self.view.frame) - kBottomButtonsHeight,
+                                     CGRectGetMaxY(_tableView.frame),
                                      CGRectGetWidth(self.view.frame) / 3.0,
                                      kBottomButtonsHeight);
     
-
+    
     _confirmButton.frame = CGRectMake(CGRectGetMaxX(self.cancelButton.frame),
                                       (CGRectGetHeight(self.view.frame)) - kBottomButtonsHeight,
                                       CGRectGetWidth(self.view.frame) / 3.0 * 2.0,
@@ -137,21 +154,38 @@
     return _confirmButton;
 }
 
-- (UILabel *)switchLabel {
-    if (!_switchLabel) {
-        _switchLabel = [[UILabel alloc] init];
-        _switchLabel.numberOfLines = 0;
-        _switchLabel.text = @"New customer";
-        _switchLabel.font = [UIFont primaryCopyTypefaceWithSize:20.0];
+- (UILabel *)newCustomerLabel {
+    if (!_newCustomerLabel) {
+        _newCustomerLabel = [[UILabel alloc] init];
+        _newCustomerLabel.numberOfLines = 0;
+        _newCustomerLabel.text = @"New customer";
+        _newCustomerLabel.font = [UIFont primaryCopyTypefaceWithSize:20.0];
     }
-    return _switchLabel;
+    return _newCustomerLabel;
 }
 
-- (UISwitch *)switchToggle {
-    if (!_switchToggle) {
-        _switchToggle = [[UISwitch alloc] init];
+- (UISwitch *)newCustomerSwitch {
+    if (!_newCustomerSwitch) {
+        _newCustomerSwitch = [[UISwitch alloc] init];
     }
-    return _switchToggle;
+    return _newCustomerSwitch;
+}
+
+- (UILabel *)cameBackLabel {
+    if (!_cameBackLabel) {
+        _cameBackLabel = [[UILabel alloc] init];
+        _cameBackLabel.numberOfLines = 0;
+        _cameBackLabel.text = @"Came back";
+        _cameBackLabel.font = [UIFont primaryCopyTypefaceWithSize:20.0];
+    }
+    return _cameBackLabel;
+}
+
+- (UISwitch *)cameBackSwitch {
+    if (!_cameBackSwitch) {
+        _cameBackSwitch = [[UISwitch alloc] init];
+    }
+    return _cameBackSwitch;
 }
 
 #pragma mark - Table View DataSource

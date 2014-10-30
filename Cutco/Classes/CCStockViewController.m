@@ -8,7 +8,6 @@
 
 #import "CCStockViewController.h"
 #import "CCStockCollectionViewCell.h"
-#import "CCStockItemViewController.h"
 #import "CCStockItem.h"
 #import <Parse/Parse.h>
 #import <MBProgressHUD.h>
@@ -49,16 +48,16 @@
                                                                          style:UIBarButtonItemStylePlain
                                                                         target:self
                                                                         action:@selector(showEvents)];
-    NSDictionary *attributes = [NSDictionary dictionaryWithObject:[UIFont primaryCopyTypefaceWithSize:17]
-                                                           forKey:NSFontAttributeName];
+    NSDictionary *attributes = [NSDictionary dictionaryWithObject:[UIFont primaryCopyTypefaceWithSize:17] forKey:NSFontAttributeName];
     [showEventsButton setTitleTextAttributes:attributes
                                     forState:UIControlStateNormal];
     self.navigationItem.leftBarButtonItem = showEventsButton;
     self.navigationItem.title = @"";
     
-    UIBarButtonItem *beBackButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemReply
-                                                                                  target:self
-                                                                                  action:@selector(beBackButtonDidPressed)];
+    UIBarButtonItem *beBackButton = [[UIBarButtonItem alloc] initWithTitle:@"Be back"
+                                                                     style:UIBarButtonItemStylePlain
+                                                                    target:self
+                                                                    action:@selector(beBackButtonDidPressed)];
     
     UIBarButtonItem *showCameraButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
                                                                                       target:self
@@ -154,7 +153,10 @@
     CCStockCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
 
     CCStockItem *item = [CCStock sharedStock].items[indexPath.row];
-    cell.title = [NSString stringWithFormat:@"    %d $",(int)item.salePrice];
+    cell.title = [NSString stringWithFormat:@"     %d $",(int)item.salePrice];
+    
+//    cell.image = [UIImage imageWithData:item.image.getData];
+    
     [item.image getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
         if (!error) {
             UIImage *image = [UIImage imageWithData:data];
