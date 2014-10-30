@@ -8,6 +8,7 @@
 
 #import "CCStockCollectionViewCell.h"
 #import "UIColor+CCColor.h"
+#import "UIFont+CCFont.h"
 
 @interface CCStockCollectionViewCell ()
 
@@ -25,6 +26,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         [self.contentView addSubview:self.imageView];
+        [self.contentView addSubview:self.titleLabel];
         [self.imageView addSubview:self.tintView];
         [self.contentView addSubview:self.checkMark];
         self.contentView.backgroundColor = [UIColor whiteColor];
@@ -33,7 +35,8 @@
 }
 
 #define kCheckmarkSize 30.0
-#define kCheckmarkPadding 10.0
+#define kCheckmarkPadding 8.0
+#define kTitleLabelHeight 20.0
 
 - (void)layoutSubviews {
     [super layoutSubviews];
@@ -52,9 +55,9 @@
                                   kCheckmarkSize);
     
     _titleLabel.frame = CGRectMake(0.0,
-                                   CGRectGetMaxY(self.imageView.frame) + 4.0,
+                                   CGRectGetMaxY(self.contentView.frame) - kTitleLabelHeight,
                                    CGRectGetWidth(self.contentView.frame),
-                                   CGRectGetHeight(self.contentView.frame) / 3 - 8.0);
+                                   kTitleLabelHeight);
 }
 
 #pragma mark - Accessors
@@ -72,8 +75,9 @@
     if (!_titleLabel) {
         _titleLabel = [[UILabel alloc] init];
         _titleLabel.numberOfLines = 2;
-        _titleLabel.textAlignment = NSTextAlignmentCenter;
-        _titleLabel.font = [UIFont fontWithName:@"Arial" size:12.0f];
+        _titleLabel.textAlignment = NSTextAlignmentLeft;
+        _titleLabel.font = [UIFont primaryCopyTypefaceWithSize:13.0];
+        _titleLabel.backgroundColor = [UIColor stockItemTitleBackgroundColor];
     }
     return _titleLabel;
 }

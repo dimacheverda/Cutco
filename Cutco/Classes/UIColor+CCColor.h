@@ -13,6 +13,7 @@
 + (UIColor *)signInButtonColor;
 + (UIColor *)placeholderTextColor;
 + (UIColor *)checkmarkColor;
++ (UIColor *)checkmarkGrayTranslucentColor;
 + (UIColor *)checkoutButtonColor;
 + (UIColor *)checkoutConfirmColor;
 + (UIColor *)checkoutCancelColor;
@@ -22,5 +23,11 @@
 + (UIColor *)checkoutToolbarCancelColor;
 + (UIColor *)checkoutToolbarCheckoutColor;
 + (UIColor *)stockCheckedTintColor;
++ (UIColor *)historyTableViewSeparatorColor;
++ (UIColor *)historyTableViewCellNameColor;
++ (UIColor *)historyTableViewCellDateColor;
++ (UIColor *)checkoutViewBackgroundColor;
++ (UIColor *)stockItemTitleBackgroundColor;
++ (UIColor *)stockCollectionViewBackgroundColor;
 
 @end

@@ -16,6 +16,7 @@
 #import <MBProgressHUD.h>
 #import "CCStockViewController.h"
 #import "UIColor+CCColor.h"
+#import "UIFont+CCFont.h"
 
 @interface CCCheckoutViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -52,7 +53,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [UIColor colorWithWhite:0.7 alpha:1.0];
+    self.view.backgroundColor = [UIColor checkoutViewBackgroundColor];
     
     [self.view addSubview:self.cancelButton];
     [self.view addSubview:self.confirmButton];
@@ -128,7 +129,7 @@
         [_confirmButton setTitle:@"Confirm" forState:UIControlStateNormal];
         [_confirmButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         _confirmButton.backgroundColor = [UIColor checkoutConfirmColor];
-        _confirmButton.titleLabel.font = [UIFont systemFontOfSize:20.0];
+        _confirmButton.titleLabel.font = [UIFont primaryCopyTypefaceWithSize:20.0];
         [_confirmButton addTarget:self
                            action:@selector(confirmButtonDidPressed)
                  forControlEvents:UIControlEventTouchUpInside];
@@ -141,7 +142,7 @@
         _switchLabel = [[UILabel alloc] init];
         _switchLabel.numberOfLines = 0;
         _switchLabel.text = @"New customer";
-        _switchLabel.font = [UIFont systemFontOfSize:20.0];
+        _switchLabel.font = [UIFont primaryCopyTypefaceWithSize:20.0];
     }
     return _switchLabel;
 }
@@ -225,7 +226,7 @@
 - (void)confirmButtonDidPressed {
     self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     self.hud.mode = MBProgressHUDModeIndeterminate;
-    self.hud.labelText = @"Loading..";
+    self.hud.labelText = @"Saving..";
     
     NSMutableArray *itemsForSale = [NSMutableArray array];
     

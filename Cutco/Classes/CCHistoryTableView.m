@@ -7,6 +7,7 @@
 //
 
 #import "CCHistoryTableView.h"
+#import "UIColor+CCColor.h"
 
 @interface CCHistoryTableView ()
 
@@ -24,7 +25,7 @@
         [self sendSubviewToBack:_refreshControl];
         self.allowsSelectionDuringEditing = NO;
         self.contentInset = UIEdgeInsetsMake(64.0, 0.0, 49.0, 0.0);
-        self.separatorColor = [UIColor colorWithWhite:0.9 alpha:1.0];
+        self.separatorColor = [UIColor historyTableViewSeparatorColor];
     }
     return self;
 }

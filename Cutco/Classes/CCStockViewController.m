@@ -20,6 +20,8 @@
 #import "CCEvents.h"
 #import "CCEvent.h"
 #import "CCSales.h"
+#import "UIColor+CCColor.h"
+#import "UIFont+CCFont.h"
 
 @interface CCStockViewController () <UICollectionViewDelegate,
                                         UICollectionViewDataSource,
@@ -47,6 +49,10 @@
                                                                          style:UIBarButtonItemStylePlain
                                                                         target:self
                                                                         action:@selector(showEvents)];
+    NSDictionary *attributes = [NSDictionary dictionaryWithObject:[UIFont primaryCopyTypefaceWithSize:17]
+                                                           forKey:NSFontAttributeName];
+    [showEventsButton setTitleTextAttributes:attributes
+                                    forState:UIControlStateNormal];
     self.navigationItem.leftBarButtonItem = showEventsButton;
     self.navigationItem.title = @"";
     
@@ -98,12 +104,11 @@
         layout.minimumInteritemSpacing = 1.0;
         layout.minimumLineSpacing = 1.0;
         CGFloat width = (CGRectGetWidth(self.view.frame) - 2) / 3;
-//        layout.itemSize = CGSizeMake(width, width / 5 * 6);
         layout.itemSize = CGSizeMake(width, width);
         _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
         _collectionView.delegate = self;
         _collectionView.dataSource = self;
-        _collectionView.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1.0];
+        _collectionView.backgroundColor = [UIColor stockCollectionViewBackgroundColor];
         [_collectionView registerClass:[CCStockCollectionViewCell class] forCellWithReuseIdentifier:@"Cell"];
     }
     return _collectionView;
@@ -149,6 +154,7 @@
     CCStockCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
 
     CCStockItem *item = [CCStock sharedStock].items[indexPath.row];
+    cell.title = [NSString stringWithFormat:@"    %d $",(int)item.salePrice];
     [item.image getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
         if (!error) {
             UIImage *image = [UIImage imageWithData:data];

@@ -19,6 +19,7 @@
 #import "CCHistoryViewController.h"
 #import "CCTutorialViewController.h"
 #import "CCReportViewController.h"
+#import "UIFont+CCFont.h"
 
 @interface CCEventsViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -42,6 +43,10 @@
                                                                      style:UIBarButtonItemStyleDone
                                                                     target:self
                                                                     action:@selector(logOutButtonDidPressed)];
+    NSDictionary *attributes = [NSDictionary dictionaryWithObject:[UIFont primaryCopyTypefaceWithSize:17]
+                                                           forKey:NSFontAttributeName];
+    [logOutButton setTitleTextAttributes:attributes
+                                forState:UIControlStateNormal];
     self.navigationItem.leftBarButtonItem = logOutButton;
     
     [self.view addSubview:self.tableView];
@@ -86,6 +91,10 @@
         [_segmentedControl addTarget:self
                               action:@selector(segmentedControlDidPressed)
                     forControlEvents:UIControlEventValueChanged];
+        NSDictionary *attributes = [NSDictionary dictionaryWithObject:[UIFont primaryCopyTypefaceWithSize:13]
+                                                               forKey:NSFontAttributeName];
+        [_segmentedControl setTitleTextAttributes:attributes
+                                        forState:UIControlStateNormal];
     }
     return _segmentedControl;
 }

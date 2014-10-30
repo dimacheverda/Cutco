@@ -15,6 +15,7 @@
 #import "CCEventsViewController.h"
 #import "CCTextField.h"
 #import "UIColor+CCColor.h"
+#import "UIFont+CCFont.h"
 
 @interface CCSignInViewController () <UITextFieldDelegate>
 
@@ -133,10 +134,10 @@
         [_signInButton addTarget:self
                           action:@selector(signInButtonDidPressed)
                 forControlEvents:UIControlEventTouchUpInside];
-        _signInButton.titleLabel.font = [UIFont systemFontOfSize:20.0];
         _signInButton.backgroundColor = [UIColor signInButtonColor];
         [_signInButton setTitleColor:[UIColor lightTextColor] forState:UIControlStateNormal];
         _signInButton.layer.cornerRadius = 4.0;
+        _signInButton.titleLabel.font = [UIFont primaryCopyTypefaceWithSize:20.0];
     }
     return _signInButton;
 }

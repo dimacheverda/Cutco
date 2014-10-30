@@ -157,11 +157,7 @@
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (self.isShowingSold) {
-        return YES;
-    } else {
-        return NO;
-    }
+    return self.isShowingSold;
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -171,7 +167,7 @@
         
         self.hud.mode = MBProgressHUDModeIndeterminate;
         [self.hud show:YES];
-        self.hud.labelText = @"Deleting..";
+        self.hud.labelText = @"Returning..";
         
         [sale saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
@@ -193,6 +189,10 @@
 }
 
 #pragma mark - Table View Delegate
+
+- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return @"Return";
+}
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];

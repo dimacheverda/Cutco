@@ -7,6 +7,8 @@
 //
 
 #import "CCEventTableViewCell.h"
+#import "UIFont+CCFont.h"
+#import "UIColor+CCColor.h"
 
 @interface CCEventTableViewCell ()
 
@@ -26,9 +28,7 @@
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
         [self.contentView addSubview:self.locationTitleLabel];
-//        [self.contentView addSubview:self.startAtPlaceholder];
         [self.contentView addSubview:self.startAtLabel];
-//        [self.contentView addSubview:self.endAtPlaceholder];
         [self.contentView addSubview:self.endAtLabel];
     
         self.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -72,7 +72,7 @@
         _locationTitleLabel = [[UILabel alloc] init];
         _locationTitleLabel.numberOfLines = 0;
         _locationTitleLabel.textAlignment = NSTextAlignmentLeft;
-        _locationTitleLabel.font = [UIFont systemFontOfSize:18.0];
+        _locationTitleLabel.font = [UIFont primaryCopyTypefaceWithSize:17.0];
     }
     return _locationTitleLabel;
 }
@@ -81,7 +81,7 @@
     if (!_startAtLabel) {
         self.startAtPlaceholder = [[UILabel alloc] init];
         self.startAtPlaceholder.numberOfLines = 1;
-        self.startAtPlaceholder.font = [UIFont systemFontOfSize:13.0];
+        self.startAtPlaceholder.font =[UIFont primaryCopyTypefaceWithSize:13.0];
         self.startAtPlaceholder.text = @"Start At:";
         self.startAtPlaceholder.textColor = [UIColor darkGrayColor];
         [self.contentView addSubview:self.startAtPlaceholder];
@@ -89,7 +89,7 @@
         _startAtLabel = [[UILabel alloc] init];
         _startAtLabel.numberOfLines = 1;
         _startAtLabel.textAlignment = NSTextAlignmentLeft;
-        _startAtLabel.font = [UIFont systemFontOfSize:13.0];
+        _startAtLabel.font = [UIFont primaryCopyTypefaceWithSize:13.0];
     }
     return _startAtLabel;
 }
@@ -98,7 +98,7 @@
     if (!_endAtLabel) {
         self.endAtPlaceholder = [[UILabel alloc] init];
         self.endAtPlaceholder.numberOfLines = 1;
-        self.endAtPlaceholder.font = [UIFont systemFontOfSize:13.0];
+        self.endAtPlaceholder.font = [UIFont primaryCopyTypefaceWithSize:13.0];
         self.endAtPlaceholder.text = @"End At:";
         self.endAtPlaceholder.textColor = [UIColor darkGrayColor];
         [self.contentView addSubview:self.endAtPlaceholder];
@@ -106,7 +106,7 @@
         _endAtLabel = [[UILabel alloc] init];
         _endAtLabel.numberOfLines = 1;
         _endAtLabel.textAlignment = NSTextAlignmentLeft;
-        _endAtLabel.font = [UIFont systemFontOfSize:13.0];
+        _endAtLabel.font = [UIFont primaryCopyTypefaceWithSize:13.0];
     }
     return _endAtLabel;
 }

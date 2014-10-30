@@ -11,5 +11,7 @@
 @interface UIFont (CCFont)
 
 + (UIFont *)signInFont;
++ (UIFont *)primaryHeadlineTypefaceWithSize:(CGFloat)size;
++ (UIFont *)primaryCopyTypefaceWithSize:(CGFloat)size;
 
 @end

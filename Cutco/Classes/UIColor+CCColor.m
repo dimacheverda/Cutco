@@ -22,6 +22,10 @@
     return [UIColor colorWithRed:0.078 green:0.435 blue:0.875 alpha:1];
 }
 
++ (UIColor *)checkmarkGrayTranslucentColor {
+    return [UIColor colorWithWhite:1.0 alpha:0.6];
+}
+
 + (UIColor *)checkoutButtonColor {
     return [UIColor colorWithRed:0.11 green:0.82 blue:0.69 alpha:1];
 }
@@ -56,6 +60,30 @@
 
 + (UIColor *)stockCheckedTintColor {
     return [UIColor colorWithWhite:0.8 alpha:0.2];
+}
+
++ (UIColor *)historyTableViewSeparatorColor {
+    return [UIColor colorWithWhite:0.9 alpha:1.0];
+}
+
++ (UIColor *)historyTableViewCellNameColor {
+    return [UIColor colorWithWhite:0.1 alpha:1.0];
+}
+
++ (UIColor *)historyTableViewCellDateColor {
+    return [UIColor colorWithWhite:0.3 alpha:1.0];
+}
+
++ (UIColor *)checkoutViewBackgroundColor {
+    return [UIColor colorWithWhite:0.7 alpha:1.0];
+}
+
++ (UIColor *)stockItemTitleBackgroundColor {
+    return [UIColor colorWithWhite:0.5 alpha:0.5];
+}
+
++ (UIColor *)stockCollectionViewBackgroundColor {
+    return [UIColor colorWithWhite:0.9 alpha:1.0];
 }
 
 @end
