@@ -174,7 +174,7 @@
     } else {
         dispatch_async(dispatch_get_main_queue(), ^{
             self.hud.labelText = @"Error";
-            self.hud.detailsLabelText = @"Fill all field";
+            self.hud.detailsLabelText = @"Fill all fields";
             self.hud.mode = MBProgressHUDModeText;
             [self.hud hide:YES afterDelay:1.5];
         });

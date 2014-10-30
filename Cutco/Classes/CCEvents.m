@@ -44,9 +44,9 @@
         for (CCEvent *event in allEvents) {
             if ([today isBetweenDate:event.startAt andDate:event.endAt]) {
                 [inProgress addObject:event];
-            } else if ([event.startAt compare:today] == NSOrderedDescending) {           //// startAt is later in time than today
+            } else if ([event.startAt compare:today] == NSOrderedDescending) {                  //// startAt is later in time than today
                 [upcomming addObject:event];
-            } else if ([event.endAt compare:today] == NSOrderedAscending) {              //// endAt is earlier in time than today
+            } else if ([event.endAt compare:today] == NSOrderedAscending) {                     //// endAt is earlier in time than today
                 [closed addObject:event];
             }
         }
