@@ -204,41 +204,22 @@
     self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     self.hud.labelText = @"Loading..";
     
-    PFQuery *query = [CCSale query];
-    [query whereKey:@"user" equalTo:[PFUser currentUser]];
-    [query whereKey:@"event" equalTo:[[CCEvents sharedEvents] currentEvent]];
-    query.limit = 1000;
-    
-    [CCSales sharedSales].sales = [NSMutableArray array];
-    [CCSales sharedSales].returned = [NSMutableArray array];
-    
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+    [[CCSales sharedSales] loadSalesFromParseWithCompletion:^(NSError *error) {
         if (!error) {
-            
-            NSMutableArray *sales = [NSMutableArray array];
-            for (CCSale *object in objects) {
-//                if ([object.createdAt isCurrentDay]) {
-                    [sales addObject:object];
-//                }
-            }
-            [CCSales sharedSales].sales = sales;
-            [CCSales sharedSales].loaded = YES;
-            
-            NSLog(@"sold %d", (int)[CCSales sharedSales].sales.count);
-            NSLog(@"returned %d", (int)[CCSales sharedSales].returned.count);
-            
-            // update UI
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.hud hide:YES];
                 [self.tableView reloadData];
                 [self refreshCounter];
             });
+            
         } else {
             self.hud.mode = MBProgressHUDModeText;
             self.hud.labelText = @"Error";
             self.hud.detailsLabelText = error.localizedDescription;
             [self.hud hide:YES afterDelay:1.5f];
         }
+        
+        // hide refresh control if shown
         dispatch_async(dispatch_get_main_queue(), ^{
             if (self.tableView.refreshControl.isRefreshing) {
                 [self.tableView.refreshControl endRefreshing];

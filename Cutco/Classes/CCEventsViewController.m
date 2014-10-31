@@ -166,15 +166,16 @@
     CCHistoryViewController *soldVC = [[CCHistoryViewController alloc] init];
     CCHistoryViewController *returnedVC = [[CCHistoryViewController alloc] init];
     CCTutorialViewController *tutorialVC = [[CCTutorialViewController alloc] init];
-    CCReportViewController *statsVC = [[CCReportViewController alloc] init];
+    CCReportViewController *reportVC = [[CCReportViewController alloc] init];
     
     UINavigationController *stockNavController = [[UINavigationController alloc] initWithRootViewController:stockVC];
+    UINavigationController *reportNavController = [[UINavigationController alloc] initWithRootViewController:reportVC];
     
     stockVC.title = @"Add Sale";
     soldVC.title = @"Sold";
     returnedVC.title = @"Returned";
     tutorialVC.title = @"Tutorial";
-    statsVC.title = @"Report";
+    reportVC.title = @"Report";
     
     soldVC.isShowingSold = YES;
     returnedVC.isShowingSold = NO;
@@ -187,11 +188,11 @@
     returnedVC.tabBarItem.selectedImage = [UIImage imageNamed:@"cart_empty_fill"];
     tutorialVC.tabBarItem.image = [UIImage imageNamed:@"briefcase_line"];
     tutorialVC.tabBarItem.selectedImage = [UIImage imageNamed:@"briefcase_fill"];
-    statsVC.tabBarItem.image = [UIImage imageNamed:@"calculator_line"];
-    statsVC.tabBarItem.selectedImage = [UIImage imageNamed:@"calculator_fill"];
+    reportVC.tabBarItem.image = [UIImage imageNamed:@"calculator_line"];
+    reportVC.tabBarItem.selectedImage = [UIImage imageNamed:@"calculator_fill"];
     
     UITabBarController *tabBarController = [[UITabBarController alloc] init];
-    tabBarController.viewControllers = @[tutorialVC, returnedVC, stockNavController, soldVC, statsVC];
+    tabBarController.viewControllers = @[tutorialVC, returnedVC, stockNavController, soldVC, reportNavController];
     [tabBarController setSelectedViewController:stockNavController];
     
     [self presentViewController:tabBarController animated:YES completion:^{
@@ -240,6 +241,8 @@
                 [CCEvents sharedEvents].allEvents = objects;
                 [self loadLocationsFromParse];
             });
+            NSLog(@"%@", objects);
+            NSLog(@"today %@", [NSDate date]);
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.hud.labelText = @"Error";

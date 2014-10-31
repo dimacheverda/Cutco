@@ -51,10 +51,17 @@
             }
         }
         
-        self.closedEvents = closed;
-        self.inProgressEvents = inProgress;
-        self.upcommingEvents = upcomming;
+        self.closedEvents = [self sortedArrayByDate:closed withKey:@"startAt"];
+        self.inProgressEvents = [self sortedArrayByDate:inProgress withKey:@"startAt"];
+        self.upcommingEvents = [self sortedArrayByDate:upcomming withKey:@"startAt"];
     }
+}
+
+- (NSArray *)sortedArrayByDate:(NSArray *)array withKey:(NSString *)key {
+    NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:key ascending:YES];
+    NSArray *descriptors=  [NSArray arrayWithObject:descriptor];
+    NSArray *sortedArray = [array sortedArrayUsingDescriptors:descriptors];
+    return sortedArray;
 }
 
 @end

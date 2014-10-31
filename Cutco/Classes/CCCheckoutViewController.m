@@ -145,14 +145,6 @@
     }
 }
 
-//- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-//    if (section == 0) {
-//        return @"Settings";
-//    } else {
-//        return @"Items";
-//    }
-//}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell;
     
@@ -239,8 +231,6 @@
             [itemsForSale addObject:self.items[itemIndex]];
         }
     }
-
-    NSLog(@"items for sale: %d", (int)itemsForSale.count);
     
     [self saveSalesToParse:itemsForSale];
 }

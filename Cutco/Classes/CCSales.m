@@ -30,6 +30,24 @@
     return self;
 }
 
+- (void)loadSalesFromParseWithCompletion:(void (^)(NSError *error))completion {
+    PFQuery *query = [CCSale query];
+    [query whereKey:@"user" equalTo:[PFUser currentUser]];
+    [query whereKey:@"event" equalTo:[[CCEvents sharedEvents] currentEvent]];
+    query.limit = 1000;
+    
+    self.sales = [NSMutableArray array];
+    self.returned = [NSMutableArray array];
+    
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (!error) {
+            self.sales = [objects mutableCopy];
+            self.loaded = YES;
+        }
+        completion(error);
+    }];
+}
+
 - (void)setSales:(NSMutableArray *)sales {
     if (sales) {
         NSMutableArray *returned = [NSMutableArray array];

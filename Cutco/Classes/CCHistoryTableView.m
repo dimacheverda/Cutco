@@ -25,6 +25,7 @@
         [self sendSubviewToBack:_refreshControl];
         self.allowsSelectionDuringEditing = NO;
         self.contentInset = UIEdgeInsetsMake(64.0, 0.0, 49.0, 0.0);
+        self.scrollIndicatorInsets = UIEdgeInsetsMake(64.0, 0.0, 49.0, 0.0);
         self.separatorColor = [UIColor historyTableViewSeparatorColor];
     }
     return self;
