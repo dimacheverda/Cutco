@@ -70,7 +70,7 @@
 }
 
 + (UIColor *)imagePlaceholderColor {
-    return [UIColor colorWithRed:0.95 green:0.95 blue:0.95 alpha:1.0];
+    return [UIColor whiteColor];
 }
 
 + (UIColor *)stockCheckedTintColor {

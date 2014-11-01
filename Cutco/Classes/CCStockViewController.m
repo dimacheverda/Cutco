@@ -153,9 +153,7 @@
     CCStockCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
 
     CCStockItem *item = [CCStock sharedStock].items[indexPath.row];
-    cell.title = [NSString stringWithFormat:@"     %d $",(int)item.salePrice];
-    
-//    cell.image = [UIImage imageWithData:item.image.getData];
+    cell.title = [NSString stringWithFormat:@"     $%d",(int)item.salePrice];
     
     [item.image getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
         if (!error) {
@@ -165,8 +163,9 @@
             });
         }
     }];
-    cell.checkMark.checked = [self.checkedIndexes containsObject:indexPath];
- 
+    
+    cell.checked = [self.checkedIndexes containsObject:indexPath];
+    
     return cell;
 }
 
@@ -174,7 +173,7 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     CCStockCollectionViewCell *cell = (CCStockCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
-
+    
     [cell setChecked:!cell.isChecked];
     
     if ([self.checkedIndexes containsObject:indexPath]) {

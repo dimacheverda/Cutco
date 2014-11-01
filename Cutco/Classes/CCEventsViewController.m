@@ -241,8 +241,6 @@
                 [CCEvents sharedEvents].allEvents = objects;
                 [self loadLocationsFromParse];
             });
-            NSLog(@"%@", objects);
-            NSLog(@"today %@", [NSDate date]);
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
                 self.hud.labelText = @"Error";
