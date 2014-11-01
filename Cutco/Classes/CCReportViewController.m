@@ -91,7 +91,7 @@
     NSArray *overviewValues = @[self.report.totalSalesNumber, self.report.totalReturnedNumber, self.report.totalSalesRevenue];
     
     NSArray *todayTitle = @[@"Sold", @"Returned", @"Revenue"];
-    NSArray *todayValues = @[self.report.totalSalesNumber, self.report.totalReturnedNumber, self.report.totalSalesRevenue];
+    NSArray *todayValues = @[self.report.todaySalesNumber, self.report.todayReturnedNumber, self.report.todaySalesRevenue];
     
     switch (indexPath.section) {
         case 0: {

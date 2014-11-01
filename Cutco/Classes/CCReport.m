@@ -75,7 +75,7 @@
         }
     }
     for (CCSale *sale in [CCSales sharedSales].returned) {
-        if ([sale.createdAt isCurrentDay]) {
+        if ([sale.updatedAt isCurrentDay]) {
             returnedToday++;
         }
     }
