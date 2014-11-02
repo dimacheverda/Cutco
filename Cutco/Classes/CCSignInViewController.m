@@ -15,6 +15,11 @@
 #import "CCTextField.h"
 #import "UIColor+CCColor.h"
 #import "UIFont+CCFont.h"
+#import "CCIntroViewController.h"
+#import "CCPaperWorkViewController.h"
+#import "CCOnboardingViewController.h"
+#import "CCTrainingVideosViewController.h"
+#import "CCGuidelinesViewControlller.h"
 
 @interface CCSignInViewController () <UITextFieldDelegate>
 
@@ -182,10 +187,21 @@
 }
 
 - (void)performTransition {
-    CCEventsViewController *eventsVC = [[CCEventsViewController alloc] init];
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:eventsVC];
-    [self presentViewController:navController animated:YES completion:^{
-    }];
+    // onboarding transtion
+    CCIntroViewController *introVC = [[CCIntroViewController alloc] init];
+    CCPaperWorkViewController *paperWorkVC = [[CCPaperWorkViewController alloc] init];
+    CCTrainingVideosViewController *trainingVideosVC = [[CCTrainingVideosViewController alloc] init];
+    CCGuidelinesViewControlller *guidelinesVC = [[CCGuidelinesViewControlller alloc] init];
+    
+    CCOnboardingViewController *onboardingVC = [[CCOnboardingViewController alloc] initWithViewControllers:@[introVC, paperWorkVC, trainingVideosVC, guidelinesVC]];
+    
+    UINavigationController *onboardingNavController = [[UINavigationController alloc] initWithRootViewController:onboardingVC];
+    [self presentViewController:onboardingNavController animated:YES completion:nil];
+    
+    // events transition
+//    CCEventsViewController *eventsVC = [[CCEventsViewController alloc] init];
+//    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:eventsVC];
+//    [self presentViewController:navController animated:YES completion:nil];
 }
 
 - (void)tapGestureHandler {
