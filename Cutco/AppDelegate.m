@@ -11,6 +11,8 @@
 #import <Crashlytics/Crashlytics.h>
 #import "CCSignInViewController.h"
 #import <MediaPlayer/MediaPlayer.h>
+#import "UIFont+CCFont.h"
+#import "UIColor+CCColor.h"
 
 @interface AppDelegate () {
     BOOL _allowRotation;
@@ -46,6 +48,7 @@
                                                  name:MPMoviePlayerWillExitFullscreenNotification
                                                object:nil];
     
+    [self applyAppearance];
     
     return YES;
 }
@@ -115,6 +118,24 @@
 
 - (void)moviePlayerWillExitFullscreen {
     _allowRotation = NO;
+}
+
+- (void)applyAppearance {
+    // changing UIBarButtonItem Appearance
+    NSDictionary *attributes = [NSDictionary dictionaryWithObject:[UIFont primaryCopyTypefaceWithSize:17]
+                                                           forKey:NSFontAttributeName];
+    [[UIBarButtonItem appearance] setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    
+    // changing NavigationBar title appearance
+    [[UINavigationBar appearance] setTitleTextAttributes:@{
+                                                           NSFontAttributeName: [UIFont primaryCopyTypefaceWithSize:20.0]
+                                                           }];
+    
+    [[UIBarButtonItem appearance] setTintColor:[UIColor eventTypeSegmentedControlTintColor]];
+    
+    [[UISegmentedControl appearance] setTintColor:[UIColor eventTypeSegmentedControlTintColor]];
+    
+    [[UITabBar appearance] setTintColor:[UIColor eventTypeSegmentedControlTintColor]];
 }
 
 @end

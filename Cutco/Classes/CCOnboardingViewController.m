@@ -116,13 +116,6 @@ typedef NS_ENUM(NSInteger, kMFWalkthroughDirection) {
     [self cycleFromViewController:currentViewController
                  toViewController:newViewController
                     withDirection:kMFWalkthroughDirectionForward];
-    
-    
-//    if (self.currentIndex == self.viewControllers.count - 1) {
-//        self.navigationItem.rightBarButtonItem.enabled = NO;
-//    } else {
-//        self.navigationItem.rightBarButtonItem.enabled = YES;
-//    }
 }
 
 - (void)displayPreviousViewController {
@@ -132,21 +125,19 @@ typedef NS_ENUM(NSInteger, kMFWalkthroughDirection) {
     [self cycleFromViewController:currentViewController
                  toViewController:newViewController
                     withDirection:kMFWalkthroughDirectionBackward];
-    
-//    if (self.currentIndex == 0) {
-//        self.navigationItem.leftBarButtonItem.enabled = NO;
-//    } else {
-//        self.navigationItem.leftBarButtonItem.enabled = YES;
-//    }
 }
 
 #pragma mark - Navigation Actions
+
+#define kOnboardingBackButtonDidPressedNotification @"OnboardingBackButtonDidPressedNotification"
+#define kOnboardingNextButtonDidPressedNotification @"OnboardingNextButtonDidPressedNotification"
 
 - (void)goBack {
     if (self.currentIndex == 0) {
         return;
     } else {
         [self displayPreviousViewController];
+        [self postNotificationWithName:kOnboardingBackButtonDidPressedNotification];
     }
 }
 
@@ -155,7 +146,12 @@ typedef NS_ENUM(NSInteger, kMFWalkthroughDirection) {
         return;
     } else {
         [self displayNextViewController];
+        [self postNotificationWithName:kOnboardingNextButtonDidPressedNotification];
     }
-
 }
+
+- (void)postNotificationWithName:(NSString *)name {
+    [[NSNotificationCenter defaultCenter] postNotificationName:name object:nil];
+}
+
 @end

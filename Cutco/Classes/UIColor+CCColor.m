@@ -34,7 +34,6 @@
 #pragma mark - Stock Items
 
 + (UIColor *)stockCollectionViewBackgroundColor {
-//    return [UIColor colorWithWhite:0.9 alpha:1.0];
     return [UIColor cutcoWhite];
 }
 

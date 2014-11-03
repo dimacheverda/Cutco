@@ -143,7 +143,15 @@
     
     cell.index = self.counterView.count - indexPath.row;
     cell.name = item.name;
-    cell.date = sale.createdAt;
+    
+    (self.isShowingSold) ? (cell.date = sale.createdAt) : (cell.date = sale.updatedAt);
+    
+//    if (self.isShowingSold) {
+//        cell.date = sale.createdAt;
+//    } else {
+//        cell.date = sale.updatedAt;
+//    }
+    
     [item.image getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
         if (!error) {
             UIImage *image = [UIImage imageWithData:data];
