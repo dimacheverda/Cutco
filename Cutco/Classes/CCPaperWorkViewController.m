@@ -33,7 +33,14 @@
     [self.view addSubview:self.checkBox];
     
     self.titleLabel.text = @"Complete employee paper work";
-    self.descriptionLabel.text = @"By pressing checkbox below you confirming that you has completed employee paper work";
+    
+    NSString *desciptionString = @"By pressing checkbox below you confirming that you has completed employee paper work";
+    NSMutableAttributedString *attrStr = [[NSMutableAttributedString alloc] initWithString:desciptionString];
+    NSMutableParagraphStyle *paragrahStyle = [[NSMutableParagraphStyle alloc] init];
+    [paragrahStyle setLineSpacing:8];
+    paragrahStyle.alignment = NSTextAlignmentCenter;
+    [attrStr addAttribute:NSParagraphStyleAttributeName value:paragrahStyle range:NSMakeRange(0, [desciptionString length])];
+    self.descriptionLabel.attributedText = attrStr;
 }
 
 - (void)viewWillLayoutSubviews {

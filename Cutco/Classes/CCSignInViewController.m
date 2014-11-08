@@ -18,8 +18,9 @@
 #import "CCIntroViewController.h"
 #import "CCPaperWorkViewController.h"
 #import "CCOnboardingViewController.h"
-#import "CCTrainingVideosViewController.h"
 #import "CCGuidelinesViewControlller.h"
+//#import <MediaPlayer/MediaPlayer.h>
+#import "CCAudioPlayerViewController.h"
 
 @interface CCSignInViewController () <UITextFieldDelegate>
 
@@ -188,12 +189,15 @@
 
 - (void)performTransition {
     // onboarding transtion
-    CCIntroViewController *introVC = [[CCIntroViewController alloc] init];
+    
+    NSURL *streamUrl = [NSURL URLWithString:@"http://ds1.downloadtech.net/cn1086/audio/209210320528066-002.mp3"];
+    NSString *titleString = @"Welcome to Cutco's demonstrator training for Costco.\nStart the audio track below to begin your training.";
+    
+    CCAudioPlayerViewController *audioPlayerVC = [[CCAudioPlayerViewController alloc] initWithStreamUrl:streamUrl titleText:titleString];
     CCPaperWorkViewController *paperWorkVC = [[CCPaperWorkViewController alloc] init];
-    CCTrainingVideosViewController *trainingVideosVC = [[CCTrainingVideosViewController alloc] init];
     CCGuidelinesViewControlller *guidelinesVC = [[CCGuidelinesViewControlller alloc] init];
     
-    CCOnboardingViewController *onboardingVC = [[CCOnboardingViewController alloc] initWithViewControllers:@[introVC, paperWorkVC, trainingVideosVC, guidelinesVC]];
+    CCOnboardingViewController *onboardingVC = [[CCOnboardingViewController alloc] initWithViewControllers:@[audioPlayerVC, paperWorkVC, guidelinesVC]];
     
     UINavigationController *onboardingNavController = [[UINavigationController alloc] initWithRootViewController:onboardingVC];
     [self presentViewController:onboardingNavController animated:YES completion:nil];

@@ -8,10 +8,15 @@
 
 #import "CCGuidelinesViewControlller.h"
 #import "CCOnboardingViewController.h"
+#import "CCGuidelinesTextView.h"
 
 @interface CCGuidelinesViewControlller ()
 
 @property (strong, nonatomic) UILabel *descriptionLabel;
+@property (strong, nonatomic) UILabel *guidelineLabel;
+@property (strong, nonatomic) UIScrollView *scrollView;
+
+@property (strong, nonatomic) CCGuidelinesTextView *textView;
 
 @end
 
@@ -22,15 +27,15 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self.view addSubview:self.descriptionLabel];
-    self.descriptionLabel.text = @"Guidelines VC";
+    [self.view addSubview:self.textView];
 }
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
-    _descriptionLabel.frame = CGRectMake(10.0, 100.0, 300.0, 40.0);
+    _textView.frame = self.view.frame;
 }
+
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
@@ -46,6 +51,14 @@
     }
     return _descriptionLabel;
 }
+
+- (CCGuidelinesTextView *)textView {
+    if (!_textView) {
+        _textView = [[CCGuidelinesTextView alloc] initWithFrame:self.view.frame];
+    }
+    return _textView;
+}
+
 
 #pragma mark - Onboarding Methods
 

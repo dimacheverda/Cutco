@@ -285,8 +285,20 @@
 #pragma mark - Action handlers
 
 - (void)logOutButtonDidPressed {
-    [self dismissViewControllerAnimated:YES completion:^{
-    }];
+    if ([self.parentViewController isKindOfClass:NSClassFromString(@"CCSignInViewController")]) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    } else {
+        
+//        UINavigationController *eventsNavController = (UINavigationController *)self.parentViewController;
+//        UINavigationController *onboardingNavCon = (UINavigationController *)eventsNavController.presentingViewController;
+//        UIViewController *onboardingVC = onboardingNavCon.viewControllers[0];
+//        NSLog(@"%@", self.presentingViewController.presentingViewController);
+//        NSLog(@"%@", eventsNavController.presentingViewController);
+//        NSLog(@"%@", onboardingNavCon.viewControllers[0]);
+//        NSLog(@"%@", self.parentViewController.presentingViewController);
+        
+        [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 
 - (void)segmentedControlDidPressed {

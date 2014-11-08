@@ -7,6 +7,7 @@
 //
 
 #import "CCOnboardingViewController.h"
+#import "CCEventsViewController.h"
 
 @interface CCOnboardingViewController ()
 
@@ -43,6 +44,12 @@ typedef NS_ENUM(NSInteger, kMFWalkthroughDirection) {
     
     [self displayInitialViewController];
 }
+
+- (void)viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+}
+
+#pragma mark - Accessors
 
 - (UIBarButtonItem *)backBarButtonItem {
     if (!_backBarButtonItem) {
@@ -143,7 +150,7 @@ typedef NS_ENUM(NSInteger, kMFWalkthroughDirection) {
 
 - (void)goForward {
     if (self.currentIndex == self.viewControllers.count - 1) {
-        return;
+        [self endOnboardingTransition];
     } else {
         [self displayNextViewController];
         [self postNotificationWithName:kOnboardingNextButtonDidPressedNotification];
@@ -152,6 +159,13 @@ typedef NS_ENUM(NSInteger, kMFWalkthroughDirection) {
 
 - (void)postNotificationWithName:(NSString *)name {
     [[NSNotificationCenter defaultCenter] postNotificationName:name object:nil];
+}
+
+- (void)endOnboardingTransition {
+    CCEventsViewController *eventsVC = [[CCEventsViewController alloc] init];
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:eventsVC];
+    [self presentViewController:navController animated:YES completion:nil];
+
 }
 
 @end
