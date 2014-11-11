@@ -18,6 +18,7 @@
 #import "UIColor+CCColor.h"
 #import "UIFont+CCFont.h"
 #import "CCCheckoutSettingCell.h"
+#import "CCTransaction.h"
 
 @interface CCCheckoutViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -27,6 +28,8 @@
 @property (strong, nonatomic) NSArray *items;
 @property (strong, nonatomic) MBProgressHUD *hud;
 @property (strong, nonatomic) NSMutableArray *quantity;
+@property (nonatomic) BOOL newCustomer;
+@property (nonatomic) BOOL cameBack;
 
 @end
 
@@ -164,6 +167,16 @@
 - (void)setupSettingCell:(CCCheckoutSettingCell *)cell forIndexPath:(NSIndexPath *)indexPath {
     NSArray *titles = @[@"New Customer", @"Came Back"];
     cell.settingNameLabel.text = titles[indexPath.row];
+    
+    [cell.switchButton addTarget:self
+                          action:@selector(switchValueChanged:)
+                forControlEvents:UIControlEventValueChanged];
+    
+    if (indexPath.row == 0) {
+        cell.switchButton.on = self.newCustomer;
+    } else {
+        cell.switchButton.on = self.cameBack;
+    }
 }
 
 - (void)setupStockItemCell:(CCCheckoutTableViewCell *)cell forIndexPath:(NSIndexPath *)indexPath {
@@ -233,6 +246,7 @@
     }
     
     [self saveSalesToParse:itemsForSale];
+    [self saveTransactionToParse];
 }
 
 - (void)saveSalesToParse:(NSArray *)items {
@@ -261,6 +275,33 @@
             });
         }
     }];
+}
+
+- (void)saveTransactionToParse {
+    CCTransaction *transaction = [[CCTransaction alloc] init];
+    transaction.newCustomer = self.newCustomer;
+    transaction.cameBack = self.cameBack;
+    transaction.user = [PFUser currentUser];
+    transaction.event = [CCEvents sharedEvents].currentEvent;
+    transaction.location = [CCEvents sharedEvents].currentLocation;
+    
+    [transaction saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+    }];
+}
+
+#pragma mark - Settings Action Handlers
+
+- (void)switchValueChanged:(id)sender {
+    CCCheckoutSettingCell *cell = (CCCheckoutSettingCell *)[[sender superview] superview];
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    
+    if (indexPath.section == 0) {
+        if (indexPath.row == 0) {
+            self.newCustomer = cell.switchButton.isOn;
+        } else {
+            self.cameBack = cell.switchButton.isOn;
+        }
+    }
 }
 
 @end

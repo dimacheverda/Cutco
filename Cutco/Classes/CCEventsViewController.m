@@ -54,6 +54,17 @@
     [self loadEventsMemberFromParse];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    // reset lastPhotoDate key after exiting current event
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"lastPhotoDate"];
+    [CCEvents sharedEvents].currentEvent = nil;
+    [CCEvents sharedEvents].currentLocation = nil;
+    [CCEvents sharedEvents].currentEventMember = nil;
+    [CCEvents sharedEvents].photoTakenForCurrentEvent = NO;
+}
+
 - (void)applyAppearanceToNavigationBar {
     // changing UIBarButtonItem Appearance
     NSDictionary *attributes = [NSDictionary dictionaryWithObject:[UIFont primaryCopyTypefaceWithSize:17]
@@ -148,7 +159,9 @@
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     if (self.segmentedControl.selectedSegmentIndex == 1) {
-        [CCEvents sharedEvents].currentEvent = self.eventsDataSource[indexPath.row];
+        CCEvent *currentEvent = self.eventsDataSource[indexPath.row];
+        [CCEvents sharedEvents].currentEvent = currentEvent;
+        [CCEvents sharedEvents].currentLocation = currentEvent.location;
         
         for (CCEventMember *member in [CCEvents sharedEvents].eventsMember) {
             if ([member.event.objectId isEqualToString:[CCEvents sharedEvents].currentEvent.objectId] &&

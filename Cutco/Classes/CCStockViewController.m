@@ -21,6 +21,7 @@
 #import "CCSales.h"
 #import "UIColor+CCColor.h"
 #import "UIFont+CCFont.h"
+#import "CCPhoto.h"
 
 @interface CCStockViewController () <UICollectionViewDelegate,
                                         UICollectionViewDataSource,
@@ -191,19 +192,22 @@
     
     [self.hud show:YES];
     self.hud.labelText = @"Saving..";
+    self.hud.detailsLabelText = @"";
     self.hud.mode = MBProgressHUDModeIndeterminate;
     
     UIImage *image = info[UIImagePickerControllerOriginalImage];
     if (image) {
         PFFile *file = [PFFile fileWithData:UIImageJPEGRepresentation(image, 0.1)];
-        PFObject *object = [PFObject objectWithClassName:@"Photo"];
-        object[@"photo"] = file;
-        object[@"user"] = [PFUser currentUser];
+        CCPhoto *object = [[CCPhoto alloc] init];
+        object.file = file;
+        object.user = [PFUser currentUser];
+        object.event = [CCEvents sharedEvents].currentEvent;
+        
         [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             self.hud.mode = MBProgressHUDModeText;
             if (succeeded) {
                 self.hud.labelText = @"Photo saved";
-                [[NSUserDefaults standardUserDefaults] setValue:[NSDate date] forKey:@"lastPhotoDate"];
+                [CCEvents sharedEvents].photoTakenForCurrentEvent = YES;
             } else {
                 self.hud.labelText = @"Error";
                 self.hud.detailsLabelText = [NSString stringWithFormat:@"Error : %@", error];
@@ -234,15 +238,10 @@
     }
 }
 
-- (void)showEvents {
-    [self dismissViewControllerAnimated:YES completion:nil];
-    self.collectionView = nil;
-}
-
 #pragma mark - Parse methods
 
 - (void)loadStockItemsFromParse {
-    self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    self.hud = [MBProgressHUD showHUDAddedTo:self.collectionView animated:YES];
     self.hud.mode = MBProgressHUDModeIndeterminate;
     self.hud.labelText = @"Loading..";
     
@@ -285,6 +284,11 @@
     [self.hud hide:YES afterDelay:1.0];
 }
 
+- (void)showEvents {
+    [self dismissViewControllerAnimated:YES completion:nil];
+    self.collectionView = nil;
+}
+
 #pragma mark - Checkout methods
 
 - (void)hideTabBarIfNeeded {
@@ -308,6 +312,41 @@
 }
 
 - (void)checkoutButtonDidPressed {
+    if ([CCEvents sharedEvents].isPhotoTakenForCurrentEvent) {
+        [self performCheckoutTransition];
+    } else {
+        PFQuery *query = [CCPhoto query];
+        [query clearCachedResult];
+        [query whereKey:@"event" equalTo:[CCEvents sharedEvents].currentEvent];
+        [query whereKey:@"user" equalTo:[PFUser currentUser]];
+        [query countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+            if (!error) {
+                if (number > 0) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [CCEvents sharedEvents].photoTakenForCurrentEvent = YES;
+                        [self performCheckoutTransition];
+                    });
+                } else {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        self.hud = [MBProgressHUD showHUDAddedTo:self.collectionView animated:YES];
+                        self.hud.mode = MBProgressHUDModeText;
+                        self.hud.labelText = @"Error";
+                        self.hud.detailsLabelText = @"No photo of this event was taken";
+                        [self.hud hide:YES afterDelay:2.0];
+                    });
+                }
+            } else {
+                NSLog(@"error %@", error);
+                self.hud.mode = MBProgressHUDModeText;
+                self.hud.labelText = @"Error";
+                self.hud.detailsLabelText = [NSString stringWithFormat:@"%@", error.description];
+                [self.hud hide:YES afterDelay:2.0];
+            }
+        }];
+    }
+}
+
+- (void)performCheckoutTransition {
     NSArray *checkedIndexesArray = [self.checkedIndexes allObjects];
     checkedIndexesArray = [checkedIndexesArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
         NSInteger r1 = [obj1 row];
@@ -320,7 +359,7 @@
         }
         return (NSComparisonResult)NSOrderedSame;
     }];
-
+    
     NSMutableArray *items = [NSMutableArray array];
     for (NSIndexPath *indexPath in checkedIndexesArray) {
         [items addObject:[CCStock sharedStock].items[indexPath.row]];

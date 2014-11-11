@@ -22,6 +22,7 @@
 @property (nonatomic, retain) CCEvent *currentEvent;
 @property (nonatomic, retain) CCEventMember *currentEventMember;
 @property (nonatomic, retain) CCLocation *currentLocation;
+@property (nonatomic, getter=isPhotoTakenForCurrentEvent) BOOL photoTakenForCurrentEvent;
  
 + (instancetype)sharedEvents;
 
