@@ -10,13 +10,12 @@
 #import "CCOnboardingViewController.h"
 #import "CCGuidelinesTextView.h"
 
-@interface CCGuidelinesViewControlller ()
+@interface CCGuidelinesViewControlller () <UITextViewDelegate>
 
-@property (strong, nonatomic) UILabel *descriptionLabel;
-@property (strong, nonatomic) UILabel *guidelineLabel;
-@property (strong, nonatomic) UIScrollView *scrollView;
-
+//@property (strong, nonatomic) UILabel *descriptionLabel;
+//@property (strong, nonatomic) UILabel *guidelineLabel;
 @property (strong, nonatomic) CCGuidelinesTextView *textView;
+@property (nonatomic, getter=isTextViewScrolledToDown) BOOL textViewScrolledToDown;
 
 @end
 
@@ -45,16 +44,10 @@
 
 #pragma mark - Accessors
 
-- (UILabel *)descriptionLabel {
-    if (!_descriptionLabel) {
-        _descriptionLabel = [[UILabel alloc] init];
-    }
-    return _descriptionLabel;
-}
-
 - (CCGuidelinesTextView *)textView {
     if (!_textView) {
         _textView = [[CCGuidelinesTextView alloc] initWithFrame:self.view.frame];
+        _textView.delegate = self;
     }
     return _textView;
 }
@@ -65,7 +58,16 @@
 - (void)setupForOnboarding {
     if ([self.parentViewController isKindOfClass:[CCOnboardingViewController class]]) {
         self.parentViewController.navigationItem.leftBarButtonItem.enabled = YES;
-        self.parentViewController.navigationItem.rightBarButtonItem.enabled = YES;
+        self.parentViewController.navigationItem.rightBarButtonItem.enabled = self.isTextViewScrolledToDown;
+    }
+}
+
+#pragma mark - Text View Delegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    if (scrollView.contentOffset.y >= scrollView.contentSize.height - scrollView.frame.size.height) {
+        self.textViewScrolledToDown = YES;
+        [self setupForOnboarding];
     }
 }
 

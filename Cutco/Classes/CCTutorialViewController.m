@@ -10,6 +10,7 @@
 
 @interface CCTutorialViewController ()
 
+@property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) UIImageView *imageView;
 
 @end
