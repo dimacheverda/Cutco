@@ -37,7 +37,7 @@
     [super layoutSubviews];
     
     _playButton.frame = CGRectMake(CGRectGetMidX(self.frame),
-                                   CGRectGetHeight(self.frame) - kButtonHeight - 20.0,
+                                   CGRectGetHeight(self.frame) - kButtonHeight - 20.0 - 49.0,
                                    kButtonWidth,
                                    kButtonHeight);
     _playButton.center = CGPointMake(CGRectGetMidX(self.frame), CGRectGetMidY(_playButton.frame));

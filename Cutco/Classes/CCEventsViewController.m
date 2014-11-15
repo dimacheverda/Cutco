@@ -183,6 +183,7 @@
     
     UINavigationController *stockNavController = [[UINavigationController alloc] initWithRootViewController:stockVC];
     UINavigationController *reportNavController = [[UINavigationController alloc] initWithRootViewController:reportVC];
+    UINavigationController *tutorialNavCOntroller = [[UINavigationController alloc] initWithRootViewController:tutorialVC];
     
     stockVC.title = @"Add Sale";
     soldVC.title = @"Sold";
@@ -205,7 +206,7 @@
     reportVC.tabBarItem.selectedImage = [UIImage imageNamed:@"calculator_fill"];
     
     UITabBarController *tabBarController = [[UITabBarController alloc] init];
-    tabBarController.viewControllers = @[tutorialVC, returnedVC, stockNavController, soldVC, reportNavController];
+    tabBarController.viewControllers = @[tutorialNavCOntroller, returnedVC, stockNavController, soldVC, reportNavController];
     [tabBarController setSelectedViewController:stockNavController];
     
     [self presentViewController:tabBarController animated:YES completion:^{
