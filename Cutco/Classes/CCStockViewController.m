@@ -22,6 +22,7 @@
 #import "UIColor+CCColor.h"
 #import "UIFont+CCFont.h"
 #import "CCPhoto.h"
+#import "CCBeBack.h"
 
 @interface CCStockViewController () <UICollectionViewDelegate,
                                         UICollectionViewDataSource,
@@ -279,9 +280,34 @@
     [self uncheckItems];
     
     [self.hud show:YES];
-    self.hud.labelText = @"'Be back' saved";
-    self.hud.mode = MBProgressHUDModeText;
-    [self.hud hide:YES afterDelay:1.0];
+    self.hud.labelText = @"Saving..";
+    self.hud.detailsLabelText = @"";
+    self.hud.mode = MBProgressHUDModeIndeterminate;
+    
+    CCBeBack *beBack = [[CCBeBack alloc] init];
+    beBack.event = [CCEvents sharedEvents].currentEvent;
+    beBack.location = [CCEvents sharedEvents].currentLocation;
+    beBack.user = [PFUser currentUser];
+    
+    [beBack saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.hud show:YES];
+                self.hud.labelText = @"'Be back' saved";
+                self.hud.detailsLabelText = @"";
+                self.hud.mode = MBProgressHUDModeText;
+                [self.hud hide:YES afterDelay:1.0];
+            });
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.hud show:YES];
+                self.hud.labelText = @"Error";
+                self.hud.detailsLabelText = error.description;
+                self.hud.mode = MBProgressHUDModeText;
+                [self.hud hide:YES afterDelay:2.0];
+            });
+        }
+    }];    
 }
 
 - (void)showEvents {
