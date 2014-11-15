@@ -10,6 +10,7 @@
 #import "CCStockItem.h"
 #import "CCEvent.h"
 #import "CCEvents.h"
+#import "CCTransaction.h"
 
 @interface CCSale : PFObject <PFSubclassing>
 
@@ -18,6 +19,7 @@
 @property BOOL returned;
 @property NSUInteger price;
 @property (retain) CCEvent *event;
+@property (retain) CCTransaction *transaction;
 
 - (instancetype)initWithStockItem:(CCStockItem *)stockItem;
 

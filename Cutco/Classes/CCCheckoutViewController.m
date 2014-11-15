@@ -246,13 +246,16 @@
     }
     
     [self saveSalesToParse:itemsForSale];
-    [self saveTransactionToParse];
 }
 
 - (void)saveSalesToParse:(NSArray *)items {
+    CCTransaction *transaction = [[CCTransaction alloc] init];
+    [self saveTransactionToParse:transaction];
+    
     NSMutableArray *sales = [NSMutableArray array];
     for (CCStockItem *item in items) {
         CCSale *sale = [[CCSale alloc] initWithStockItem:item];
+        sale.transaction = transaction;
         [sales addObject:sale];
     }
     
@@ -277,8 +280,7 @@
     }];
 }
 
-- (void)saveTransactionToParse {
-    CCTransaction *transaction = [[CCTransaction alloc] init];
+- (void)saveTransactionToParse:(CCTransaction *)transaction {
     transaction.newCustomer = self.newCustomer;
     transaction.cameBack = self.cameBack;
     transaction.user = [PFUser currentUser];
