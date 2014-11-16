@@ -173,6 +173,7 @@
         CCSale *sale = [CCSales sharedSales].sales[indexPath.row];
         sale.returned = YES;
         
+        self.hud = [MBProgressHUD showHUDAddedTo:self.tableView animated:YES];
         self.hud.mode = MBProgressHUDModeIndeterminate;
         [self.hud show:YES];
         self.hud.labelText = @"Returning..";

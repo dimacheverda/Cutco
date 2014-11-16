@@ -20,13 +20,22 @@
 
 @end
 
+#define PARSE_DEVELOPMENT_APPLICATION_ID @"in1P0XGnoUdnVtp9a2jXLU0f2NOcAsyiOpqQydgA"
+#define PARSE_DEVELOPMENT_CLIENT_KEY @"bYy7fEK59sNtpY1JJWtZkyvPksfKJgt54AT1NjLa"
+
+#define PARSE_PRODUCTION_APPLICATION_ID @"VjNo1dyIZ5RhU0Mm4ISvw2DsFlYY6UnjHM0WmWWq"
+#define PARSE_PRODUCTION_CLIENT_KEY @"AyOEiJunxVs7HWVX0EqEop3CWYPDXzDz0LWcj3MV"
+
+#define PARSE_RELEASE_APPLICATION_ID @"aiiGqQQjMLdO69CGpCSf5h05iRETlez3UoBgF0zw"
+#define PARSE_RELEASE_CLIENT_KEY @"XsbllrVRUzVx7sd8NwiB3v72ErEjiF68PcGzlUDB"
+
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     // Override point for customization after application launch.
-    [Parse setApplicationId:@"in1P0XGnoUdnVtp9a2jXLU0f2NOcAsyiOpqQydgA"
-                  clientKey:@"bYy7fEK59sNtpY1JJWtZkyvPksfKJgt54AT1NjLa"];
+    [Parse setApplicationId:PARSE_PRODUCTION_APPLICATION_ID
+                  clientKey:PARSE_PRODUCTION_CLIENT_KEY];
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
     
     [Crashlytics startWithAPIKey:@"b4e0bfdc0e14fd2d3f5efc10f37ed1265a1520d8"];
