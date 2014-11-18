@@ -58,7 +58,6 @@
     [super viewDidAppear:animated];
     
     // reset lastPhotoDate key after exiting current event
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"lastPhotoDate"];
     [CCEvents sharedEvents].currentEvent = nil;
     [CCEvents sharedEvents].currentLocation = nil;
     [CCEvents sharedEvents].currentEventMember = nil;
@@ -91,6 +90,9 @@
         _tableView.delegate = self;
         _tableView.dataSource = self;
         [_tableView registerClass:[CCEventTableViewCell class] forCellReuseIdentifier:@"Cell"];
+        [_tableView.refreshControl addTarget:self
+                                      action:@selector(loadEventsMemberFromParse)
+                            forControlEvents:UIControlEventValueChanged];
     }
     return _tableView;
 }
@@ -280,7 +282,8 @@
                 [CCEvents sharedEvents].locations = objects;
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
-                    self.eventsDataSource = [NSArray arrayWithArray:[CCEvents sharedEvents].inProgressEvents];
+                    [self segmentedControlDidPressed];
+                    
                     [self.tableView reloadData];
                     
                     [self.hud hide:YES];
@@ -293,6 +296,9 @@
                 [self.hud hide:YES afterDelay:2.0];
             });
         }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.tableView.refreshControl endRefreshing];
+        });
     }];
 }
 
@@ -301,16 +307,7 @@
 - (void)logOutButtonDidPressed {
     if ([self.parentViewController isKindOfClass:NSClassFromString(@"CCSignInViewController")]) {
         [self dismissViewControllerAnimated:YES completion:nil];
-    } else {
-        
-//        UINavigationController *eventsNavController = (UINavigationController *)self.parentViewController;
-//        UINavigationController *onboardingNavCon = (UINavigationController *)eventsNavController.presentingViewController;
-//        UIViewController *onboardingVC = onboardingNavCon.viewControllers[0];
-//        NSLog(@"%@", self.presentingViewController.presentingViewController);
-//        NSLog(@"%@", eventsNavController.presentingViewController);
-//        NSLog(@"%@", onboardingNavCon.viewControllers[0]);
-//        NSLog(@"%@", self.parentViewController.presentingViewController);
-        
+    } else {        
         [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
     }
 }

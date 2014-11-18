@@ -17,6 +17,10 @@
     if (self) {
         self.rowHeight = 96.0;
         self.contentInset = UIEdgeInsetsMake(44.0, 0.0, 0.0, 0.0);
+        
+        _refreshControl = [[UIRefreshControl alloc] init];
+        [self addSubview:_refreshControl];
+        [self sendSubviewToBack:_refreshControl];
     }
     return self;
 }

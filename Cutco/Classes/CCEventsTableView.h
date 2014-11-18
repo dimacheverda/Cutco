@@ -10,4 +10,7 @@
 
 @interface CCEventsTableView : UITableView
 
+
+@property (strong, nonatomic) UIRefreshControl *refreshControl;
+
 @end
