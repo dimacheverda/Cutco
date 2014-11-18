@@ -185,24 +185,33 @@
 }
 
 - (void)performTransition {
-    // onboarding transtion
     
-    NSURL *streamUrl = [NSURL URLWithString:@"http://ds1.downloadtech.net/cn1086/audio/209210320528066-002.mp3"];
-    NSString *titleString = @"Welcome to Cutco's demonstrator training for Costco.\nStart the audio track below to begin your training.";
+    // for onboarding testing purpose
+//    [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"kGeneralOnboadringCompleted"];
     
-    CCAudioPlayerViewController *audioPlayerVC = [[CCAudioPlayerViewController alloc] initWithStreamUrl:streamUrl titleText:titleString];
-    CCPaperWorkViewController *paperWorkVC = [[CCPaperWorkViewController alloc] init];
-    CCGuidelinesViewControlller *guidelinesVC = [[CCGuidelinesViewControlller alloc] init];
     
-    CCOnboardingViewController *onboardingVC = [[CCOnboardingViewController alloc] initWithViewControllers:@[audioPlayerVC, paperWorkVC, guidelinesVC]];
+    BOOL isOnboardingCompleted = [[NSUserDefaults standardUserDefaults] boolForKey:@"kGeneralOnboadringCompleted"];
     
-    UINavigationController *onboardingNavController = [[UINavigationController alloc] initWithRootViewController:onboardingVC];
-    [self presentViewController:onboardingNavController animated:YES completion:nil];
-    
-    // events transition
-//    CCEventsViewController *eventsVC = [[CCEventsViewController alloc] init];
-//    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:eventsVC];
-//    [self presentViewController:navController animated:YES completion:nil];
+    if (isOnboardingCompleted) {
+        
+        CCEventsViewController *eventsVC = [[CCEventsViewController alloc] init];
+        UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:eventsVC];
+        [self presentViewController:navController animated:YES completion:nil];
+        
+    } else {
+        
+        NSURL *streamUrl = [NSURL URLWithString:@"http://ds1.downloadtech.net/cn1086/audio/209210320528066-002.mp3"];
+        NSString *titleString = @"Welcome to Cutco's demonstrator training for Costco.\nStart the audio track below to begin your training.";
+        
+        CCAudioPlayerViewController *audioPlayerVC = [[CCAudioPlayerViewController alloc] initWithStreamUrl:streamUrl titleText:titleString];
+        CCPaperWorkViewController *paperWorkVC = [[CCPaperWorkViewController alloc] init];
+        CCGuidelinesViewControlller *guidelinesVC = [[CCGuidelinesViewControlller alloc] init];
+        
+        CCOnboardingViewController *onboardingVC = [[CCOnboardingViewController alloc] initWithViewControllers:@[audioPlayerVC, paperWorkVC, guidelinesVC]];
+        
+        UINavigationController *onboardingNavController = [[UINavigationController alloc] initWithRootViewController:onboardingVC];
+        [self presentViewController:onboardingNavController animated:YES completion:nil];
+    }
 }
 
 - (void)tapGestureHandler {

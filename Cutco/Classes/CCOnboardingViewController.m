@@ -164,7 +164,9 @@ typedef NS_ENUM(NSInteger, kMFWalkthroughDirection) {
 - (void)endOnboardingTransition {
     CCEventsViewController *eventsVC = [[CCEventsViewController alloc] init];
     UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:eventsVC];
-    [self presentViewController:navController animated:YES completion:nil];
+    [self presentViewController:navController animated:YES completion:^{
+        [[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"kGeneralOnboadringCompleted"];
+    }];
 
 }
 

@@ -38,8 +38,6 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    [self applyAppearanceToNavigationBar];
 
     self.navigationItem.title = @"Events";
     UIBarButtonItem *logOutButton = [[UIBarButtonItem alloc] initWithTitle:@"Log Out"
@@ -62,24 +60,6 @@
     [CCEvents sharedEvents].currentLocation = nil;
     [CCEvents sharedEvents].currentEventMember = nil;
     [CCEvents sharedEvents].photoTakenForCurrentEvent = NO;
-}
-
-- (void)applyAppearanceToNavigationBar {
-    // changing UIBarButtonItem Appearance
-    NSDictionary *attributes = [NSDictionary dictionaryWithObject:[UIFont primaryCopyTypefaceWithSize:17]
-                                                           forKey:NSFontAttributeName];
-    [[UIBarButtonItem appearance] setTitleTextAttributes:attributes forState:UIControlStateNormal];
-    
-    // changing NavigationBar title appearance
-    [[UINavigationBar appearance] setTitleTextAttributes:@{
-                                                           NSFontAttributeName: [UIFont primaryCopyTypefaceWithSize:20.0]
-                                                           }];
-    
-    [[UIBarButtonItem appearance] setTintColor:[UIColor eventTypeSegmentedControlTintColor]];
-    
-    [[UISegmentedControl appearance] setTintColor:[UIColor eventTypeSegmentedControlTintColor]];
-    
-    [[UITabBar appearance] setTintColor:[UIColor eventTypeSegmentedControlTintColor]];
 }
 
 #pragma mark - Accessors
@@ -305,9 +285,9 @@
 #pragma mark - Action handlers
 
 - (void)logOutButtonDidPressed {
-    if ([self.parentViewController isKindOfClass:NSClassFromString(@"CCSignInViewController")]) {
+    if ([self.presentingViewController isKindOfClass:NSClassFromString(@"CCSignInViewController")]) {
         [self dismissViewControllerAnimated:YES completion:nil];
-    } else {        
+    } else {
         [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
     }
 }

@@ -41,8 +41,6 @@ static void *AVPlayerPlaybackStatusObservationContext = &AVPlayerPlaybackStatusO
         paragrahStyle.alignment = NSTextAlignmentCenter;
         [attrStr addAttribute:NSParagraphStyleAttributeName value:paragrahStyle range:NSMakeRange(0, [titleText length])];
         self.audioPlayerView.titleLabel.attributedText = attrStr;
-        
-//        [self.player play];
     }
     return self;
 }
@@ -76,7 +74,8 @@ static void *AVPlayerPlaybackStatusObservationContext = &AVPlayerPlaybackStatusO
 - (void)setupForOnboarding {
     if ([self.parentViewController isKindOfClass:[CCOnboardingViewController class]]) {
         self.parentViewController.navigationItem.leftBarButtonItem.enabled = NO;
-        self.parentViewController.navigationItem.rightBarButtonItem.enabled = self.audioFinishedAtLeastOnce;
+        self.parentViewController.navigationItem.rightBarButtonItem.enabled = YES;
+//        self.parentViewController.navigationItem.rightBarButtonItem.enabled = self.audioFinishedAtLeastOnce;
     }
 }
 
