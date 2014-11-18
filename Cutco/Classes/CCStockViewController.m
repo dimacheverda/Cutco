@@ -78,7 +78,7 @@
         [self loadStockItemsFromParse];
     }
     
-    [self clearSingletonSales];
+    [[CCSales sharedSales] clearAllData];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -89,12 +89,6 @@
                                                     0.0,
                                                     49.0,
                                                     0.0);
-}
-
-- (void)clearSingletonSales {
-    [CCSales sharedSales].sales = [NSMutableArray array];
-    [CCSales sharedSales].returned = [NSMutableArray array];
-    [CCSales sharedSales].loaded = NO;
 }
 
 #pragma mark - Accessors
@@ -279,7 +273,7 @@
 - (void)beBackButtonDidPressed {
     [self uncheckItems];
     
-    [self.hud show:YES];
+    [self.hud show:YES ];
     self.hud.labelText = @"Saving..";
     self.hud.detailsLabelText = @"";
     self.hud.mode = MBProgressHUDModeIndeterminate;
@@ -291,6 +285,9 @@
     
     [beBack saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
         if (succeeded) {
+            
+            [[CCSales sharedSales].beBacks addObject:beBack];
+            
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.hud show:YES];
                 self.hud.labelText = @"'Be back' saved";
@@ -298,6 +295,7 @@
                 self.hud.mode = MBProgressHUDModeText;
                 [self.hud hide:YES afterDelay:1.0];
             });
+            
         } else {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.hud show:YES];

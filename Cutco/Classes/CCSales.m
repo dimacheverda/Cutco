@@ -22,22 +22,24 @@
 #define kUpdatedAtKey @"updatedAt"
 #define kCreatedAtKey @"createdAt"
 
-- (id)init {
+- (instancetype)init {
     if (self = [super init]) {
         self.sales = [NSMutableArray array];
         self.returned = [NSMutableArray array];
+        self.transactions = [NSMutableArray array];
+        self.beBacks = [NSMutableArray array];
     }
     return self;
 }
 
 - (void)loadSalesFromParseWithCompletion:(void (^)(NSError *error))completion {
+    [self loadTransactionsFromParse];
+    [self loadBeBacksFromParse];
+    
     PFQuery *query = [CCSale query];
     [query whereKey:@"user" equalTo:[PFUser currentUser]];
     [query whereKey:@"event" equalTo:[[CCEvents sharedEvents] currentEvent]];
     query.limit = 1000;
-    
-    self.sales = [NSMutableArray array];
-    self.returned = [NSMutableArray array];
     
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (!error) {
@@ -46,6 +48,37 @@
         }
         completion(error);
     }];
+    
+}
+
+- (void)loadTransactionsFromParse {
+    PFQuery *query = [CCTransaction query];
+    [query whereKey:@"user" equalTo:[PFUser currentUser]];
+    [query whereKey:@"event" equalTo:[[CCEvents sharedEvents] currentEvent]];
+    query.limit = 1000;
+    
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (!error) {
+            self.transactions = [objects mutableCopy];
+//            NSLog(@"transactions %@", objects);
+        }
+    }];
+
+}
+
+- (void)loadBeBacksFromParse {
+    PFQuery *query = [CCBeBack query];
+    [query whereKey:@"user" equalTo:[PFUser currentUser]];
+    [query whereKey:@"event" equalTo:[[CCEvents sharedEvents] currentEvent]];
+    query.limit = 1000;
+    
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (!error) {
+            self.beBacks = [objects mutableCopy];
+//            NSLog(@"be backs %@", objects);
+        }
+    }];
+
 }
 
 - (void)setSales:(NSMutableArray *)sales {
@@ -104,6 +137,14 @@
 
 - (void)postUpdateNotification {
     [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"kSalesUpdatedNotificationName" object:nil]];
+}
+
+- (void)clearAllData {
+    self.returned = [NSMutableArray array];
+    self.sales = [NSMutableArray array];
+    self.transactions = [NSMutableArray array];
+    self.beBacks = [NSMutableArray array];
+    self.loaded = NO;
 }
 
 @end

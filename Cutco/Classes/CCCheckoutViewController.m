@@ -288,6 +288,9 @@
     transaction.location = [CCEvents sharedEvents].currentLocation;
     
     [transaction saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            [[CCSales sharedSales].transactions addObject:transaction];
+        }
     }];
 }
 

@@ -8,11 +8,15 @@
 
 #import <Foundation/Foundation.h>
 #import "CCSale.h"
+#import "CCTransaction.h"
+#import "CCBeBack.h"
 
 @interface CCSales : NSObject
 
 @property (nonatomic, retain) NSMutableArray *sales;
 @property (nonatomic, retain) NSMutableArray *returned;
+@property (nonatomic, retain) NSMutableArray *transactions;
+@property (nonatomic, retain) NSMutableArray *beBacks;
 @property (nonatomic, assign, getter=isLoaded) BOOL loaded;
 
 + (instancetype)sharedSales;
@@ -21,5 +25,6 @@
 
 - (void)addSale:(CCSale *)sale;
 - (void)moveSaleToReturnedAtIndex:(NSUInteger)index;
+- (void)clearAllData;
 
 @end
