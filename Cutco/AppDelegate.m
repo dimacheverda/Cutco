@@ -14,9 +14,7 @@
 #import "UIFont+CCFont.h"
 #import "UIColor+CCColor.h"
 
-@interface AppDelegate () {
-    BOOL _allowRotation;
-}
+@interface AppDelegate ()
 
 @end
 
@@ -34,8 +32,8 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     // Override point for customization after application launch.
-    [Parse setApplicationId:PARSE_PRODUCTION_APPLICATION_ID
-                  clientKey:PARSE_PRODUCTION_CLIENT_KEY];
+    [Parse setApplicationId:PARSE_DEVELOPMENT_APPLICATION_ID
+                  clientKey:PARSE_DEVELOPMENT_CLIENT_KEY];
     [PFAnalytics trackAppOpenedWithLaunchOptions:launchOptions];
     
     [Crashlytics startWithAPIKey:@"b4e0bfdc0e14fd2d3f5efc10f37ed1265a1520d8"];
@@ -44,18 +42,6 @@
     self.window.backgroundColor = [UIColor whiteColor];
     self.window.rootViewController = [[CCSignInViewController alloc] init];
     [self.window makeKeyAndVisible];
-    
-    // subscribe to MoviePlayer fullscreen entering
-    _allowRotation = NO;
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(moviePlayerDidEnterFullscreen)
-                                                 name:MPMoviePlayerDidEnterFullscreenNotification
-                                               object:nil];
-    
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(moviePlayerWillExitFullscreen)
-                                                 name:MPMoviePlayerWillExitFullscreenNotification
-                                               object:nil];
     
     [self applyAppearance];
     
@@ -85,48 +71,33 @@
     [PFUser logOut];
 }
 
-- (NSUInteger) application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window
-{
-//////    MAGIC GOES HERE!!!!!
-    {
-//    if ([[window.rootViewController presentedViewController] isKindOfClass:[MPMoviePlayerViewController class]] || [[window.rootViewController presentedViewController] isKindOfClass:NSClassFromString(@"MPInlineVideoFullscreenViewController")] || [[window.rootViewController presentedViewController] isKindOfClass:NSClassFromString(@"AVFullScreenViewController")]) {
-//        
-//        return UIInterfaceOrientationMaskAllButUpsideDown;
-//    } else {
-//        
-//        if ([[window.rootViewController presentedViewController] isKindOfClass:[UINavigationController class]]) {
-//            
-//            // look for it inside UINavigationController
-//            UINavigationController *nc = (UINavigationController *)[window.rootViewController presentedViewController];
-//            
-//            // is at the top?
-//            if ([nc.topViewController isKindOfClass:[MPMoviePlayerViewController class]]) {
-//                return UIInterfaceOrientationMaskAllButUpsideDown;
-//                
-//                // or it's presented from the top?
-//            } else if ([[nc.topViewController presentedViewController] isKindOfClass:[MPMoviePlayerViewController class]] ||
-//                       [[nc.topViewController presentedViewController] isKindOfClass:NSClassFromString(@"MPInlineVideoFullscreenViewController")]) {
-//                return UIInterfaceOrientationMaskAllButUpsideDown;
-//            }
-//        }
-//    }
-    }
+- (NSUInteger) application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window {
     
-    if (_allowRotation) {
+//////    MAGIC GOES HERE!!!!!
+        
+    if ([[window.rootViewController presentedViewController] isKindOfClass:[MPMoviePlayerViewController class]] || [[window.rootViewController presentedViewController] isKindOfClass:NSClassFromString(@"MPInlineVideoFullscreenViewController")] || [[window.rootViewController presentedViewController] isKindOfClass:NSClassFromString(@"AVFullScreenViewController")]) {
+        
         return UIInterfaceOrientationMaskAllButUpsideDown;
     } else {
-        return UIInterfaceOrientationMaskPortrait;
+        
+        if ([[window.rootViewController presentedViewController] isKindOfClass:[UINavigationController class]]) {
+            
+            // look for it inside UINavigationController
+            UINavigationController *nc = (UINavigationController *)[window.rootViewController presentedViewController];
+            
+            // is at the top?
+            if ([nc.topViewController isKindOfClass:[MPMoviePlayerViewController class]]) {
+                return UIInterfaceOrientationMaskAllButUpsideDown;
+                
+                // or it's presented from the top?
+            } else if ([[nc.topViewController presentedViewController] isKindOfClass:[MPMoviePlayerViewController class]] ||
+                       [[nc.topViewController presentedViewController] isKindOfClass:NSClassFromString(@"MPInlineVideoFullscreenViewController")]) {
+                return UIInterfaceOrientationMaskAllButUpsideDown;
+            }
+        }
     }
-    
+ 
     return UIInterfaceOrientationMaskPortrait;
-}
-
-- (void)moviePlayerDidEnterFullscreen {
-    _allowRotation = YES;
-}
-
-- (void)moviePlayerWillExitFullscreen {
-    _allowRotation = NO;
 }
 
 - (void)applyAppearance {

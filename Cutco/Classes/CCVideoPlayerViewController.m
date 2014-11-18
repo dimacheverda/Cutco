@@ -9,7 +9,7 @@
 #import "CCVideoPlayerViewController.h"
 #import <youtube-ios-player-helper/YTPlayerView.h>
 
-@interface CCVideoPlayerViewController ()
+@interface CCVideoPlayerViewController () <YTPlayerViewDelegate>
 
 @property (strong, nonatomic) YTPlayerView *playerView;
 
@@ -25,7 +25,12 @@
     self.view.backgroundColor = [UIColor whiteColor];
     
     [self.view addSubview:self.playerView];
-    [self.playerView loadWithVideoId:self.videoId];
+    NSDictionary *playerVars = @{
+                                 @"autoplay" : @1,
+                                 @"autohide" : @1
+                                 };
+
+    [self.playerView loadWithVideoId:self.videoId playerVars:playerVars];
     [self.playerView playVideo];
     self.playerView.webView.backgroundColor = [UIColor clearColor];
 }
