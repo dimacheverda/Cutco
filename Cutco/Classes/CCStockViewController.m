@@ -273,7 +273,7 @@
 - (void)beBackButtonDidPressed {
     [self uncheckItems];
     
-    [self.hud show:YES ];
+    self.hud = [MBProgressHUD showHUDAddedTo:self.collectionView animated:YES];
     self.hud.labelText = @"Saving..";
     self.hud.detailsLabelText = @"";
     self.hud.mode = MBProgressHUDModeIndeterminate;
