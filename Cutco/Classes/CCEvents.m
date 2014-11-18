@@ -44,17 +44,24 @@
         for (CCEvent *event in allEvents) {
             if ([today isBetweenDate:event.startAt andDate:event.endAt]) {
                 [inProgress addObject:event];
-            } else if ([event.startAt compare:today] == NSOrderedDescending) {           //// startAt is later in time than today
+            } else if ([event.startAt compare:today] == NSOrderedDescending) {                  //// startAt is later in time than today
                 [upcomming addObject:event];
-            } else if ([event.endAt compare:today] == NSOrderedAscending) {              //// endAt is earlier in time than today
+            } else if ([event.endAt compare:today] == NSOrderedAscending) {                     //// endAt is earlier in time than today
                 [closed addObject:event];
             }
         }
         
-        self.closedEvents = closed;
-        self.inProgressEvents = inProgress;
-        self.upcommingEvents = upcomming;
+        self.closedEvents = [self sortedArrayByDate:closed withKey:@"startAt"];
+        self.inProgressEvents = [self sortedArrayByDate:inProgress withKey:@"startAt"];
+        self.upcommingEvents = [self sortedArrayByDate:upcomming withKey:@"startAt"];
     }
+}
+
+- (NSArray *)sortedArrayByDate:(NSArray *)array withKey:(NSString *)key {
+    NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:key ascending:YES];
+    NSArray *descriptors=  [NSArray arrayWithObject:descriptor];
+    NSArray *sortedArray = [array sortedArrayUsingDescriptors:descriptors];
+    return sortedArray;
 }
 
 @end

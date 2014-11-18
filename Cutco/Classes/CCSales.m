@@ -19,12 +19,33 @@
     return sharedSales;
 }
 
+#define kUpdatedAtKey @"updatedAt"
+#define kCreatedAtKey @"createdAt"
+
 - (id)init {
     if (self = [super init]) {
         self.sales = [NSMutableArray array];
         self.returned = [NSMutableArray array];
     }
     return self;
+}
+
+- (void)loadSalesFromParseWithCompletion:(void (^)(NSError *error))completion {
+    PFQuery *query = [CCSale query];
+    [query whereKey:@"user" equalTo:[PFUser currentUser]];
+    [query whereKey:@"event" equalTo:[[CCEvents sharedEvents] currentEvent]];
+    query.limit = 1000;
+    
+    self.sales = [NSMutableArray array];
+    self.returned = [NSMutableArray array];
+    
+    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        if (!error) {
+            self.sales = [objects mutableCopy];
+            self.loaded = YES;
+        }
+        completion(error);
+    }];
 }
 
 - (void)setSales:(NSMutableArray *)sales {
@@ -39,8 +60,8 @@
             }
         }
         
-        _sales = [self sortedArrayByDate:sold];
-        _returned = [self sortedArrayByDate:returned];
+        _sales = [self sortedArrayByDate:sold withKey:kCreatedAtKey];
+        _returned = [self sortedArrayByDate:returned withKey:kUpdatedAtKey];
     }
 }
 
@@ -50,17 +71,17 @@
         if (sale.returned) {
             array = [_returned mutableCopy];
             [array insertObject:sale atIndex:0];
-            _returned = [self sortedArrayByDate:array];
+            _returned = [self sortedArrayByDate:array withKey:kUpdatedAtKey];
         } else {
             array = [_sales mutableCopy];
             [array insertObject:sale atIndex:0];
-            _sales = [self sortedArrayByDate:array];
+            _sales = [self sortedArrayByDate:array withKey:kCreatedAtKey];
         }
     }
 }
 
-- (NSMutableArray *)sortedArrayByDate:(NSMutableArray *)array {
-    NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:@"createdAt" ascending:NO];
+- (NSMutableArray *)sortedArrayByDate:(NSMutableArray *)array withKey:(NSString *)key {
+    NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:key ascending:NO];
     NSArray *descriptors=  [NSArray arrayWithObject:descriptor];
     NSMutableArray *sortedArray = (NSMutableArray *)[array sortedArrayUsingDescriptors:descriptors];
     return sortedArray;
@@ -75,8 +96,14 @@
         [sold removeObject:sale];
         [returned addObject:sale];
         self.sales = sold;
-        self.returned = [self sortedArrayByDate:returned];
+        self.returned = [self sortedArrayByDate:returned withKey:kUpdatedAtKey];
+        
+        [self postUpdateNotification];
     }
+}
+
+- (void)postUpdateNotification {
+    [[NSNotificationCenter defaultCenter] postNotification:[NSNotification notificationWithName:@"kSalesUpdatedNotificationName" object:nil]];
 }
 
 @end

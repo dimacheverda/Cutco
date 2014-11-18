@@ -16,6 +16,9 @@
 @property (nonatomic, assign, getter=isLoaded) BOOL loaded;
 
 + (instancetype)sharedSales;
+
+- (void)loadSalesFromParseWithCompletion:(void (^)(NSError *error))completion;
+
 - (void)addSale:(CCSale *)sale;
 - (void)moveSaleToReturnedAtIndex:(NSUInteger)index;
 

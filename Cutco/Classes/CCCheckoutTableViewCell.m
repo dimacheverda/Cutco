@@ -7,6 +7,8 @@
 //
 
 #import "CCCheckoutTableViewCell.h"
+#import "UIFont+CCFont.h"
+#import "UIColor+CCColor.h"
 
 @interface CCCheckoutTableViewCell ()
 
@@ -109,7 +111,7 @@
         _quantityLabel = [[UILabel alloc] init];
         _quantityLabel.numberOfLines = 1;
         _quantityLabel.textAlignment = NSTextAlignmentCenter;
-        _quantityLabel.font = [UIFont systemFontOfSize:22.0];
+        _quantityLabel.font = [UIFont primaryCopyTypefaceWithSize:22.0];
         _quantityLabel.text = @"1";
     }
     return _quantityLabel;

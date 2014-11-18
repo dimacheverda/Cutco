@@ -8,6 +8,7 @@
 
 #import "CCCounterView.h"
 #import "UIColor+CCColor.h"
+#import "UIFont+CCFont.h"
 
 @interface CCCounterView ()
 
@@ -43,7 +44,7 @@
         _counterLabel.frame = CGRectMake(0.0, 20.0, 320.0, 44.0);//CGRectGetWidth(self.frame), CGRectGetHeight(self.frame));
         _counterLabel.numberOfLines = 1;
         _counterLabel.textAlignment = NSTextAlignmentCenter;
-        _counterLabel.font = [UIFont systemFontOfSize:16.0];
+        _counterLabel.font = [UIFont primaryCopyTypefaceWithSize:16.0];
         _counterLabel.textColor = [UIColor darkTextColor];
         _counterLabel.text = [NSString stringWithFormat:@"%@ %d", self.placeholder, (int)self.count];
     }

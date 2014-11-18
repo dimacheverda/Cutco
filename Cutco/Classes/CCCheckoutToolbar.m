@@ -8,6 +8,7 @@
 
 #import "CCCheckoutToolbar.h"
 #import "UIColor+CCColor.h"
+#import "UIFont+CCFont.h"
 
 @interface CCCheckoutToolbar ()
 
@@ -54,7 +55,7 @@
         _checkoutButton = [UIButton buttonWithType:UIButtonTypeSystem];
         [_checkoutButton setTitle:@"Checkout" forState:UIControlStateNormal];
         [_checkoutButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-        _checkoutButton.titleLabel.font = [UIFont systemFontOfSize:20.0];
+        _checkoutButton.titleLabel.font = [UIFont primaryCopyTypefaceWithSize:20.0];
         _checkoutButton.backgroundColor = [UIColor checkoutToolbarCheckoutColor];
     }
     return _checkoutButton;

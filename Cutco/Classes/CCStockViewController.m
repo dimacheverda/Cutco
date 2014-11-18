@@ -8,7 +8,6 @@
 
 #import "CCStockViewController.h"
 #import "CCStockCollectionViewCell.h"
-#import "CCStockItemViewController.h"
 #import "CCStockItem.h"
 #import <Parse/Parse.h>
 #import <MBProgressHUD.h>
@@ -20,6 +19,10 @@
 #import "CCEvents.h"
 #import "CCEvent.h"
 #import "CCSales.h"
+#import "UIColor+CCColor.h"
+#import "UIFont+CCFont.h"
+#import "CCPhoto.h"
+#import "CCBeBack.h"
 
 @interface CCStockViewController () <UICollectionViewDelegate,
                                         UICollectionViewDataSource,
@@ -47,12 +50,16 @@
                                                                          style:UIBarButtonItemStylePlain
                                                                         target:self
                                                                         action:@selector(showEvents)];
+    NSDictionary *attributes = [NSDictionary dictionaryWithObject:[UIFont primaryCopyTypefaceWithSize:17] forKey:NSFontAttributeName];
+    [showEventsButton setTitleTextAttributes:attributes
+                                    forState:UIControlStateNormal];
     self.navigationItem.leftBarButtonItem = showEventsButton;
     self.navigationItem.title = @"";
     
-    UIBarButtonItem *beBackButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemReply
-                                                                                  target:self
-                                                                                  action:@selector(beBackButtonDidPressed)];
+    UIBarButtonItem *beBackButton = [[UIBarButtonItem alloc] initWithTitle:@"Be back"
+                                                                     style:UIBarButtonItemStylePlain
+                                                                    target:self
+                                                                    action:@selector(beBackButtonDidPressed)];
     
     UIBarButtonItem *showCameraButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCamera
                                                                                       target:self
@@ -98,12 +105,11 @@
         layout.minimumInteritemSpacing = 1.0;
         layout.minimumLineSpacing = 1.0;
         CGFloat width = (CGRectGetWidth(self.view.frame) - 2) / 3;
-//        layout.itemSize = CGSizeMake(width, width / 5 * 6);
         layout.itemSize = CGSizeMake(width, width);
         _collectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
         _collectionView.delegate = self;
         _collectionView.dataSource = self;
-        _collectionView.backgroundColor = [UIColor colorWithWhite:0.9 alpha:1.0];
+        _collectionView.backgroundColor = [UIColor stockCollectionViewBackgroundColor];
         [_collectionView registerClass:[CCStockCollectionViewCell class] forCellWithReuseIdentifier:@"Cell"];
     }
     return _collectionView;
@@ -149,6 +155,8 @@
     CCStockCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
 
     CCStockItem *item = [CCStock sharedStock].items[indexPath.row];
+    cell.title = [NSString stringWithFormat:@"     $%d",(int)item.salePrice];
+    
     [item.image getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
         if (!error) {
             UIImage *image = [UIImage imageWithData:data];
@@ -157,8 +165,9 @@
             });
         }
     }];
-    cell.checkMark.checked = [self.checkedIndexes containsObject:indexPath];
- 
+    
+    cell.checked = [self.checkedIndexes containsObject:indexPath];
+    
     return cell;
 }
 
@@ -166,7 +175,7 @@
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     CCStockCollectionViewCell *cell = (CCStockCollectionViewCell *)[collectionView cellForItemAtIndexPath:indexPath];
-
+    
     [cell setChecked:!cell.isChecked];
     
     if ([self.checkedIndexes containsObject:indexPath]) {
@@ -184,19 +193,22 @@
     
     [self.hud show:YES];
     self.hud.labelText = @"Saving..";
+    self.hud.detailsLabelText = @"";
     self.hud.mode = MBProgressHUDModeIndeterminate;
     
     UIImage *image = info[UIImagePickerControllerOriginalImage];
     if (image) {
         PFFile *file = [PFFile fileWithData:UIImageJPEGRepresentation(image, 0.1)];
-        PFObject *object = [PFObject objectWithClassName:@"Photo"];
-        object[@"photo"] = file;
-        object[@"user"] = [PFUser currentUser];
+        CCPhoto *object = [[CCPhoto alloc] init];
+        object.file = file;
+        object.user = [PFUser currentUser];
+        object.event = [CCEvents sharedEvents].currentEvent;
+        
         [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             self.hud.mode = MBProgressHUDModeText;
             if (succeeded) {
                 self.hud.labelText = @"Photo saved";
-                [[NSUserDefaults standardUserDefaults] setValue:[NSDate date] forKey:@"lastPhotoDate"];
+                [CCEvents sharedEvents].photoTakenForCurrentEvent = YES;
             } else {
                 self.hud.labelText = @"Error";
                 self.hud.detailsLabelText = [NSString stringWithFormat:@"Error : %@", error];
@@ -227,15 +239,10 @@
     }
 }
 
-- (void)showEvents {
-    [self dismissViewControllerAnimated:YES completion:nil];
-    self.collectionView = nil;
-}
-
 #pragma mark - Parse methods
 
 - (void)loadStockItemsFromParse {
-    self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    self.hud = [MBProgressHUD showHUDAddedTo:self.collectionView animated:YES];
     self.hud.mode = MBProgressHUDModeIndeterminate;
     self.hud.labelText = @"Loading..";
     
@@ -273,9 +280,39 @@
     [self uncheckItems];
     
     [self.hud show:YES];
-    self.hud.labelText = @"'Be back' saved";
-    self.hud.mode = MBProgressHUDModeText;
-    [self.hud hide:YES afterDelay:1.0];
+    self.hud.labelText = @"Saving..";
+    self.hud.detailsLabelText = @"";
+    self.hud.mode = MBProgressHUDModeIndeterminate;
+    
+    CCBeBack *beBack = [[CCBeBack alloc] init];
+    beBack.event = [CCEvents sharedEvents].currentEvent;
+    beBack.location = [CCEvents sharedEvents].currentLocation;
+    beBack.user = [PFUser currentUser];
+    
+    [beBack saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+        if (succeeded) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.hud show:YES];
+                self.hud.labelText = @"'Be back' saved";
+                self.hud.detailsLabelText = @"";
+                self.hud.mode = MBProgressHUDModeText;
+                [self.hud hide:YES afterDelay:1.0];
+            });
+        } else {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.hud show:YES];
+                self.hud.labelText = @"Error";
+                self.hud.detailsLabelText = error.description;
+                self.hud.mode = MBProgressHUDModeText;
+                [self.hud hide:YES afterDelay:2.0];
+            });
+        }
+    }];    
+}
+
+- (void)showEvents {
+    [self dismissViewControllerAnimated:YES completion:nil];
+    self.collectionView = nil;
 }
 
 #pragma mark - Checkout methods
@@ -301,6 +338,41 @@
 }
 
 - (void)checkoutButtonDidPressed {
+    if ([CCEvents sharedEvents].isPhotoTakenForCurrentEvent) {
+        [self performCheckoutTransition];
+    } else {
+        PFQuery *query = [CCPhoto query];
+        [query clearCachedResult];
+        [query whereKey:@"event" equalTo:[CCEvents sharedEvents].currentEvent];
+        [query whereKey:@"user" equalTo:[PFUser currentUser]];
+        [query countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
+            if (!error) {
+                if (number > 0) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        [CCEvents sharedEvents].photoTakenForCurrentEvent = YES;
+                        [self performCheckoutTransition];
+                    });
+                } else {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        self.hud = [MBProgressHUD showHUDAddedTo:self.collectionView animated:YES];
+                        self.hud.mode = MBProgressHUDModeText;
+                        self.hud.labelText = @"Error";
+                        self.hud.detailsLabelText = @"No photo of this event was taken";
+                        [self.hud hide:YES afterDelay:2.0];
+                    });
+                }
+            } else {
+                NSLog(@"error %@", error);
+                self.hud.mode = MBProgressHUDModeText;
+                self.hud.labelText = @"Error";
+                self.hud.detailsLabelText = [NSString stringWithFormat:@"%@", error.description];
+                [self.hud hide:YES afterDelay:2.0];
+            }
+        }];
+    }
+}
+
+- (void)performCheckoutTransition {
     NSArray *checkedIndexesArray = [self.checkedIndexes allObjects];
     checkedIndexesArray = [checkedIndexesArray sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
         NSInteger r1 = [obj1 row];
@@ -313,7 +385,7 @@
         }
         return (NSComparisonResult)NSOrderedSame;
     }];
-
+    
     NSMutableArray *items = [NSMutableArray array];
     for (NSIndexPath *indexPath in checkedIndexesArray) {
         [items addObject:[CCStock sharedStock].items[indexPath.row]];

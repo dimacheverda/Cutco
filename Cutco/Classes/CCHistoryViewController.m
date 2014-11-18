@@ -40,6 +40,14 @@
     
     // show HUD only on first loading, not when pull-to-refresh triggered
     
+    // add notification observer only for returned VC
+    if (!self.isShowingSold) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(updateNotificationDidRecieved)
+                                                     name:@"kSalesUpdatedNotificationName"
+                                                   object:nil];
+    }
+    
     if (![CCSales sharedSales].isLoaded) {
         [self loadSalesFromParse];
     }
@@ -135,7 +143,15 @@
     
     cell.index = self.counterView.count - indexPath.row;
     cell.name = item.name;
-    cell.date = sale.createdAt;
+    
+    (self.isShowingSold) ? (cell.date = sale.createdAt) : (cell.date = sale.updatedAt);
+    
+//    if (self.isShowingSold) {
+//        cell.date = sale.createdAt;
+//    } else {
+//        cell.date = sale.updatedAt;
+//    }
+    
     [item.image getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
         if (!error) {
             UIImage *image = [UIImage imageWithData:data];
@@ -149,11 +165,7 @@
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    if (self.isShowingSold) {
-        return YES;
-    } else {
-        return NO;
-    }
+    return self.isShowingSold;
 }
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -161,9 +173,10 @@
         CCSale *sale = [CCSales sharedSales].sales[indexPath.row];
         sale.returned = YES;
         
+        self.hud = [MBProgressHUD showHUDAddedTo:self.tableView animated:YES];
         self.hud.mode = MBProgressHUDModeIndeterminate;
         [self.hud show:YES];
-        self.hud.labelText = @"Deleting..";
+        self.hud.labelText = @"Returning..";
         
         [sale saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
             if (succeeded) {
@@ -186,6 +199,10 @@
 
 #pragma mark - Table View Delegate
 
+- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return @"Return";
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
@@ -196,41 +213,22 @@
     self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     self.hud.labelText = @"Loading..";
     
-    PFQuery *query = [CCSale query];
-    [query whereKey:@"user" equalTo:[PFUser currentUser]];
-    [query whereKey:@"event" equalTo:[[CCEvents sharedEvents] currentEvent]];
-    query.limit = 1000;
-    
-    [CCSales sharedSales].sales = [NSMutableArray array];
-    [CCSales sharedSales].returned = [NSMutableArray array];
-    
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+    [[CCSales sharedSales] loadSalesFromParseWithCompletion:^(NSError *error) {
         if (!error) {
-            
-            NSMutableArray *sales = [NSMutableArray array];
-            for (CCSale *object in objects) {
-//                if ([object.createdAt isCurrentDay]) {
-                    [sales addObject:object];
-//                }
-            }
-            [CCSales sharedSales].sales = sales;
-            [CCSales sharedSales].loaded = YES;
-            
-            NSLog(@"sold %d", (int)[CCSales sharedSales].sales.count);
-            NSLog(@"returned %d", (int)[CCSales sharedSales].returned.count);
-            
-            // update UI
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.hud hide:YES];
                 [self.tableView reloadData];
                 [self refreshCounter];
             });
+            
         } else {
             self.hud.mode = MBProgressHUDModeText;
             self.hud.labelText = @"Error";
             self.hud.detailsLabelText = error.localizedDescription;
             [self.hud hide:YES afterDelay:1.5f];
         }
+        
+        // hide refresh control if shown
         dispatch_async(dispatch_get_main_queue(), ^{
             if (self.tableView.refreshControl.isRefreshing) {
                 [self.tableView.refreshControl endRefreshing];
@@ -255,6 +253,11 @@
         CCHistoryTableViewCell *cell = (CCHistoryTableViewCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
         cell.index = cellsCount - i;
     }
+}
+
+- (void)updateNotificationDidRecieved {
+    [self refreshCounter];
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 @end

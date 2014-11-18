@@ -8,6 +8,7 @@
 
 #import "CCHistoryTableViewCell.h"
 #import "UIColor+CCColor.h"
+#import "UIFont+CCFont.h"
 
 @interface CCHistoryTableViewCell ()
 
@@ -95,6 +96,7 @@
         _indexLabel.numberOfLines = 1;
         _indexLabel.textAlignment = NSTextAlignmentCenter;
         _indexLabel.textColor = [UIColor placeholderTextColor];
+        _indexLabel.font = [UIFont primaryCopyTypefaceWithSize:17.0];
     }
     return _indexLabel;
 }
@@ -112,7 +114,8 @@
         _nameLabel = [[UILabel alloc] init];
         _nameLabel.numberOfLines = 1;
         _nameLabel.textAlignment = NSTextAlignmentLeft;
-        _nameLabel.textColor = [UIColor colorWithWhite:0.1 alpha:1.0];
+        _nameLabel.textColor = [UIColor historyTableViewCellNameColor];
+        _nameLabel.font = [UIFont primaryCopyTypefaceWithSize:17.0];
     }
     return _nameLabel;
 }
@@ -122,8 +125,8 @@
         _dateLabel = [[UILabel alloc] init];
         _dateLabel.numberOfLines = 1;
         _dateLabel.textAlignment = NSTextAlignmentLeft;
-        _dateLabel.textColor = [UIColor colorWithWhite:0.3 alpha:1.0];
-        _dateLabel.font = [UIFont systemFontOfSize:13.0];
+        _dateLabel.textColor = [UIColor historyTableViewCellDateColor];
+        _dateLabel.font = [UIFont primaryCopyTypefaceWithSize:13.0];
     }
     return _dateLabel;
 }

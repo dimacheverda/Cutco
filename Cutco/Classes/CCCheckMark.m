@@ -11,8 +11,7 @@
 
 @implementation CCCheckMark
 
-- (void)drawRect:(CGRect)rect
-{
+- (void)drawRect:(CGRect)rect {
     [super drawRect:rect];
     
     if (self.isChecked)
@@ -22,14 +21,12 @@
     }
 }
 
-- (void)setChecked:(BOOL)checked
-{
+- (void)setChecked:(BOOL)checked {
     _checked = checked;
     [self setNeedsDisplay];
 }
 
-- (void)drawRectChecked:(CGRect)rect
-{
+- (void)drawRectChecked:(CGRect)rect {
     //// General Declarations
     CGContextRef context = UIGraphicsGetCurrentContext();
     
@@ -72,8 +69,7 @@
     
 }
 
-- (void)drawRectOpenCircle:(CGRect)rect
-{
+- (void)drawRectOpenCircle:(CGRect)rect {
     //// General Declarations
     CGContextRef context = UIGraphicsGetCurrentContext();
     
@@ -106,13 +102,12 @@
     
 }
 
-- (void)drawRectGrayedOut:(CGRect)rect
-{
+- (void)drawRectGrayedOut:(CGRect)rect {
     //// General Declarations
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     //// Color Declarations
-    UIColor *grayTranslucent = [UIColor colorWithWhite:1.0 alpha:0.6];
+    UIColor *grayTranslucent = [UIColor checkmarkGrayTranslucentColor];
     
     //// Shadow Declarations
     UIColor *shadow2 = [UIColor blackColor];

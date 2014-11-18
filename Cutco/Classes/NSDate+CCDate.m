@@ -26,19 +26,29 @@
 }
 
 - (BOOL)isBetweenDate:(NSDate *)beginDate andDate:(NSDate *)endDate {
-    
-    NSDateComponents *today = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:[NSDate date]];
-    NSDateComponents *begin = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:beginDate];
-    NSDateComponents *end = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:endDate];
-    
-    if (today.year < begin.year || today.year > end.year) {
-        return NO;
-    } else if (today.month < begin.month || today.month > end.month) {
-        return NO;
-    } else if (today.day < begin.day || today.day > end.day) {
-        return NO;
+    NSDate *today = [NSDate date];
+    if (([beginDate compare:today] == NSOrderedAscending) && ([endDate compare:today] == NSOrderedDescending)) {
+        return YES;
     }
-    return YES;
+    return NO;
+    
+    
+
+//    NSDateComponents *today = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:[NSDate date]];
+//    NSDateComponents *begin = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:beginDate];
+//    NSDateComponents *end = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:endDate];
+//    
+//    NSLog(@"\ntoday %@ \nbegin %@ \nend %@", today, begin, end);
+//    
+//    if (today.year < begin.year || today.year > end.year) {
+//        return NO;
+//    } else if (today.month < begin.month || today.month > end.month) {
+//        return NO;
+//    } else if (today.day < begin.day || today.day > end.day) {
+//        return NO;
+//    } else {
+//        return YES;
+//    }
 }
 
 @end

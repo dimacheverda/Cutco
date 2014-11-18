@@ -19,9 +19,23 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>101</string>
+	<string>106</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>MYRIADPRO-BOLD.OTF</string>
+		<string>MYRIADPRO-BOLDCOND.OTF</string>
+		<string>MYRIADPRO-BOLDCONDIT.OTF</string>
+		<string>MYRIADPRO-BOLDIT.OTF</string>
+		<string>MYRIADPRO-COND.OTF</string>
+		<string>MYRIADPRO-CONDIT.OTF</string>
+		<string>MYRIADPRO-REGULAR.OTF</string>
+		<string>MYRIADPRO-SEMIBOLD.OTF</string>
+		<string>MYRIADPRO-SEMIBOLDIT.OTF</string>
+		<string>MyriadPro-Light.otf</string>
+		<string>Tahoma.ttf</string>
+	</array>
 	<key>UILaunchImageFile~iphone</key>
 	<string>LaunchImage</string>
 	<key>UILaunchStoryboardName</key>
@@ -33,6 +47,8 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 </dict>
 </plist>

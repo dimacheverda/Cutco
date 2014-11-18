@@ -20,6 +20,7 @@
 @dynamic returned;
 @dynamic price;
 @dynamic event;
+@dynamic transaction;
 
 + (void)load {
     [self registerSubclass];
@@ -37,6 +38,7 @@
         self.returned = NO;
         self.price = stockItem.salePrice;
         self.event = [[CCEvents sharedEvents] currentEvent];
+        self.transaction = nil;
     }
     return self;
 }

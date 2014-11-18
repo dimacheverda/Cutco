@@ -10,11 +10,17 @@
 #import "CCStockViewController.h"
 #import "CCHistoryViewController.h"
 #import <Parse/Parse.h>
-#import <ProgressHUD.h>
 #import <MBProgressHUD.h>
 #import "CCEventsViewController.h"
 #import "CCTextField.h"
 #import "UIColor+CCColor.h"
+#import "UIFont+CCFont.h"
+#import "CCIntroViewController.h"
+#import "CCPaperWorkViewController.h"
+#import "CCOnboardingViewController.h"
+#import "CCGuidelinesViewControlller.h"
+//#import <MediaPlayer/MediaPlayer.h>
+#import "CCAudioPlayerViewController.h"
 
 @interface CCSignInViewController () <UITextFieldDelegate>
 
@@ -86,9 +92,6 @@
     [super viewDidAppear:animated];
     
     [self.emailTextField becomeFirstResponder];
-    
-    // reset lastPhotoDate key after logout
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"lastPhotoDate"];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {
@@ -133,10 +136,10 @@
         [_signInButton addTarget:self
                           action:@selector(signInButtonDidPressed)
                 forControlEvents:UIControlEventTouchUpInside];
-        _signInButton.titleLabel.font = [UIFont systemFontOfSize:20.0];
         _signInButton.backgroundColor = [UIColor signInButtonColor];
         [_signInButton setTitleColor:[UIColor lightTextColor] forState:UIControlStateNormal];
         _signInButton.layer.cornerRadius = 4.0;
+        _signInButton.titleLabel.font = [UIFont primaryCopyTypefaceWithSize:20.0];
     }
     return _signInButton;
 }
@@ -174,7 +177,7 @@
     } else {
         dispatch_async(dispatch_get_main_queue(), ^{
             self.hud.labelText = @"Error";
-            self.hud.detailsLabelText = @"Fill all field";
+            self.hud.detailsLabelText = @"Fill all fields";
             self.hud.mode = MBProgressHUDModeText;
             [self.hud hide:YES afterDelay:1.5];
         });
@@ -182,10 +185,24 @@
 }
 
 - (void)performTransition {
-    CCEventsViewController *eventsVC = [[CCEventsViewController alloc] init];
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:eventsVC];
-    [self presentViewController:navController animated:YES completion:^{
-    }];
+    // onboarding transtion
+    
+    NSURL *streamUrl = [NSURL URLWithString:@"http://ds1.downloadtech.net/cn1086/audio/209210320528066-002.mp3"];
+    NSString *titleString = @"Welcome to Cutco's demonstrator training for Costco.\nStart the audio track below to begin your training.";
+    
+    CCAudioPlayerViewController *audioPlayerVC = [[CCAudioPlayerViewController alloc] initWithStreamUrl:streamUrl titleText:titleString];
+    CCPaperWorkViewController *paperWorkVC = [[CCPaperWorkViewController alloc] init];
+    CCGuidelinesViewControlller *guidelinesVC = [[CCGuidelinesViewControlller alloc] init];
+    
+    CCOnboardingViewController *onboardingVC = [[CCOnboardingViewController alloc] initWithViewControllers:@[audioPlayerVC, paperWorkVC, guidelinesVC]];
+    
+    UINavigationController *onboardingNavController = [[UINavigationController alloc] initWithRootViewController:onboardingVC];
+    [self presentViewController:onboardingNavController animated:YES completion:nil];
+    
+    // events transition
+//    CCEventsViewController *eventsVC = [[CCEventsViewController alloc] init];
+//    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:eventsVC];
+//    [self presentViewController:navController animated:YES completion:nil];
 }
 
 - (void)tapGestureHandler {

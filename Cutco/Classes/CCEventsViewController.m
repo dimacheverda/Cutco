@@ -17,6 +17,10 @@
 #import "CCLocation.h"
 #import "CCStockViewController.h"
 #import "CCHistoryViewController.h"
+#import "CCTutorialViewController.h"
+#import "CCReportViewController.h"
+#import "UIFont+CCFont.h"
+#import "UIColor+CCColor.h"
 
 @interface CCEventsViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -35,6 +39,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    [self applyAppearanceToNavigationBar];
+
     self.navigationItem.title = @"Events";
     UIBarButtonItem *logOutButton = [[UIBarButtonItem alloc] initWithTitle:@"Log Out"
                                                                      style:UIBarButtonItemStyleDone
@@ -46,6 +52,35 @@
     [self.view addSubview:self.backgroundToolbar];
     
     [self loadEventsMemberFromParse];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    // reset lastPhotoDate key after exiting current event
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"lastPhotoDate"];
+    [CCEvents sharedEvents].currentEvent = nil;
+    [CCEvents sharedEvents].currentLocation = nil;
+    [CCEvents sharedEvents].currentEventMember = nil;
+    [CCEvents sharedEvents].photoTakenForCurrentEvent = NO;
+}
+
+- (void)applyAppearanceToNavigationBar {
+    // changing UIBarButtonItem Appearance
+    NSDictionary *attributes = [NSDictionary dictionaryWithObject:[UIFont primaryCopyTypefaceWithSize:17]
+                                                           forKey:NSFontAttributeName];
+    [[UIBarButtonItem appearance] setTitleTextAttributes:attributes forState:UIControlStateNormal];
+    
+    // changing NavigationBar title appearance
+    [[UINavigationBar appearance] setTitleTextAttributes:@{
+                                                           NSFontAttributeName: [UIFont primaryCopyTypefaceWithSize:20.0]
+                                                           }];
+    
+    [[UIBarButtonItem appearance] setTintColor:[UIColor eventTypeSegmentedControlTintColor]];
+    
+    [[UISegmentedControl appearance] setTintColor:[UIColor eventTypeSegmentedControlTintColor]];
+    
+    [[UITabBar appearance] setTintColor:[UIColor eventTypeSegmentedControlTintColor]];
 }
 
 #pragma mark - Accessors
@@ -84,6 +119,10 @@
         [_segmentedControl addTarget:self
                               action:@selector(segmentedControlDidPressed)
                     forControlEvents:UIControlEventValueChanged];
+        NSDictionary *attributes = [NSDictionary dictionaryWithObject:[UIFont primaryCopyTypefaceWithSize:13]
+                                                               forKey:NSFontAttributeName];
+        [_segmentedControl setTitleTextAttributes:attributes
+                                        forState:UIControlStateNormal];
     }
     return _segmentedControl;
 }
@@ -120,7 +159,9 @@
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     
     if (self.segmentedControl.selectedSegmentIndex == 1) {
-        [CCEvents sharedEvents].currentEvent = self.eventsDataSource[indexPath.row];
+        CCEvent *currentEvent = self.eventsDataSource[indexPath.row];
+        [CCEvents sharedEvents].currentEvent = currentEvent;
+        [CCEvents sharedEvents].currentLocation = currentEvent.location;
         
         for (CCEventMember *member in [CCEvents sharedEvents].eventsMember) {
             if ([member.event.objectId isEqualToString:[CCEvents sharedEvents].currentEvent.objectId] &&
@@ -137,16 +178,18 @@
     CCStockViewController *stockVC = [[CCStockViewController alloc] init];
     CCHistoryViewController *soldVC = [[CCHistoryViewController alloc] init];
     CCHistoryViewController *returnedVC = [[CCHistoryViewController alloc] init];
-    UIViewController *tutorialVC = [[UIViewController alloc] init];
-    UIViewController *statsVC = [[UIViewController alloc] init];
+    CCTutorialViewController *tutorialVC = [[CCTutorialViewController alloc] init];
+    CCReportViewController *reportVC = [[CCReportViewController alloc] init];
     
     UINavigationController *stockNavController = [[UINavigationController alloc] initWithRootViewController:stockVC];
+    UINavigationController *reportNavController = [[UINavigationController alloc] initWithRootViewController:reportVC];
+    UINavigationController *tutorialNavCOntroller = [[UINavigationController alloc] initWithRootViewController:tutorialVC];
     
     stockVC.title = @"Add Sale";
     soldVC.title = @"Sold";
     returnedVC.title = @"Returned";
     tutorialVC.title = @"Tutorial";
-    statsVC.title = @"Report";
+    reportVC.title = @"Report";
     
     soldVC.isShowingSold = YES;
     returnedVC.isShowingSold = NO;
@@ -159,11 +202,11 @@
     returnedVC.tabBarItem.selectedImage = [UIImage imageNamed:@"cart_empty_fill"];
     tutorialVC.tabBarItem.image = [UIImage imageNamed:@"briefcase_line"];
     tutorialVC.tabBarItem.selectedImage = [UIImage imageNamed:@"briefcase_fill"];
-    statsVC.tabBarItem.image = [UIImage imageNamed:@"calculator_line"];
-    statsVC.tabBarItem.selectedImage = [UIImage imageNamed:@"calculator_fill"];
+    reportVC.tabBarItem.image = [UIImage imageNamed:@"calculator_line"];
+    reportVC.tabBarItem.selectedImage = [UIImage imageNamed:@"calculator_fill"];
     
     UITabBarController *tabBarController = [[UITabBarController alloc] init];
-    tabBarController.viewControllers = @[tutorialVC, returnedVC, stockNavController, soldVC, statsVC];
+    tabBarController.viewControllers = @[tutorialNavCOntroller, returnedVC, stockNavController, soldVC, reportNavController];
     [tabBarController setSelectedViewController:stockNavController];
     
     [self presentViewController:tabBarController animated:YES completion:^{
@@ -256,8 +299,20 @@
 #pragma mark - Action handlers
 
 - (void)logOutButtonDidPressed {
-    [self dismissViewControllerAnimated:YES completion:^{
-    }];
+    if ([self.parentViewController isKindOfClass:NSClassFromString(@"CCSignInViewController")]) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    } else {
+        
+//        UINavigationController *eventsNavController = (UINavigationController *)self.parentViewController;
+//        UINavigationController *onboardingNavCon = (UINavigationController *)eventsNavController.presentingViewController;
+//        UIViewController *onboardingVC = onboardingNavCon.viewControllers[0];
+//        NSLog(@"%@", self.presentingViewController.presentingViewController);
+//        NSLog(@"%@", eventsNavController.presentingViewController);
+//        NSLog(@"%@", onboardingNavCon.viewControllers[0]);
+//        NSLog(@"%@", self.parentViewController.presentingViewController);
+        
+        [self.presentingViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
+    }
 }
 
 - (void)segmentedControlDidPressed {

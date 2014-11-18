@@ -16,6 +16,9 @@
 #import <MBProgressHUD.h>
 #import "CCStockViewController.h"
 #import "UIColor+CCColor.h"
+#import "UIFont+CCFont.h"
+#import "CCCheckoutSettingCell.h"
+#import "CCTransaction.h"
 
 @interface CCCheckoutViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -25,8 +28,8 @@
 @property (strong, nonatomic) NSArray *items;
 @property (strong, nonatomic) MBProgressHUD *hud;
 @property (strong, nonatomic) NSMutableArray *quantity;
-@property (strong, nonatomic) UISwitch *switchToggle;
-@property (strong, nonatomic) UILabel *switchLabel;
+@property (nonatomic) BOOL newCustomer;
+@property (nonatomic) BOOL cameBack;
 
 @end
 
@@ -52,13 +55,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.view.backgroundColor = [UIColor colorWithWhite:0.7 alpha:1.0];
+    self.view.backgroundColor = [UIColor checkoutViewBackgroundColor];
     
     [self.view addSubview:self.cancelButton];
     [self.view addSubview:self.confirmButton];
     [self.view addSubview:self.tableView];
-    [self.view addSubview:self.switchToggle];
-    [self.view addSubview:self.switchLabel];
 }
 
 #define kBottomButtonsHeight 44.0
@@ -66,29 +67,17 @@
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
     
-    _switchLabel.frame = CGRectMake(16.0,
-                                    0.0,
-                                    CGRectGetWidth(self.view.frame),
-                                    kBottomButtonsHeight);
-    
-    _switchToggle.frame = CGRectMake(CGRectGetWidth(self.view.frame) - 60.0,
-                                     0.0,
-                                     64.0,
-                                     kBottomButtonsHeight);
-    _switchToggle.center = CGPointMake(CGRectGetMidX(_switchToggle.frame),
-                                       kBottomButtonsHeight / 2.0);
-    
     _tableView.frame = CGRectMake(0.0,
-                                  kBottomButtonsHeight,
+                                  0.0,
                                   CGRectGetWidth(self.view.frame),
-                                  CGRectGetHeight(self.view.frame) - kBottomButtonsHeight * 2);
+                                  CGRectGetHeight(self.view.frame) - kBottomButtonsHeight);
     
     _cancelButton.frame = CGRectMake(0.0,
-                                     CGRectGetHeight(self.view.frame) - kBottomButtonsHeight,
+                                     CGRectGetMaxY(_tableView.frame),
                                      CGRectGetWidth(self.view.frame) / 3.0,
                                      kBottomButtonsHeight);
     
-
+    
     _confirmButton.frame = CGRectMake(CGRectGetMaxX(self.cancelButton.frame),
                                       (CGRectGetHeight(self.view.frame)) - kBottomButtonsHeight,
                                       CGRectGetWidth(self.view.frame) / 3.0 * 2.0,
@@ -100,8 +89,9 @@
 - (CCCheckoutTableView *)tableView {
     if (!_tableView) {
         _tableView = [[CCCheckoutTableView alloc] initWithFrame:CGRectZero
-                                                          style:UITableViewStylePlain];
+                                                          style:UITableViewStyleGrouped];
         [_tableView registerClass:[CCCheckoutTableViewCell class] forCellReuseIdentifier:@"Cell"];
+        [_tableView registerClass:[CCCheckoutSettingCell class] forCellReuseIdentifier:@"SettingCell"];
         _tableView.dataSource = self;
         _tableView.delegate = self;
     }
@@ -128,7 +118,7 @@
         [_confirmButton setTitle:@"Confirm" forState:UIControlStateNormal];
         [_confirmButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
         _confirmButton.backgroundColor = [UIColor checkoutConfirmColor];
-        _confirmButton.titleLabel.font = [UIFont systemFontOfSize:20.0];
+        _confirmButton.titleLabel.font = [UIFont primaryCopyTypefaceWithSize:20.0];
         [_confirmButton addTarget:self
                            action:@selector(confirmButtonDidPressed)
                  forControlEvents:UIControlEventTouchUpInside];
@@ -136,40 +126,60 @@
     return _confirmButton;
 }
 
-- (UILabel *)switchLabel {
-    if (!_switchLabel) {
-        _switchLabel = [[UILabel alloc] init];
-        _switchLabel.numberOfLines = 0;
-        _switchLabel.text = @"New customer";
-        _switchLabel.font = [UIFont systemFontOfSize:20.0];
-    }
-    return _switchLabel;
-}
-
-- (UISwitch *)switchToggle {
-    if (!_switchToggle) {
-        _switchToggle = [[UISwitch alloc] init];
-    }
-    return _switchToggle;
-}
-
 #pragma mark - Table View DataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 1;
+    return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return self.items.count;
+    if (section == 0) {
+        return 2;
+    } else {
+        return self.items.count;
+    }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return CGRectGetWidth(self.view.frame) / 3.0;
+    if (indexPath.section == 0) {
+        return 44.0;
+    } else {
+        return CGRectGetWidth(self.view.frame) / 3.0;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    CCCheckoutTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
+    UITableViewCell *cell;
     
+    if (indexPath.section == 0) {
+        cell = [tableView dequeueReusableCellWithIdentifier:@"SettingCell"];
+        [self setupSettingCell:(CCCheckoutSettingCell *)cell forIndexPath:indexPath];
+    } else {
+        cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
+        [self setupStockItemCell:(CCCheckoutTableViewCell *)cell forIndexPath:indexPath];
+    }
+    
+    return cell;
+}
+
+#pragma mark - Cell Setup Methods
+
+- (void)setupSettingCell:(CCCheckoutSettingCell *)cell forIndexPath:(NSIndexPath *)indexPath {
+    NSArray *titles = @[@"New Customer", @"Came Back"];
+    cell.settingNameLabel.text = titles[indexPath.row];
+    
+    [cell.switchButton addTarget:self
+                          action:@selector(switchValueChanged:)
+                forControlEvents:UIControlEventValueChanged];
+    
+    if (indexPath.row == 0) {
+        cell.switchButton.on = self.newCustomer;
+    } else {
+        cell.switchButton.on = self.cameBack;
+    }
+}
+
+- (void)setupStockItemCell:(CCCheckoutTableViewCell *)cell forIndexPath:(NSIndexPath *)indexPath {
     [cell.plusButton addTarget:self
                         action:@selector(quantityButtonDidPressed:)
               forControlEvents:UIControlEventTouchUpInside];
@@ -177,7 +187,7 @@
     [cell.minusButton addTarget:self
                          action:@selector(quantityButtonDidPressed:)
                forControlEvents:UIControlEventTouchUpInside];
-
+    
     CCStockItem *item = self.items[indexPath.row];
     [item.image getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
         if (!error) {
@@ -189,8 +199,7 @@
     }];
     
     cell.quantityLabel.text = [NSString stringWithFormat:@"%@", self.quantity[indexPath.row]];
-    
-    return cell;
+
 }
 
 #pragma mark - Action Handlers
@@ -225,7 +234,7 @@
 - (void)confirmButtonDidPressed {
     self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     self.hud.mode = MBProgressHUDModeIndeterminate;
-    self.hud.labelText = @"Loading..";
+    self.hud.labelText = @"Saving..";
     
     NSMutableArray *itemsForSale = [NSMutableArray array];
     
@@ -235,16 +244,18 @@
             [itemsForSale addObject:self.items[itemIndex]];
         }
     }
-
-    NSLog(@"items for sale: %d", (int)itemsForSale.count);
     
     [self saveSalesToParse:itemsForSale];
 }
 
 - (void)saveSalesToParse:(NSArray *)items {
+    CCTransaction *transaction = [[CCTransaction alloc] init];
+    [self saveTransactionToParse:transaction];
+    
     NSMutableArray *sales = [NSMutableArray array];
     for (CCStockItem *item in items) {
         CCSale *sale = [[CCSale alloc] initWithStockItem:item];
+        sale.transaction = transaction;
         [sales addObject:sale];
     }
     
@@ -267,6 +278,32 @@
             });
         }
     }];
+}
+
+- (void)saveTransactionToParse:(CCTransaction *)transaction {
+    transaction.newCustomer = self.newCustomer;
+    transaction.cameBack = self.cameBack;
+    transaction.user = [PFUser currentUser];
+    transaction.event = [CCEvents sharedEvents].currentEvent;
+    transaction.location = [CCEvents sharedEvents].currentLocation;
+    
+    [transaction saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+    }];
+}
+
+#pragma mark - Settings Action Handlers
+
+- (void)switchValueChanged:(id)sender {
+    CCCheckoutSettingCell *cell = (CCCheckoutSettingCell *)[[sender superview] superview];
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    
+    if (indexPath.section == 0) {
+        if (indexPath.row == 0) {
+            self.newCustomer = cell.switchButton.isOn;
+        } else {
+            self.cameBack = cell.switchButton.isOn;
+        }
+    }
 }
 
 @end
