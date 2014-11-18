@@ -17,7 +17,7 @@
 @property (retain) CCStockItem *stockItem;
 @property (retain) PFUser *user;
 @property BOOL returned;
-@property NSUInteger price;
+@property CGFloat price;
 @property (retain) CCEvent *event;
 @property (retain) CCTransaction *transaction;
 

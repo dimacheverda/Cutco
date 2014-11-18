@@ -14,8 +14,8 @@
 @property (retain) NSString *name;
 @property (retain) NSString *description;
 @property NSUInteger UPC;
-@property NSUInteger retailPrice;
-@property NSUInteger salePrice;
+@property CGFloat retailPrice;
+@property CGFloat salePrice;
 @property (retain) PFFile *image;
 
 @end

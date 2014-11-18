@@ -155,7 +155,7 @@
     CCStockCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
 
     CCStockItem *item = [CCStock sharedStock].items[indexPath.row];
-    cell.title = [NSString stringWithFormat:@"     $%d",(int)item.salePrice];
+    cell.title = [NSString stringWithFormat:@"     $%.2f", item.salePrice];
     
     [item.image getDataInBackgroundWithBlock:^(NSData *data, NSError *error) {
         if (!error) {

@@ -98,7 +98,7 @@
             NSString *valueString = @"";
             
             if (indexPath.row == 2) {
-                valueString = [NSString stringWithFormat:@"$%@", overviewValues[indexPath.row]];
+                valueString = [NSString stringWithFormat:@"$%.2f", [overviewValues[indexPath.row] doubleValue]];
             } else {
                 valueString = [NSString stringWithFormat:@"%@ items", overviewValues[indexPath.row]];
             }
@@ -112,7 +112,7 @@
             NSString *valueString = @"";
             
             if (indexPath.row == 2) {
-                valueString = [NSString stringWithFormat:@"$%@", todayValues[indexPath.row]];
+                valueString = [NSString stringWithFormat:@"$%.2f", [todayValues[indexPath.row] doubleValue]];
             } else {
                 valueString = [NSString stringWithFormat:@"%@ items", todayValues[indexPath.row]];
             }

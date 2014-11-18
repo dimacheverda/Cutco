@@ -61,11 +61,11 @@
     // set Overview numbers
     self.totalSalesNumber = [NSNumber numberWithUnsignedInteger:[CCSales sharedSales].sales.count];
     self.totalReturnedNumber = [NSNumber numberWithUnsignedInteger:[CCSales sharedSales].returned.count];
-    self.totalSalesRevenue = [NSNumber numberWithUnsignedInteger:[[[CCSales sharedSales].sales valueForKeyPath:@"@sum.price"] integerValue]];
+    self.totalSalesRevenue = [NSNumber numberWithDouble:[[[CCSales sharedSales].sales valueForKeyPath:@"@sum.price"] doubleValue]];
  
     // set today numbers
     NSUInteger soldToday = 0;
-    NSUInteger revenueToday = 0;
+    CGFloat revenueToday = 0;
     NSUInteger returnedToday = 0;
     
     for (CCSale *sale in [CCSales sharedSales].sales) {
@@ -82,7 +82,7 @@
     
     self.todaySalesNumber = [NSNumber numberWithUnsignedInteger:soldToday];
     self.todayReturnedNumber = [NSNumber numberWithUnsignedInteger:returnedToday];
-    self.todaySalesRevenue = [NSNumber numberWithUnsignedInteger:revenueToday];
+    self.todaySalesRevenue = [NSNumber numberWithDouble:revenueToday];
     
     [self postNotification];
 }
