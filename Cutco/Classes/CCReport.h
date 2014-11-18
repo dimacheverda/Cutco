@@ -15,12 +15,16 @@
 @property (strong, nonatomic) NSNumber *totalSalesRevenue;
 @property (strong, nonatomic) NSNumber *totalBeBacks;
 @property (strong, nonatomic) NSNumber *totalCameBacks;
+@property (strong, nonatomic) NSNumber *totalCameBackPercentage;
+@property (strong, nonatomic) NSNumber *totalNewCustomers;
 
 @property (strong, nonatomic) NSNumber *todaySalesNumber;
 @property (strong, nonatomic) NSNumber *todayReturnedNumber;
 @property (strong, nonatomic) NSNumber *todaySalesRevenue;
 @property (strong, nonatomic) NSNumber *todayBeBacks;
 @property (strong, nonatomic) NSNumber *todayCameBacks;
+@property (strong, nonatomic) NSNumber *todayCameBackPercentage;
+@property (strong, nonatomic) NSNumber *todayNewCustomers;
 
 @property (strong, nonatomic) NSArray *days;
 @property (strong, nonatomic) NSArray *salesPerDay;

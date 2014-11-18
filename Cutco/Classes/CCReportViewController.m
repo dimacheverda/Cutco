@@ -14,6 +14,10 @@
 @property (strong, nonatomic) UIImageView *imageView;
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) CCReport *report;
+@property (strong, nonatomic) NSArray *totalTitles;
+@property (strong, nonatomic) NSArray *todayTitles;
+@property (strong, nonatomic) NSArray *totalValues;
+@property (strong, nonatomic) NSArray *todayValues;
 
 @end
 
@@ -34,6 +38,28 @@
                                              selector:@selector(updateTableView)
                                                  name:kReportUpdatedNotificationName
                                                object:nil];
+    
+    self.totalTitles = [NSArray arrayWithObjects:
+                        @"Sold",
+                        @"Returned",
+                        @"Revenue",
+                        @"Be Backs",
+                        @"Came Backs",
+                        @"Came Back Percetage",
+                        @"New Customers",
+                        nil
+                        ];
+    
+    self.todayTitles = [NSArray arrayWithObjects:
+                        @"Sold",
+                        @"Returned",
+                        @"Revenue",
+                        @"Be Backs",
+                        @"Came Backs",
+                        @"Came Back Percentage",
+                        @"New Customers",
+                        nil
+                        ];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -46,6 +72,24 @@
     [super viewWillLayoutSubviews];
     
     _tableView.contentInset = UIEdgeInsetsMake(64.0, 0.0, 49.0, 0.0);
+}
+
+- (void)updateReportValues {
+    self.totalValues = @[self.report.totalSalesNumber,
+                         self.report.totalReturnedNumber,
+                         self.report.totalSalesRevenue,
+                         self.report.totalBeBacks,
+                         self.report.totalCameBacks,
+                         self.report.totalCameBackPercentage,
+                         self.report.totalNewCustomers];
+    
+    self.todayValues = @[self.report.todaySalesNumber,
+                         self.report.todayReturnedNumber,
+                         self.report.todaySalesRevenue,
+                         self.report.todayBeBacks,
+                         self.report.todayCameBacks,
+                         self.report.todayCameBackPercentage,
+                         self.report.todayNewCustomers];
 }
 
 #pragma mark - Accessors
@@ -67,12 +111,15 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    NSArray *sections = @[@3, @3];
-    return [sections[section] integerValue];
+    if (section == 0) {
+        return self.totalTitles.count;
+    } else {
+        return self.todayTitles.count;
+    }
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    NSArray *headerTitle = @[@"Overview", @"Today"];
+    NSArray *headerTitle = @[@"Total", @"Today"];
     return headerTitle[section];
 }
 
@@ -87,40 +134,55 @@
 }
 
 - (void)setupCell:(UITableViewCell *)cell forIndexPath:(NSIndexPath *)indexPath {
-    NSArray *overviewTitle = @[@"Total Sold", @"Total Returned", @"Total Revenue"];
-    NSArray *overviewValues = @[self.report.totalSalesNumber, self.report.totalReturnedNumber, self.report.totalSalesRevenue];
+
+    NSArray *titles = [NSArray array];
+    NSArray *values = [NSArray array];
+    if (indexPath.section == 0) {
+        titles = self.totalTitles;
+        values = self.totalValues;
+    } else {
+        titles = self.todayTitles;
+        values = self.todayValues;
+    }
     
-    NSArray *todayTitle = @[@"Sold", @"Returned", @"Revenue"];
-    NSArray *todayValues = @[self.report.todaySalesNumber, self.report.todayReturnedNumber, self.report.todaySalesRevenue];
+    cell.textLabel.text = [NSString stringWithFormat:@"%@", titles[indexPath.row]];
     
-    switch (indexPath.section) {
+    switch (indexPath.row) {
         case 0: {
-            NSString *valueString = @"";
-            
-            if (indexPath.row == 2) {
-                valueString = [NSString stringWithFormat:@"$%.2f", [overviewValues[indexPath.row] doubleValue]];
-            } else {
-                valueString = [NSString stringWithFormat:@"%@ items", overviewValues[indexPath.row]];
-            }
-            
-            cell.textLabel.text = [NSString stringWithFormat:@"%@", overviewTitle[indexPath.row]];
-            cell.detailTextLabel.text = valueString;
-            
-            break;
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ items", values[indexPath.row]];
         }
+            break;
+        
         case 1: {
-            NSString *valueString = @"";
-            
-            if (indexPath.row == 2) {
-                valueString = [NSString stringWithFormat:@"$%.2f", [todayValues[indexPath.row] doubleValue]];
-            } else {
-                valueString = [NSString stringWithFormat:@"%@ items", todayValues[indexPath.row]];
-            }
-            
-            cell.textLabel.text = [NSString stringWithFormat:@"%@", todayTitle[indexPath.row]];
-            cell.detailTextLabel.text = valueString;
-            break;
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ items", values[indexPath.row]];
         }
+            break;
+        
+        case 2: {
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"$%.2f", [values[indexPath.row] doubleValue]];
+        }
+            break;
+        
+        case 3: {
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ customers", values[indexPath.row]];
+        }
+            break;
+        
+        case 4: {
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ customers", values[indexPath.row]];
+        }
+            break;
+            
+        case 5: {
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%.2f%%", [values[indexPath.row] doubleValue]];
+        }
+            break;
+            
+        case 6: {
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ customers", values[indexPath.row]];
+        }
+            break;
+            
         default:
             break;
     }
@@ -135,6 +197,8 @@
 #pragma mark - Notification Methods
 
 - (void)updateTableView {
+    [self updateReportValues];
+    
     [self.tableView reloadData];
 }
 

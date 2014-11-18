@@ -15,8 +15,6 @@
 
 @interface CCReport ()
 
-@property (strong, nonatomic) CCEvent *currentEvent;
-
 @end
 
 @implementation CCReport
@@ -56,35 +54,72 @@
 }
 
 - (void)calculateData {
-    self.currentEvent = [CCEvents sharedEvents].currentEvent;
     
-    // set Overview numbers
-    self.totalSalesNumber = [NSNumber numberWithUnsignedInteger:[CCSales sharedSales].sales.count];
-    self.totalReturnedNumber = [NSNumber numberWithUnsignedInteger:[CCSales sharedSales].returned.count];
-    self.totalSalesRevenue = [NSNumber numberWithDouble:[[[CCSales sharedSales].sales valueForKeyPath:@"@sum.price"] doubleValue]];
+    [self calculateTotalData];
  
-    // set today numbers
-    NSUInteger soldToday = 0;
-    CGFloat revenueToday = 0;
-    NSUInteger returnedToday = 0;
+    [self calculateTodayData];
+    
+    [self postNotification];
+}
+
+- (void)calculateTotalData {
+    NSMutableArray *transactions = [CCSales sharedSales].transactions;
+    NSMutableArray *beBacks = [CCSales sharedSales].beBacks;
+    NSMutableArray *sales = [CCSales sharedSales].sales;
+    
+    self.totalSalesNumber = [NSNumber numberWithUnsignedInteger:sales.count];
+    self.totalReturnedNumber = [NSNumber numberWithUnsignedInteger:[CCSales sharedSales].returned.count];
+    self.totalSalesRevenue = [NSNumber numberWithDouble:[[sales valueForKeyPath:@"@sum.price"] doubleValue]];
+    self.totalBeBacks = [NSNumber numberWithUnsignedInteger:beBacks.count];
+    self.totalCameBacks = [NSNumber numberWithUnsignedInteger:[[transactions valueForKeyPath:@"@sum.cameBack"] unsignedIntegerValue]];
+    self.totalCameBackPercentage = [NSNumber numberWithDouble:([self.totalCameBacks doubleValue] / [self.totalBeBacks doubleValue] * 100)];
+    self.totalNewCustomers = [NSNumber numberWithUnsignedInteger:[[transactions valueForKeyPath:@"@sum.newCustomer"] unsignedIntegerValue]];
+}
+
+- (void)calculateTodayData {
+    NSUInteger sold = 0;
+    NSUInteger returned = 0;
+    CGFloat revenue = 0.0;
+    NSUInteger beBack = 0;
+    NSUInteger cameBack = 0;
+    NSUInteger newCustomers = 0;
     
     for (CCSale *sale in [CCSales sharedSales].sales) {
         if ([sale.createdAt isCurrentDay]) {
-            soldToday++;
-            revenueToday += sale.price;
+            sold++;
+            revenue += sale.price;
         }
     }
     for (CCSale *sale in [CCSales sharedSales].returned) {
         if ([sale.updatedAt isCurrentDay]) {
-            returnedToday++;
+            returned++;
         }
     }
     
-    self.todaySalesNumber = [NSNumber numberWithUnsignedInteger:soldToday];
-    self.todayReturnedNumber = [NSNumber numberWithUnsignedInteger:returnedToday];
-    self.todaySalesRevenue = [NSNumber numberWithDouble:revenueToday];
+    for (CCBeBack *beback in [CCSales sharedSales].beBacks) {
+        if ([beback.createdAt isCurrentDay]) {
+            beBack++;
+        }
+    }
     
-    [self postNotification];
+    for (CCTransaction *transaction in [CCSales sharedSales].transactions) {
+        if ([transaction.createdAt isCurrentDay]) {
+            if (transaction.cameBack) {
+                cameBack++;
+            }
+            if (transaction.newCustomer) {
+                newCustomers++;
+            }
+        }
+    }
+    
+    self.todaySalesNumber = [NSNumber numberWithUnsignedInteger:sold];
+    self.todayReturnedNumber = [NSNumber numberWithUnsignedInteger:returned];
+    self.todaySalesRevenue = [NSNumber numberWithDouble:revenue];
+    self.todayBeBacks = [NSNumber numberWithUnsignedInteger:beBack];
+    self.todayCameBacks = [NSNumber numberWithUnsignedInteger:cameBack];
+    self.todayCameBackPercentage = [NSNumber numberWithDouble:([self.todayCameBacks doubleValue] / [self.todayBeBacks doubleValue] * 100)];
+    self.todayNewCustomers = [NSNumber numberWithUnsignedInteger:newCustomers];
 }
 
 #define kReportUpdatedNotificationName @"kReportUpdatedNotificationName"
