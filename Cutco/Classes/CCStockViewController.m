@@ -186,7 +186,7 @@
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info {
     [picker dismissViewControllerAnimated:YES completion:nil];
     
-    [self.hud show:YES];
+    self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     self.hud.labelText = @"Saving..";
     self.hud.detailsLabelText = @"";
     self.hud.mode = MBProgressHUDModeIndeterminate;
@@ -200,13 +200,18 @@
         object.event = [CCEvents sharedEvents].currentEvent;
         
         [object saveInBackgroundWithBlock:^(BOOL succeeded, NSError *error) {
+            
             self.hud.mode = MBProgressHUDModeText;
+            
             if (succeeded) {
                 self.hud.labelText = @"Photo saved";
+                self.hud.detailsLabelText = @"";
+                
                 [CCEvents sharedEvents].photoTakenForCurrentEvent = YES;
             } else {
                 self.hud.labelText = @"Error";
                 self.hud.detailsLabelText = [NSString stringWithFormat:@"Error : %@", error];
+                
                 NSLog(@"photo not saved %@", error);
             }
             [self.hud hide:YES afterDelay:1.0f];
