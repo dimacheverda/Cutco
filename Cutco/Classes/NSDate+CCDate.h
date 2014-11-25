@@ -13,4 +13,6 @@
 - (BOOL)isCurrentDay;
 - (BOOL)isBetweenDate:(NSDate*)beginDate andDate:(NSDate*)endDate;
 
++ (NSDate *)beginningOfDay;
++ (NSDate *)endOfDay;
 @end

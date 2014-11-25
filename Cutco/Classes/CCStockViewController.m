@@ -21,6 +21,7 @@
 #import "CCSales.h"
 #import "UIColor+CCColor.h"
 #import "UIFont+CCFont.h"
+#import "NSDate+CCDate.h"
 #import "CCPhoto.h"
 #import "CCBeBack.h"
 
@@ -244,11 +245,7 @@
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (!error) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
-                NSMutableArray *items = [NSMutableArray array];
-                for (CCStockItem *object in objects) {
-                    [items addObject:object];
-                }
+                
                 [CCStock sharedStock].items = objects;
                 [CCStock sharedStock].isStockLoaded = YES;
                 
@@ -339,20 +336,31 @@
     if ([CCEvents sharedEvents].isPhotoTakenForCurrentEvent) {
         [self performCheckoutTransition];
     } else {
+        self.hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        self.hud.mode = MBProgressHUDModeIndeterminate;
+        self.hud.labelText = @"Checking photo..";
+        self.hud.detailsLabelText = @"";
+        
         PFQuery *query = [CCPhoto query];
         [query clearCachedResult];
         [query whereKey:@"event" equalTo:[CCEvents sharedEvents].currentEvent];
         [query whereKey:@"user" equalTo:[PFUser currentUser]];
+        [query whereKey:@"createdAt" lessThanOrEqualTo:[NSDate endOfDay]];
+        [query whereKey:@"createdAt" greaterThanOrEqualTo:[NSDate beginningOfDay]];
+
         [query countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
             if (!error) {
+                NSLog(@"photos numebr : %d", number);
                 if (number > 0) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [CCEvents sharedEvents].photoTakenForCurrentEvent = YES;
+                        
+                        [self.hud hide:YES];
+                        
                         [self performCheckoutTransition];
                     });
                 } else {
                     dispatch_async(dispatch_get_main_queue(), ^{
-                        self.hud = [MBProgressHUD showHUDAddedTo:self.collectionView animated:YES];
                         self.hud.mode = MBProgressHUDModeText;
                         self.hud.labelText = @"Error";
                         self.hud.detailsLabelText = @"No photo of this event was taken";

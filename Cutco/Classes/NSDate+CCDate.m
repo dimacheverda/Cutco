@@ -31,24 +31,23 @@
         return YES;
     }
     return NO;
-    
-    
+}
 
-//    NSDateComponents *today = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:[NSDate date]];
-//    NSDateComponents *begin = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:beginDate];
-//    NSDateComponents *end = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:endDate];
-//    
-//    NSLog(@"\ntoday %@ \nbegin %@ \nend %@", today, begin, end);
-//    
-//    if (today.year < begin.year || today.year > end.year) {
-//        return NO;
-//    } else if (today.month < begin.month || today.month > end.month) {
-//        return NO;
-//    } else if (today.day < begin.day || today.day > end.day) {
-//        return NO;
-//    } else {
-//        return YES;
-//    }
++ (NSDate *)beginningOfDay {
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    
+    NSDateComponents *components = [calendar components:NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit fromDate:[NSDate date]];
+    
+    return [calendar dateFromComponents:components];
+}
+
++ (NSDate *)endOfDay {
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    
+    NSDateComponents *components = [[NSDateComponents alloc] init];
+    [components setDay:1];
+    
+    return [[calendar dateByAddingComponents:components toDate:[NSDate beginningOfDay] options:0] dateByAddingTimeInterval:-1];
 }
 
 @end
