@@ -355,7 +355,7 @@
 
         [query countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
             if (!error) {
-                NSLog(@"photos numebr : %d", number);
+                NSLog(@"photos number : %d", number);
                 if (number > 0) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [CCEvents sharedEvents].photoTakenForCurrentEvent = YES;
@@ -367,8 +367,8 @@
                 } else {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         self.hud.mode = MBProgressHUDModeText;
-                        self.hud.labelText = @"Error";
-                        self.hud.detailsLabelText = @"No photo of this event was taken";
+                        self.hud.labelText = @"You haven't submitted a photo yet";
+                        self.hud.detailsLabelText = @"Please do";
                         [self.hud hide:YES afterDelay:2.0];
                     });
                 }
