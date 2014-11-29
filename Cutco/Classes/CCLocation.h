@@ -11,5 +11,7 @@
 @interface CCLocation : PFObject <PFSubclassing>
 
 @property (retain) NSString *title;
+@property (retain) NSString *state;
+@property NSUInteger warehouseNumber;
 
 @end

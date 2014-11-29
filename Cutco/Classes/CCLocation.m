@@ -12,6 +12,8 @@
 @implementation CCLocation
 
 @dynamic title;
+@dynamic state;
+@dynamic warehouseNumber;
 
 + (void)load {
     [self registerSubclass];

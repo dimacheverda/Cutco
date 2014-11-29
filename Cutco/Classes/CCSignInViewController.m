@@ -201,9 +201,10 @@
     } else {
         
         NSURL *streamUrl = [NSURL URLWithString:@"http://ds1.downloadtech.net/cn1086/audio/209210320528066-002.mp3"];
-        NSString *titleString = @"Welcome to Cutco's demonstrator training for Costco.\nStart the audio track below to begin your training.";
+//        NSString *titleString = @"Welcome to Cutco's demonstrator training for Costco.\nStart the audio track below to begin your training.";
+        NSString *newTitleString = @"Welcome to the Cutco Retail Demonstrator Program";
         
-        CCAudioPlayerViewController *audioPlayerVC = [[CCAudioPlayerViewController alloc] initWithStreamUrl:streamUrl titleText:titleString];
+        CCAudioPlayerViewController *audioPlayerVC = [[CCAudioPlayerViewController alloc] initWithStreamUrl:streamUrl titleText:newTitleString];
         CCPaperWorkViewController *paperWorkVC = [[CCPaperWorkViewController alloc] init];
         CCGuidelinesViewControlller *guidelinesVC = [[CCGuidelinesViewControlller alloc] init];
         

@@ -125,7 +125,7 @@
     CCEvent *event = self.eventsDataSource[indexPath.row];
     for (CCLocation *location in [CCEvents sharedEvents].locations) {
         if ([location.objectId isEqualToString:event.location.objectId]) {
-            cell.location = location.title;
+            cell.location = [NSString stringWithFormat:@"%@, %@ - %d",location.title, location.state, (int)location.warehouseNumber];
             break;
         }
     }
@@ -259,7 +259,9 @@
     [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         if (!error) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                
                 [CCEvents sharedEvents].locations = objects;
+                
                 dispatch_async(dispatch_get_main_queue(), ^{
                     
                     [self segmentedControlDidPressed];

@@ -165,7 +165,7 @@
 #pragma mark - Cell Setup Methods
 
 - (void)setupSettingCell:(CCCheckoutSettingCell *)cell forIndexPath:(NSIndexPath *)indexPath {
-    NSArray *titles = @[@"New Customer", @"Came Back"];
+    NSArray *titles = @[@"New Customer", @"Be Back"];
     cell.settingNameLabel.text = titles[indexPath.row];
     
     [cell.switchButton addTarget:self
