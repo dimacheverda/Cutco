@@ -142,16 +142,26 @@ static void *AVPlayerPlaybackStatusObservationContext = &AVPlayerPlaybackStatusO
     
     [self.player play];
     
+    // to prevent phone from going to slepp during playback
+    [UIApplication sharedApplication].idleTimerDisabled = YES;
+    
     [self syncPlayPauseButton];
 }
 
 - (void)pauseButtonDidPressed:(UIButton *)sender {
     [self.player pause];
+
+    // to prevent phone from going to slepp during playback
+    [UIApplication sharedApplication].idleTimerDisabled = NO;
     
     [self syncPlayPauseButton];
 }
 
 - (void)playerItemDidEndPlaying:(AVPlayer *)player {
+    
+    // to prevent phone from going to slepp during playback
+    [UIApplication sharedApplication].idleTimerDisabled = NO;
+    
     self.audioFinishedAtLeastOnce = YES;
     self.seekToZeroBeforePlay = YES;
     [self syncPlayPauseButton];
