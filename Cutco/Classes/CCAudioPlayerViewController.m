@@ -67,6 +67,9 @@ static void *AVPlayerPlaybackStatusObservationContext = &AVPlayerPlaybackStatusO
     [super viewWillDisappear:animated];
     
     [self.player pause];
+
+    [UIApplication sharedApplication].idleTimerDisabled = NO;
+    
     [self removePlayerTimeObserver];
     [self syncPlayPauseButton];
 }

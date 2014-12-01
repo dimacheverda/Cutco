@@ -47,6 +47,7 @@
                         @"Came Backs",
                         @"Came Back Percetage",
                         @"New Customers",
+                        @"Old Customers",
                         nil
                         ];
     
@@ -58,6 +59,7 @@
                         @"Came Backs",
                         @"Came Back Percentage",
                         @"New Customers",
+                        @"Old Customers",
                         nil
                         ];
 }
@@ -65,7 +67,9 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    [self.report updateReportData];
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        [self.report updateReportData];
+    });
 }
 
 - (void)viewWillLayoutSubviews {
@@ -81,7 +85,8 @@
                          self.report.totalBeBacks,
                          self.report.totalCameBacks,
                          self.report.totalCameBackPercentage,
-                         self.report.totalNewCustomers];
+                         self.report.totalNewCustomers,
+                         self.report.totalOldCustomers];
     
     self.todayValues = @[self.report.todaySalesNumber,
                          self.report.todayReturnedNumber,
@@ -89,7 +94,8 @@
                          self.report.todayBeBacks,
                          self.report.todayCameBacks,
                          self.report.todayCameBackPercentage,
-                         self.report.todayNewCustomers];
+                         self.report.todayNewCustomers,
+                         self.report.todayOldCustomers];
 }
 
 #pragma mark - Accessors
@@ -182,6 +188,11 @@
             cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ customers", values[indexPath.row]];
         }
             break;
+          
+        case 7: {
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ customers", values[indexPath.row]];
+        }
+            break;
             
         default:
             break;
@@ -197,9 +208,10 @@
 #pragma mark - Notification Methods
 
 - (void)updateTableView {
-    [self updateReportValues];
-    
-    [self.tableView reloadData];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self updateReportValues];
+        [self.tableView reloadData];
+    });
 }
 
 @end

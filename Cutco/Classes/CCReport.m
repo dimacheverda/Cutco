@@ -29,12 +29,18 @@
         self.totalSalesRevenue = @0;
         self.totalBeBacks = @0;
         self.totalCameBacks = @0;
+        self.totalCameBackPercentage = @0;
+        self.totalNewCustomers = @0;
+        self.totalOldCustomers = @0;
         
         self.todaySalesNumber = @0;
         self.todayReturnedNumber = @0;
         self.todaySalesRevenue = @0;
         self.todayBeBacks = @0;
         self.todayCameBacks = @0;
+        self.todayCameBackPercentage = @0;
+        self.todayNewCustomers = @0;
+        self.todayOldCustomers = @0;
     }
     return self;
 }
@@ -63,9 +69,9 @@
 }
 
 - (void)calculateTotalData {
-    NSMutableArray *transactions = [CCSales sharedSales].transactions;
-    NSMutableArray *beBacks = [CCSales sharedSales].beBacks;
-    NSMutableArray *sales = [CCSales sharedSales].sales;
+    NSArray *transactions = [CCSales sharedSales].transactions;
+    NSArray *beBacks = [CCSales sharedSales].beBacks;
+    NSArray *sales = [CCSales sharedSales].sales;
     
     self.totalSalesNumber = [NSNumber numberWithUnsignedInteger:sales.count];
     self.totalReturnedNumber = [NSNumber numberWithUnsignedInteger:[CCSales sharedSales].returned.count];
@@ -74,6 +80,7 @@
     self.totalCameBacks = [NSNumber numberWithUnsignedInteger:[[transactions valueForKeyPath:@"@sum.cameBack"] unsignedIntegerValue]];
     self.totalCameBackPercentage = [NSNumber numberWithDouble:([self.totalCameBacks doubleValue] / [self.totalBeBacks doubleValue] * 100)];
     self.totalNewCustomers = [NSNumber numberWithUnsignedInteger:[[transactions valueForKeyPath:@"@sum.newCustomer"] unsignedIntegerValue]];
+    self.totalOldCustomers = [NSNumber numberWithInteger:transactions.count - [self.totalNewCustomers integerValue]];
 }
 
 - (void)calculateTodayData {
@@ -83,6 +90,7 @@
     NSUInteger beBack = 0;
     NSUInteger cameBack = 0;
     NSUInteger newCustomers = 0;
+    NSUInteger oldCustomers = 0;
     
     for (CCSale *sale in [CCSales sharedSales].sales) {
         if ([sale.createdAt isCurrentDay]) {
@@ -109,6 +117,8 @@
             }
             if (transaction.newCustomer) {
                 newCustomers++;
+            } else {
+                oldCustomers++;
             }
         }
     }
@@ -120,6 +130,7 @@
     self.todayCameBacks = [NSNumber numberWithUnsignedInteger:cameBack];
     self.todayCameBackPercentage = [NSNumber numberWithDouble:([self.todayCameBacks doubleValue] / [self.todayBeBacks doubleValue] * 100)];
     self.todayNewCustomers = [NSNumber numberWithUnsignedInteger:newCustomers];
+    self.todayOldCustomers = [NSNumber numberWithUnsignedInteger:oldCustomers];
 }
 
 #define kReportUpdatedNotificationName @"kReportUpdatedNotificationName"
