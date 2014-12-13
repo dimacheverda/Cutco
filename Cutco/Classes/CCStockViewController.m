@@ -349,7 +349,6 @@
         PFQuery *query = [CCPhoto query];
         [query clearCachedResult];
         [query whereKey:@"event" equalTo:[CCEvents sharedEvents].currentEvent];
-        [query whereKey:@"user" equalTo:[PFUser currentUser]];
         [query whereKey:@"createdAt" lessThanOrEqualTo:[NSDate endOfDay]];
         [query whereKey:@"createdAt" greaterThanOrEqualTo:[NSDate beginningOfDay]];
 
